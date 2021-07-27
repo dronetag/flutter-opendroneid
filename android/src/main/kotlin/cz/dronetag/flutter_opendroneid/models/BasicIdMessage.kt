@@ -18,12 +18,17 @@ class BasicIdMessage(
             val type: Int = byteBuffer.get().toInt()
             val idType = type and 0xF0 shr 4
             val uaType = type and 0x0F
-            var uasId = ByteArray(OdidMessageHandler.MAX_ID_BYTE_SIZE)
+            val uasId = ByteArray(OdidMessageHandler.MAX_ID_BYTE_SIZE)
             byteBuffer.get(uasId, 0, OdidMessageHandler.MAX_ID_BYTE_SIZE)
 
+            var uasIdString = String(uasId)
+
+            if (uasIdString.contains('\u0000')) {
+                uasIdString = uasIdString.split('\u0000').first()
+            }
 
             return BasicIdMessage(
-                idType, uaType, String(uasId).trim()
+                idType, uaType, uasIdString
             )
         }
     }

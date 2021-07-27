@@ -18,8 +18,14 @@ class OperatorIdMessage(
             val operatorId = ByteArray(OdidMessageHandler.MAX_ID_BYTE_SIZE)
             byteBuffer.get(operatorId, 0, OdidMessageHandler.MAX_ID_BYTE_SIZE)
 
+            var operatorIdString = String(operatorId)
+
+            if (operatorIdString.contains('\u0000')) {
+                operatorIdString = operatorIdString.split('\u0000').first()
+            }
+
             return OperatorIdMessage(
-                type, String(operatorId)
+                type, operatorIdString
             )
         }
     }
