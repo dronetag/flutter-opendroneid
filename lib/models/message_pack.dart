@@ -10,6 +10,7 @@ class MessagePack {
   // FIXME: Rename to avoid clash with ODID MessagePack
   final String macAddress;
   final int? lastMessageRssi;
+  final DateTime? lastUpdate;
   final BasicIdMessage? basicIdMessage;
   final LocationMessage? locationMessage;
   final OperatorIdMessage? operatorIdMessage;
@@ -17,6 +18,7 @@ class MessagePack {
   MessagePack({
     required this.macAddress,
     this.lastMessageRssi,
+    this.lastUpdate,
     this.basicIdMessage,
     this.locationMessage,
     this.operatorIdMessage,
@@ -28,6 +30,7 @@ class MessagePack {
   MessagePack copyWith({
     String? macAddress,
     int? lastMessageRssi,
+    DateTime? lastUpdate,
     BasicIdMessage? basicIdMessage,
     LocationMessage? locationMessage,
     OperatorIdMessage? operatorIdMessage,
@@ -35,6 +38,7 @@ class MessagePack {
       MessagePack(
         macAddress: macAddress ?? this.macAddress,
         lastMessageRssi: lastMessageRssi ?? this.lastMessageRssi,
+        lastUpdate: lastUpdate ?? DateTime.now(),
         basicIdMessage: basicIdMessage ?? this.basicIdMessage,
         locationMessage: locationMessage ?? this.locationMessage,
         operatorIdMessage: operatorIdMessage ?? this.operatorIdMessage,
