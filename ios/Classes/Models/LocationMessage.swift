@@ -3,57 +3,50 @@ import Foundation
 class LocationMessage: OdidMessage {
     let status: Int
     let heightType: Int
-    let ewDirection: Int
-    let speedMult: Int
     let direction: Int
-    let speedHori: Int
-    let speedVert: Int
-    let droneLat: Int // FIXME: RENAME THIS, horrible!
-    let droneLon: Int // FIXME: RENAME THIS, horrible!
-    let altitudePressure: Int
-    let altitudeGeodetic: Int
-    let height: Int
+    let speedHori: Double
+    let speedVert: Double
+    let latitude: Double
+    let longitude: Double
+    let altitudePressure: Double
+    let altitudeGeodetic: Double
+    let height: Double
     let horizontalAccuracy: Int
     let verticalAccuracy: Int
     let baroAccuracy: Int
     let speedAccuracy: Int
     let timestamp: Int
-    let timeAccuracy: Int
+    let timeAccuracy: Double
     let distance: Double
     
     static let LAT_LONG_MULTIPLIER = 1e-7
-    static let SPEED_VERTICAL_MULTIPLIER = 0.5
     
     init(
         status: Int,
         heightType: Int,
-        ewDirection: Int,
-        speedMult: Int,
         direction: Int,
-        speedHori: Int,
-        speedVert: Int,
-        droneLat: Int,
-        droneLon: Int,
-        altitudePressure: Int,
-        altitudeGeodetic: Int,
-        height: Int,
+        speedHori: Double,
+        speedVert: Double,
+        latitude: Double,
+        longitude: Double,
+        altitudePressure: Double,
+        altitudeGeodetic: Double,
+        height: Double,
         horizontalAccuracy: Int,
         verticalAccuracy: Int,
         baroAccuracy: Int,
         speedAccuracy: Int,
         timestamp: Int,
-        timeAccuracy: Int,
+        timeAccuracy: Double,
         distance: Double
     ) {
         self.status = status
         self.heightType = heightType
-        self.ewDirection = ewDirection
-        self.speedMult = speedMult
         self.direction = direction
         self.speedHori = speedHori
         self.speedVert = speedVert
-        self.droneLat = droneLat
-        self.droneLon = droneLon
+        self.latitude = latitude
+        self.longitude = longitude
         self.altitudePressure = altitudePressure
         self.altitudeGeodetic = altitudeGeodetic
         self.height = height
@@ -74,69 +67,33 @@ class LocationMessage: OdidMessage {
         return [
             "status": status,
             "heightType": heightType,
-            "direction": getDirection(),
-            "speedHorizontal": getSpeedHorizontal(),
-            "speedVertical": getSpeedVertical(),
-            "latitude": getLatitude(),
-            "longitude": getLongitude(),
-            "altitudePressure": getAltitudePressure(),
-            "altitudeGeodetic": getAltitudeGeodetic(),
-            "height": getHeight(),
+            "direction": direction,
+            "speedHorizontal": speedHori,
+            "speedVertical": speedVert,
+            "latitude": latitude,
+            "longitude": longitude,
+            "altitudePressure": altitudePressure,
+            "altitudeGeodetic": altitudeGeodetic,
+            "height": height,
             "accuracyHorizontal": horizontalAccuracy,
             "accuracyVertical": verticalAccuracy,
             "accuracyBaro": baroAccuracy,
             "accuracySpeed": speedAccuracy,
             "locationTimestamp": timestamp,
-            "timeAccuracy": getTimeAccuracy(),
+            "timeAccuracy": timeAccuracy,
             "distance": distance,
         ]
     }
     
-    func getDirection() -> Double {
-        return decodeDirection(value: direction, ew: ewDirection)
-    }
-    
-    func getSpeedHorizontal() -> Double {
-        return decodeSpeed(value: speedHori, multiplier: speedMult)
-    }
-    
-    func getSpeedVertical() -> Double {
-        return decodeSpeed(value: speedVert, multiplier: speedMult)
-    }
-    
-    func getLatitude() -> Double {
-        return LocationMessage.LAT_LONG_MULTIPLIER * Double(droneLat)
-    }
-    
-    func getLongitude() -> Double {
-        return LocationMessage.LAT_LONG_MULTIPLIER * Double(droneLon)
-    }
-    
-    func getAltitudePressure() -> Double {
-        return decodeAltitude(value: altitudePressure)
-    }
-    
-    func getAltitudeGeodetic() -> Double {
-        return decodeAltitude(value: altitudeGeodetic)
-    }
-    
-    func getHeight() -> Double {
-        return decodeAltitude(value: height)
-    }
-    
-    func getTimeAccuracy() -> Double {
-        return Double(timeAccuracy) * 0.1
-    }
-    
-    func decodeSpeed(value: Int, multiplier: Int) -> Double {
+    static func decodeSpeed(value: Int, multiplier: Int) -> Double {
         return multiplier == 0 ? Double(value) * 0.25 : Double(value) * 0.75 + 255 * 0.25 // 🤨
     }
     
-    func decodeDirection(value: Int, ew: Int) -> Double {
-        return Double(ewDirection == 0 ? (direction ?? 0) : (direction ?? 0) + 180) // FIXME
+    static func decodeDirection(value: Int, ew: Int) -> Int {
+        return ew == 0 ? value : (value + 180)
     }
     
-    func decodeAltitude(value: Int) -> Double {
+    static func decodeAltitude(value: Int) -> Double {
         return Double(value) / 2 - 1000
     }
     
@@ -145,25 +102,42 @@ class LocationMessage: OdidMessage {
         let dataSlice = Data(bytes)
         let meta = bytes[0]
         
+        let status = Int((meta & 0xF0) >> 4)
+        let heightType = Int((meta & 0x04) >> 2)
+        let ewDirection = Int((meta & 0x02) >> 1)
+        let speedMult = Int((meta & 0x01))
+        let direction = Int(dataSlice[1] & 0xFF)
+        let speedHori = Int(dataSlice[2] & 0xFF)
+        let speedVert = Int(dataSlice[3])
+        let latitude = Int(dataSlice[4...7].uint32)
+        let longitude = Int(dataSlice[8...11].uint32)
+        let altitudePressure = Int(dataSlice[12...13].uint16)
+        let altitudeGeodetic = Int(dataSlice[14...15].uint16)
+        let height = Int(dataSlice[16...17].uint16)
+        let horizontalAccuracy = Int(dataSlice[18] & 0x0F)
+        let verticalAccuracy = Int((dataSlice[18] & 0xF0) >> 4)
+        let baroAccuracy = Int(dataSlice[19] & 0x0F)
+        let speedAccuracy = Int((dataSlice[19] & 0xF0) >> 4)
+        let timestamp = Int(dataSlice[20...21].uint16)
+        let timeAccuracy = Int(dataSlice[22] & 0x0F)
+        
         return LocationMessage(
-            status: Int((meta & 0xF0) >> 4),
-            heightType: Int((meta & 0x04) >> 2),
-            ewDirection: Int((meta & 0x02) >> 1),
-            speedMult: Int((meta & 0x01)),
-            direction: Int(dataSlice[1] & 0xFF),
-            speedHori: Int(dataSlice[2] & 0xFF),
-            speedVert: Int(dataSlice[3]),
-            droneLat: Int(dataSlice[4...7].uint32), // FIXME
-            droneLon: Int(dataSlice[8...11].uint32), // FIXME
-            altitudePressure: Int(dataSlice[12...13].uint16), // FIXME
-            altitudeGeodetic: Int(dataSlice[14...15].uint16), // FIXME
-            height: Int(dataSlice[16...17].uint16), // FIXME
-            horizontalAccuracy: Int(dataSlice[18] & 0x0F),
-            verticalAccuracy: Int((dataSlice[18] & 0xF0) >> 4),
-            baroAccuracy: Int(dataSlice[19] & 0x0F),
-            speedAccuracy: Int((dataSlice[19] & 0xF0) >> 4),
-            timestamp: Int(dataSlice[20...21].uint16), // FIXME
-            timeAccuracy: Int(dataSlice[22] & 0x0F),
+            status: status,
+            heightType: heightType,
+            direction: decodeDirection(value: direction, ew: ewDirection),
+            speedHori: decodeSpeed(value: speedHori, multiplier: speedMult),
+            speedVert: decodeSpeed(value: speedVert, multiplier: speedMult),
+            latitude: LocationMessage.LAT_LONG_MULTIPLIER * Double(latitude),
+            longitude: LocationMessage.LAT_LONG_MULTIPLIER * Double(longitude),
+            altitudePressure: decodeAltitude(value: altitudePressure),
+            altitudeGeodetic: decodeAltitude(value: altitudeGeodetic),
+            height: decodeAltitude(value: height),
+            horizontalAccuracy: horizontalAccuracy,
+            verticalAccuracy: verticalAccuracy,
+            baroAccuracy: baroAccuracy,
+            speedAccuracy: speedAccuracy,
+            timestamp: timestamp,
+            timeAccuracy: Double(timeAccuracy) * 0.1,
             distance: 0.0
         )
     }

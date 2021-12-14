@@ -11,7 +11,7 @@ class LocationMessage extends OdidMessage {
   final HeightType heightType;
 
   /// Direction of the aircraft heading (in degrees)
-  final double? direction;
+  final int? direction;
 
   /// Horizontal speed of the aircraft
   final double? speedHorizontal;
@@ -46,10 +46,8 @@ class LocationMessage extends OdidMessage {
   /// Speed accuracy of reported position via GNSS
   final SpeedAccuracy speedAccuracy;
 
-  /// Time of location report
-  ///
-  /// (This time can differ from the [received] field)
-  final DateTime? reported;
+  /// Time of the location report
+  final DateTime? time;
 
   /// Accuracy of timestamp values
   final double? timeAccuracy;
@@ -74,7 +72,7 @@ class LocationMessage extends OdidMessage {
     this.verticalAccuracy = VerticalAccuracy.Unknown,
     this.baroAccuracy = VerticalAccuracy.Unknown,
     this.speedAccuracy = SpeedAccuracy.Unknown,
-    this.reported,
+    this.time,
     this.timeAccuracy,
   }) : super(
           received: received,
@@ -89,9 +87,12 @@ class LocationMessage extends OdidMessage {
   @override
   String toString() =>
       'LocationMessage { $macAddress ($status) @ $latitude, $longitude, '
-      '$height meters, $reported }';
+      '$height meters, $time }';
 
   factory LocationMessage.fromMap(Map<Object?, Object?> map) {
+    final currentHourTimestamp =
+        DateTime.now().millisecondsSinceEpoch ~/ 3600000 * 3600000;
+
     return LocationMessage(
       received: DateTime.now(),
       macAddress: map['macAddress'].toString(),
@@ -99,7 +100,7 @@ class LocationMessage extends OdidMessage {
       rssi: map['rssi'] as int?,
       status: AircraftStatus.values[map['status'] as int],
       heightType: HeightType.values[map['heightType'] as int],
-      direction: map['direction'] as double,
+      direction: map['direction'] as int,
       speedHorizontal: map['speedHorizontal'] as double,
       speedVertical: map['speedVertical'] as double,
       latitude: map['latitude'] as double,
@@ -112,8 +113,8 @@ class LocationMessage extends OdidMessage {
       verticalAccuracy: VerticalAccuracy.values[map['accuracyVertical'] as int],
       baroAccuracy: VerticalAccuracy.values[map['accuracyBaro'] as int],
       speedAccuracy: SpeedAccuracy.values[map['accuracySpeed'] as int],
-      reported: DateTime.fromMicrosecondsSinceEpoch(
-          1000 * (map['locationTimestamp'] as int)),
+      time: DateTime.fromMillisecondsSinceEpoch(
+          currentHourTimestamp + 100 * (map['locationTimestamp'] as int)),
       timeAccuracy: map['timeAccuracy'] as double,
     );
   }
