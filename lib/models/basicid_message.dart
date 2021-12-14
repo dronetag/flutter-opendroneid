@@ -42,7 +42,9 @@ class BasicIdMessage extends OdidMessage {
         macAddress: map['macAddress'].toString(),
         source: MessageSource.values[map['source'] as int],
         rssi: map['rssi'] as int?,
-        uasId: map['uasId'].toString(),
+        uasId: map['uasId']
+            .toString()
+            .replaceAll(RegExp(r'[^A-Za-z0-9]'), ''), // FIXME
         idType: IdType.values[map['idType'] as int],
         uaType: UaType.values[map['uaType'] as int],
       );
