@@ -10,7 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  pigeon: ^1.0.12
 
+    
 dev_dependencies:
   flutter_test:
     sdk: flutter
