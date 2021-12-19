@@ -1,11 +1,11 @@
 import Foundation
-import CoreBluetooth
+import CoreWLAN
 
-class BluetoothScanner: NSObject, CBCentralManagerDelegate {
+class WifiScanner: NSObject{
     private let messageHandler: StreamHandler
     private let stateHandler: StreamHandler
     
-    var centralManager: CBCentralManager
+    var wifiClient: CWWifiClient
     let dispatchQueue: DispatchQueue = DispatchQueue(label: "BluetoothScanner")
     
     static let serviceUUID = CBUUID(string: "0000fffa-0000-1000-8000-00805f9b34fb")
@@ -13,7 +13,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     init(messageHandler: StreamHandler, stateHandler: StreamHandler) {
         self.messageHandler = messageHandler
         self.stateHandler = stateHandler
-        self.centralManager = CBCentralManager(delegate: nil, queue: dispatchQueue)
+        self.wifiClient = CWWifiClient.shared()
         super.init()
         self.centralManager.delegate = self
     }
@@ -43,4 +43,5 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
         // Peripheral must have service data
        
     }
+    
 }

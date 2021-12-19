@@ -1,7 +1,7 @@
 import Foundation
 import CoreBluetooth
 
-class BluetoothSjkjcanner: NSObject, CBCentralManagerDelegate {
+class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     private let messageHandler: StreamHandler
     private let stateHandler: StreamHandler
     private let scanStateHandler: StreamHandler
