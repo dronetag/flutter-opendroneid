@@ -7,8 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import androidx.annotation.NonNull
-import io.flutter.Log
+import android.net.wifi.WifiManager
 
+import io.flutter.Log
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -22,6 +23,9 @@ class FlutterOpendroneidPlugin: FlutterPlugin, ActivityAware, MethodCallHandler 
   private lateinit var channel: MethodChannel
   private var boundActivity: Activity? = null
 
+  private lateinit var context: Context
+  private lateinit var activity: Activity
+
   private val messagesStreamHandler = StreamHandler()
   private val bluetoothStateStreamHandler = StreamHandler()
   private val scanStateStreamHandler = StreamHandler()
@@ -29,6 +33,7 @@ class FlutterOpendroneidPlugin: FlutterPlugin, ActivityAware, MethodCallHandler 
   private var scanner: BluetoothScanner = BluetoothScanner(
           messagesStreamHandler, bluetoothStateStreamHandler, scanStateStreamHandler,
   )
+  private lateinit var wifiScanner: WifiScanner
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_odid")
@@ -39,8 +44,15 @@ class FlutterOpendroneidPlugin: FlutterPlugin, ActivityAware, MethodCallHandler 
       "flutter_odid_bt_state" to bluetoothStateStreamHandler,
       "flutter_odid_scan_state" to scanStateStreamHandler,
     ))
+    context = flutterPluginBinding.applicationContext
 
+    val wifiManager: WifiManager? = context.getSystemService(Context.WIFI_SERVICE) as WifiManager?
+
+    wifiScanner = WifiScanner(
+      messagesStreamHandler, bluetoothStateStreamHandler, wifiManager
+    )
   }
+
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     binding.activity.registerReceiver(scanner.adapterStateReceiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED))
@@ -57,6 +69,10 @@ class FlutterOpendroneidPlugin: FlutterPlugin, ActivityAware, MethodCallHandler 
   override fun onDetachedFromActivity() {
   }
 
+  override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    channel.setMethodCallHandler(null)
+  }
+
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     when (call.method) {
       "start_scan" -> startScan(result)
@@ -68,24 +84,16 @@ class FlutterOpendroneidPlugin: FlutterPlugin, ActivityAware, MethodCallHandler 
     }
   }
 
-  override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-    scanner.cancel()
-    channel.setMethodCallHandler(null)
-    StreamHandler.clearMultipleHandlers(binding.binaryMessenger, listOf(
-      "flutter_odid_basicid",
-      "flutter_odid_location",
-      "flutter_odid_bt_state"
-    ))
-  }
-
   private fun startScan(@NonNull result: Result) {
     scanner.scan()
+    wifiScanner.scan()
     Log.d("plugin", "Started scanning")
     result.success(null)
   }
 
   private fun stopScan(@NonNull result: Result) {
     scanner.cancel()
+    wifiScanner.cancel()
     Log.d("plugin", "Scan was stopped")
     result.success(null)
   }
