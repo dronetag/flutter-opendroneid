@@ -2,6 +2,9 @@ package cz.dronetag.flutter_opendroneid
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.ParcelUuid
 import cz.dronetag.flutter_opendroneid.models.BasicIdMessage
@@ -11,9 +14,18 @@ import io.flutter.Log
 import java.util.*
 
 class BluetoothScanner(
-    private val messagesHandler: StreamHandler,
-    private val bluetoothStateHandler: StreamHandler
+        private val messagesHandler: StreamHandler,
+        private val bluetoothStateHandler: StreamHandler,
+        private val scanStateHandler: StreamHandler,
 ) {
+    var isScanning = false
+        get() = field
+        set(value) {
+            field = value
+            scanStateHandler.send(value)
+        }
+    var shouldAutoRestart = false
+
     val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private val serviceUuid = UUID.fromString("0000fffa-0000-1000-8000-00805f9b34fb")
     private val serviceParcelUuid = ParcelUuid(serviceUuid)
@@ -44,18 +56,20 @@ class BluetoothScanner(
         }
 
         bluetoothLeScanner.startScan(scanFilters, scanSettings, scanCallback)
-        Log.d("scanner", "startScan begin")
+        Log.d("scanner", "Started OpenDroneID messages scan")
+        isScanning = true
+        shouldAutoRestart = true
     }
 
     fun cancel() {
         if (!bluetoothAdapter.isEnabled) return
         bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
+        isScanning = false
+        shouldAutoRestart = false
     }
 
     fun getAdapterState(): Int {
-        val state = bluetoothAdapter.state
-
-        return when (state) {
+        return when (bluetoothAdapter.state) {
             BluetoothAdapter.STATE_OFF -> 4
             BluetoothAdapter.STATE_ON -> 5
             BluetoothAdapter.STATE_TURNING_OFF -> 1
@@ -64,23 +78,35 @@ class BluetoothScanner(
         }
     }
 
+    val adapterStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val rawState = bluetoothAdapter.state
+            val commonState = getAdapterState()
+            bluetoothStateHandler.send(commonState)
+
+            if (rawState == BluetoothAdapter.STATE_OFF || rawState == BluetoothAdapter.STATE_TURNING_OFF) {
+                if (bluetoothAdapter.isEnabled) bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
+                isScanning = false
+            } else if (rawState == BluetoothAdapter.STATE_ON || rawState == BluetoothAdapter.STATE_TURNING_ON
+                    && !isScanning && shouldAutoRestart) {
+//                scan()
+            }
+        }
+    }
+
     private val scanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
-            Log.d("scanner", "scanResult received")
             val scanRecord: ScanRecord = result.scanRecord ?: return
             val bytes = scanRecord.bytes ?: return
             val receivedMessage: OdidMessage? = messageHandler.receiveDataBluetooth(bytes)
             receivedMessage ?: return
 
-            Log.d("scanner", "parsing scan result...")
             val json = receivedMessage.toJson()
 
             json["type"] = receivedMessage.type.ordinal
             json["macAddress"] = result.device.address
             json["source"] = OdidMessage.Source.BLUETOOTH_LEGACY.ordinal
             json["rssi"] = result.rssi
-
-            Log.d("scanner", json.toString())
 
             messagesHandler.send(json)
         }

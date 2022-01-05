@@ -1,24 +1,34 @@
 package cz.dronetag.flutter_opendroneid
 
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.annotation.NonNull
 import io.flutter.Log
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
 /** FlutterOpendroneidPlugin */
-class FlutterOpendroneidPlugin: FlutterPlugin, MethodCallHandler {
-  var isScanning = false
-
+class FlutterOpendroneidPlugin: FlutterPlugin, ActivityAware, MethodCallHandler {
   private lateinit var channel: MethodChannel
+  private var boundActivity: Activity? = null
 
   private val messagesStreamHandler = StreamHandler()
   private val bluetoothStateStreamHandler = StreamHandler()
+  private val scanStateStreamHandler = StreamHandler()
 
-  private lateinit var scanner: BluetoothScanner
+  private var scanner: BluetoothScanner = BluetoothScanner(
+          messagesStreamHandler, bluetoothStateStreamHandler, scanStateStreamHandler,
+  )
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_odid")
@@ -26,19 +36,32 @@ class FlutterOpendroneidPlugin: FlutterPlugin, MethodCallHandler {
 
     StreamHandler.bindMultipleHandlers(flutterPluginBinding.binaryMessenger, mapOf(
       "flutter_odid_messages" to messagesStreamHandler,
-      "flutter_odid_bt_state" to bluetoothStateStreamHandler
+      "flutter_odid_bt_state" to bluetoothStateStreamHandler,
+      "flutter_odid_scan_state" to scanStateStreamHandler,
     ))
 
-    scanner = BluetoothScanner(
-        messagesStreamHandler, bluetoothStateStreamHandler
-    )
+  }
+
+  override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+    binding.activity.registerReceiver(scanner.adapterStateReceiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED))
+    boundActivity = binding.activity
+  }
+
+  override fun onDetachedFromActivityForConfigChanges() {
+    boundActivity?.unregisterReceiver(scanner.adapterStateReceiver)
+  }
+
+  override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+  }
+
+  override fun onDetachedFromActivity() {
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     when (call.method) {
       "start_scan" -> startScan()
       "stop_scan" -> stopScan()
-      "is_scanning" -> result.success(isScanning)
+      "is_scanning" -> result.success(scanner.isScanning)
       "bluetooth_state" -> result.success(scanner.getAdapterState())
       else -> result.notImplemented()
     }
@@ -56,13 +79,11 @@ class FlutterOpendroneidPlugin: FlutterPlugin, MethodCallHandler {
 
   private fun startScan() {
     scanner.scan()
-    isScanning = true
     Log.d("plugin", "Started scanning")
   }
 
   private fun stopScan() {
     scanner.cancel()
-    isScanning = false
     Log.d("plugin", "Scan was stopped")
   }
 }

@@ -12,6 +12,8 @@ class FlutterOpenDroneId {
       const EventChannel('flutter_odid_messages');
   static const _btStateEventChannel =
       const EventChannel('flutter_odid_bt_state');
+  static const _scanStateEventChannel =
+      const EventChannel('flutter_odid_scan_state');
 
   static Map<String, MessagePack> _storedPacks = {};
   static final _packController = StreamController<MessagePack>.broadcast();
@@ -26,6 +28,10 @@ class FlutterOpenDroneId {
   }
 
   static Stream<MessagePack> get allMessages => _packController.stream;
+
+  static Stream<bool> get isScanningStream => _scanStateEventChannel
+      .receiveBroadcastStream()
+      .map((event) => event as bool);
 
   /// Starts scanning for nearby traffic
   ///
