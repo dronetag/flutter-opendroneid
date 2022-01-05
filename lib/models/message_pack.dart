@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_opendroneid/models/basicid_message.dart';
+import 'package:flutter_opendroneid/models/enums.dart';
 import 'package:flutter_opendroneid/models/location_message.dart';
 import 'package:flutter_opendroneid/models/operatorid_message.dart';
 
@@ -62,7 +63,7 @@ class MessagePack {
   Color getPackColor() {
     final len = macAddress.length;
     return Color.fromARGB(
-      255,
+      locationMessage?.status != AircraftStatus.Airborne ? 80 : 255,
       colorOffset +
           32 +
           macAddress
