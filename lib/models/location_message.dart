@@ -90,9 +90,6 @@ class LocationMessage extends OdidMessage {
       '$height meters, $time }';
 
   factory LocationMessage.fromMap(Map<Object?, Object?> map) {
-    final currentHourTimestamp =
-        DateTime.now().millisecondsSinceEpoch ~/ 3600000 * 3600000;
-
     return LocationMessage(
       received: DateTime.now(),
       macAddress: map['macAddress'].toString(),
@@ -113,9 +110,22 @@ class LocationMessage extends OdidMessage {
       verticalAccuracy: VerticalAccuracy.values[map['accuracyVertical'] as int],
       baroAccuracy: VerticalAccuracy.values[map['accuracyBaro'] as int],
       speedAccuracy: SpeedAccuracy.values[map['accuracySpeed'] as int],
-      time: DateTime.fromMillisecondsSinceEpoch(
-          currentHourTimestamp + 100 * (map['locationTimestamp'] as int)),
+      time: convertFromHourTimestamp(map['locationTimestamp'] as int),
       timeAccuracy: map['timeAccuracy'] as double,
     );
+  }
+
+  static DateTime convertFromHourTimestamp(int timestamp) {
+    // If the timestamp is close to the full hour, but current time doesn't
+    // correspond, it's probably delayed timestamp from the previous hour
+    final referenceTime = timestamp > 18000 && DateTime.now().minute < 30
+        ? DateTime.now().subtract(Duration(hours: 1))
+        : DateTime.now();
+
+    final referenceTimestamp =
+        referenceTime.millisecondsSinceEpoch ~/ 3600000 * 3600000;
+
+    return DateTime.fromMillisecondsSinceEpoch(
+        referenceTimestamp + 100 * timestamp);
   }
 }
