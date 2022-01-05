@@ -89,7 +89,7 @@ class BluetoothScanner(
                 isScanning = false
             } else if (rawState == BluetoothAdapter.STATE_ON || rawState == BluetoothAdapter.STATE_TURNING_ON
                     && !isScanning && shouldAutoRestart) {
-//                scan()
+                scan()
             }
         }
     }

@@ -16,7 +16,6 @@ class FlutterOpenDroneIdApp extends StatefulWidget {
 class _FlutterOpenDroneIdAppState extends State<FlutterOpenDroneIdApp> {
   StreamSubscription? listener;
   Map<String, List<MessagePack>> packHistory = {};
-  bool isScanning = false;
 
   @override
   void initState() {
@@ -66,9 +65,6 @@ class _FlutterOpenDroneIdAppState extends State<FlutterOpenDroneIdApp> {
 
   void _updateScanningState() async {
     final value = await FlutterOpenDroneId.isScanning;
-    setState(() {
-      isScanning = value;
-    });
   }
 
   @override
@@ -87,7 +83,6 @@ class _FlutterOpenDroneIdAppState extends State<FlutterOpenDroneIdApp> {
       )),
       home: HomeScreen(
         receivedPacks: packHistory,
-        isScanning: isScanning,
         startScan: start,
         stopScan: stop,
         clearData: clear,

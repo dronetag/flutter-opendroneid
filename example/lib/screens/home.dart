@@ -11,14 +11,12 @@ import 'package:latlong2/latlong.dart';
 
 class HomeScreen extends StatefulWidget {
   final Map<String, List<MessagePack>> receivedPacks;
-  final bool isScanning;
   final VoidCallback startScan;
   final VoidCallback stopScan;
   final VoidCallback clearData;
 
   HomeScreen({
     required this.receivedPacks,
-    required this.isScanning,
     required this.startScan,
     required this.stopScan,
     required this.clearData,
@@ -30,7 +28,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription? _bluetoothStateSubscription;
+  StreamSubscription? _scanStateSubscription;
   BluetoothState bluetoothState = BluetoothState.Unknown;
+  bool isScanning = false;
 
   @override
   void initState() {
@@ -41,12 +41,15 @@ class _HomeScreenState extends State<HomeScreen> {
         bluetoothState = state;
       });
     });
+    _scanStateSubscription = FlutterOpenDroneId.isScanningStream
+        .listen((s) => setState(() => isScanning = s));
   }
 
   @override
   void dispose() {
     super.dispose();
     _bluetoothStateSubscription?.cancel();
+    _scanStateSubscription?.cancel();
   }
 
   @override
@@ -54,7 +57,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final packs = widget.receivedPacks;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter OpenDroneID'),
+        title: Wrap(spacing: 8.0, children: [
+          Icon(isScanning ? Icons.circle : Icons.circle_outlined),
+          Text('Flutter OpenDroneID'),
+        ]),
+        backgroundColor: isScanning
+            ? Theme.of(context).primaryColor
+            : Theme.of(context).primaryColorDark,
         actions: [
           if (bluetoothState != BluetoothState.PoweredOn)
             Tooltip(
@@ -91,9 +100,9 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: false,
       ),
       floatingActionButton: ElevatedButton.icon(
-        icon: Icon(widget.isScanning ? Icons.pause : Icons.play_arrow),
-        label: Text(widget.isScanning ? 'Stop scan' : 'Start scan'),
-        onPressed: widget.isScanning ? widget.stopScan : widget.startScan,
+        icon: Icon(isScanning ? Icons.pause : Icons.play_arrow),
+        label: Text(isScanning ? 'Stop scan' : 'Start scan'),
+        onPressed: isScanning ? widget.stopScan : widget.startScan,
       ),
       body: Builder(builder: (context) {
         final themeMapBrightness =
