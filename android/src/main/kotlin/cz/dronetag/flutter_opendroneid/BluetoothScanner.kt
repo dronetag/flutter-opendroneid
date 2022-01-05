@@ -62,10 +62,10 @@ class BluetoothScanner(
     }
 
     fun cancel() {
-        if (!bluetoothAdapter.isEnabled) return
-        bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
         isScanning = false
         shouldAutoRestart = false
+        if (!bluetoothAdapter.isEnabled) return
+        bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
     }
 
     fun getAdapterState(): Int {
@@ -87,8 +87,9 @@ class BluetoothScanner(
             if (rawState == BluetoothAdapter.STATE_OFF || rawState == BluetoothAdapter.STATE_TURNING_OFF) {
                 if (bluetoothAdapter.isEnabled) bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
                 isScanning = false
-            } else if (rawState == BluetoothAdapter.STATE_ON || rawState == BluetoothAdapter.STATE_TURNING_ON
+            } else if ((rawState == BluetoothAdapter.STATE_ON)
                     && !isScanning && shouldAutoRestart) {
+                cancel()
                 scan()
             }
         }
