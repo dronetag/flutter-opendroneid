@@ -4,15 +4,17 @@ import CoreBluetooth
 class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     private let messageHandler: StreamHandler
     private let stateHandler: StreamHandler
+    private let scanStateHandler: StreamHandler
     
     var centralManager: CBCentralManager
     let dispatchQueue: DispatchQueue = DispatchQueue(label: "BluetoothScanner")
     
     static let serviceUUID = CBUUID(string: "0000fffa-0000-1000-8000-00805f9b34fb")
     
-    init(messageHandler: StreamHandler, stateHandler: StreamHandler) {
+    init(messageHandler: StreamHandler, stateHandler: StreamHandler, scanStateHandler: StreamHandler) {
         self.messageHandler = messageHandler
         self.stateHandler = stateHandler
+        self.scanStateHandler = scanStateHandler
         self.centralManager = CBCentralManager(delegate: nil, queue: dispatchQueue)
         super.init()
         self.centralManager.delegate = self
@@ -32,14 +34,25 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
                 CBCentralManagerScanOptionAllowDuplicatesKey: true,
             ]
         )
+        updateScanState()
+    }
+    
+    func isScanning() -> Bool {
+        return centralManager.isScanning
     }
     
     func cancel() {
         centralManager.stopScan()
+        updateScanState()
+    }
+    
+    func updateScanState() {
+        scanStateHandler.send(centralManager.isScanning)
     }
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         stateHandler.send(central.state.rawValue)
+        updateScanState()
     }
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
