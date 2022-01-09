@@ -98,20 +98,20 @@ class LocationMessage extends OdidMessage {
       status: AircraftStatus.values[map['status'] as int],
       heightType: HeightType.values[map['heightType'] as int],
       direction: map['direction'] as int,
-      speedHorizontal: map['speedHorizontal'] as double,
-      speedVertical: map['speedVertical'] as double,
-      latitude: map['latitude'] as double,
-      longitude: map['longitude'] as double,
-      altitudePressure: map['altitudePressure'] as double,
-      altitudeGeodetic: map['altitudeGeodetic'] as double,
-      height: map['height'] as double,
+      speedHorizontal: (map['speedHorizontal'] as num).toDouble(),
+      speedVertical: (map['speedVertical'] as num).toDouble(),
+      latitude: (map['latitude'] as num).toDouble(),
+      longitude: (map['longitude'] as num).toDouble(),
+      altitudePressure: (map['altitudePressure'] as num).toDouble(),
+      altitudeGeodetic: (map['altitudeGeodetic'] as num).toDouble(),
+      height: (map['height'] as num).toDouble(),
       horizontalAccuracy:
           HorizontalAccuracy.values[map['accuracyHorizontal'] as int],
       verticalAccuracy: VerticalAccuracy.values[map['accuracyVertical'] as int],
       baroAccuracy: VerticalAccuracy.values[map['accuracyBaro'] as int],
       speedAccuracy: SpeedAccuracy.values[map['accuracySpeed'] as int],
       time: convertFromHourTimestamp(map['locationTimestamp'] as int),
-      timeAccuracy: map['timeAccuracy'] as double,
+      timeAccuracy: (map['timeAccuracy'] as num).toDouble(),
     );
   }
 
