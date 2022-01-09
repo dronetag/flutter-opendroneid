@@ -59,10 +59,11 @@ class FlutterOpendroneidPlugin: FlutterPlugin, ActivityAware, MethodCallHandler 
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     when (call.method) {
-      "start_scan" -> startScan()
-      "stop_scan" -> stopScan()
+      "start_scan" -> startScan(result)
+      "stop_scan" -> stopScan(result)
       "is_scanning" -> result.success(scanner.isScanning)
       "bluetooth_state" -> result.success(scanner.getAdapterState())
+      "set_autorestart" -> setAutorestart(call.argument<Boolean>("enable"), result)
       else -> result.notImplemented()
     }
   }
@@ -77,13 +78,20 @@ class FlutterOpendroneidPlugin: FlutterPlugin, ActivityAware, MethodCallHandler 
     ))
   }
 
-  private fun startScan() {
+  private fun startScan(@NonNull result: Result) {
     scanner.scan()
     Log.d("plugin", "Started scanning")
+    result.success(null)
   }
 
-  private fun stopScan() {
+  private fun stopScan(@NonNull result: Result) {
     scanner.cancel()
     Log.d("plugin", "Scan was stopped")
+    result.success(null)
+  }
+
+  private fun setAutorestart(enable: Boolean?, @NonNull result: Result) {
+    scanner.shouldAutoRestart = enable ?: false
+    result.success(null)
   }
 }

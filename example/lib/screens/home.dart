@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription? _scanStateSubscription;
   BluetoothState bluetoothState = BluetoothState.Unknown;
   bool isScanning = false;
+  bool autoRestartEnabled = false;
 
   @override
   void initState() {
@@ -80,6 +81,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Text('About'),
                 value: 'about',
               ),
+              CheckedPopupMenuItem(
+                value: 'autorestart',
+                checked: autoRestartEnabled,
+                child: Text('Auto-restart'),
+              ),
             ],
             onSelected: (item) {
               if (item == 'clear') {
@@ -92,6 +98,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   applicationIcon: Icon(Icons.flight),
                   applicationLegalese: '2021 © Dronetag s.r.o.',
                 );
+              }
+              if (item == 'autorestart') {
+                setState(() {
+                  autoRestartEnabled = !autoRestartEnabled;
+                });
+                FlutterOpenDroneId.enableAutoRestart(
+                    enable: autoRestartEnabled);
               }
             },
             icon: Icon(Icons.more_vert),

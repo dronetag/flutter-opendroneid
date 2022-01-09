@@ -58,12 +58,10 @@ class BluetoothScanner(
         bluetoothLeScanner.startScan(scanFilters, scanSettings, scanCallback)
         Log.d("scanner", "Started OpenDroneID messages scan")
         isScanning = true
-        shouldAutoRestart = true
     }
 
     fun cancel() {
         isScanning = false
-        shouldAutoRestart = false
         if (!bluetoothAdapter.isEnabled) return
         bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
     }

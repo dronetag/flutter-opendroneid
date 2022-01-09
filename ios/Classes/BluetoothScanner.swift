@@ -7,6 +7,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     private let scanStateHandler: StreamHandler
     
     var centralManager: CBCentralManager
+    var autoRestart: Bool = false
     let dispatchQueue: DispatchQueue = DispatchQueue(label: "BluetoothScanner")
     
     static let serviceUUID = CBUUID(string: "0000fffa-0000-1000-8000-00805f9b34fb")
@@ -53,6 +54,10 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         stateHandler.send(central.state.rawValue)
         updateScanState()
+        
+        if (central.state == .poweredOn && autoRestart) {
+            scan()
+        }
     }
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {

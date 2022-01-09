@@ -28,7 +28,8 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin {
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        NSLog(call.method)
+        let arguments = call.arguments as? Dictionary<String, AnyObject> ?? [:]
+        
         switch call.method {
         case "start_scan":
             startScan(result)
@@ -38,6 +39,8 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin {
             result(bluetoothScanner?.isScanning())
         case "bluetooth_state":
             result(bluetoothScanner?.centralManager.state.rawValue)
+        case "set_autorestart":
+            bluetoothScanner?.autoRestart = arguments["enable"] as! Bool
         default:
             result(FlutterMethodNotImplemented)
         }

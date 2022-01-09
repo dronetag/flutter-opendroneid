@@ -53,6 +53,12 @@ class FlutterOpenDroneId {
     _messagesSubscription?.cancel();
   }
 
+  static Future<void> enableAutoRestart({required bool enable}) async {
+    await _methodChannel.invokeMethod('set_autorestart', {
+      'enable': enable,
+    });
+  }
+
   static Future<bool> get isScanning async =>
       await _methodChannel.invokeMethod('is_scanning');
 
