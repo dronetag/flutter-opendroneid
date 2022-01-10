@@ -49,7 +49,7 @@ class FlutterOpendroneidPlugin: FlutterPlugin, ActivityAware, MethodCallHandler 
     val wifiManager: WifiManager? = context.getSystemService(Context.WIFI_SERVICE) as WifiManager?
 
     wifiScanner = WifiScanner(
-      messagesStreamHandler, bluetoothStateStreamHandler, wifiManager, context
+      messagesStreamHandler, bluetoothStateStreamHandler, wifiManager
     )
   }
 

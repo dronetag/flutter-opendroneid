@@ -10,6 +10,10 @@ import cz.dronetag.flutter_opendroneid.models.LocationMessage
 import cz.dronetag.flutter_opendroneid.models.OdidMessage
 import java.util.*
 import io.flutter.Log
+import kotlin.Unit
+
+
+
 
 class WifiScanner (
     private val messagesHandler: StreamHandler,
@@ -27,8 +31,11 @@ class WifiScanner (
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(contxt: Context?, intent: Intent?) {
-            val resultList = wifiManager?.scanResults as ArrayList<ScanResult>
-            Log.d("TESTING", "onReceive Called")
+            val resultList = wifiManager?.getScanResults() as ArrayList<ScanResult>
+            Log.d("wifi scanner", "wifi scan number of results: ${resultList.size}")
+            for (net in resultList) {
+                Log.d("wifi scanner", "$net")
+            }
         }
     }
 
@@ -37,9 +44,8 @@ class WifiScanner (
     }
 
     fun scan() {
-        wifiManager?.startScan()
-
+        val start_res = wifiManager?.startScan()
         context.registerReceiver(broadcastReceiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
-        Log.d("wifi scanner", "startScan begin")
+        Log.d("wifi scanner", "startScan began: $start_res")
     }
 }

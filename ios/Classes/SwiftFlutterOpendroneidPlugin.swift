@@ -8,11 +8,8 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin {
     
     private let messagesStreamHandler = StreamHandler()
     private let bluetoothStateStreamHandler = StreamHandler()
-<<<<<<< HEAD
     private let scanStateStreamHandler = StreamHandler()
-=======
     private let wifiStateStreamHandler = StreamHandler()
->>>>>>> add wifi scanner as param to plugin class, add cwwificlient to wifiscanner
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         // Method channel

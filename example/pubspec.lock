@@ -359,9 +359,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
 <<<<<<< HEAD
+<<<<<<< HEAD
     version: "2.1.1"
 =======
     version: "2.1.0"
+=======
+    version: "2.1.1"
+>>>>>>> fix app permissions to enable wifi and location features in an app
   watcher:
     dependency: transitive
     description:

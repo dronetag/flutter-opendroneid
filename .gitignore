@@ -3,5 +3,8 @@
 
 .packages
 .pub/
+.vscode/
+.idea/.*
+.idea/workspace.*
 
 build/
