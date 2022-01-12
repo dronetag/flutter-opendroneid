@@ -34,7 +34,17 @@ class WifiScanner (
             val resultList = wifiManager?.getScanResults() as ArrayList<ScanResult>
             Log.d("wifi scanner", "wifi scan number of results: ${resultList.size}")
             for (net in resultList) {
+                // example json from trasmitter raspberry program:
+                //D/wifi scanner: SSID: DroneIDTest, BSSID: e4:5f:01:7a:f2:90, capabilities: [WPA2-PSK-CCMP][ESS][V], level: -49, frequency: 2437, timestamp: 529905847455, distance: ?(cm), distanceSd: ?(cm), passpoint: no, ChannelBandwidth: 0, centerFreq0: 0, centerFreq1: 0, 80211mcResponder: is not supported, Carrier AP: no, Carrier AP EAP Type: -1, Carrier name: null, Radio Chain Infos: null
+
                 Log.d("wifi scanner", "$net")
+                val json: MutableMap<String, Any>  = mutableMapOf<String, Any>()
+                json["source"] = OdidMessage.Source.WIFI_BEACON.ordinal
+                json["type"] = OdidMessage.Type.OPERATOR_ID.ordinal
+                json["macAddress"] = net.BSSID
+                json["rssi"] = net.level
+                json["operatorID"] = net.SSID
+                messagesHandler.send(json)
             }
         }
     }
