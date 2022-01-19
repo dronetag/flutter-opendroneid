@@ -45,7 +45,6 @@ class OdidMessageHandler {
 
     private fun parseMessage(payload: ByteArray, offset: Int): OdidMessage? {
         if (payload.size < offset + MAX_MESSAGE_SIZE) return null
-
         val byteBuffer = ByteBuffer.wrap(payload, offset, MAX_MESSAGE_SIZE)
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
 
@@ -55,6 +54,7 @@ class OdidMessageHandler {
         if (type > 5) return null
         header.type = OdidMessage.Type.values()[type]
         header.version = b and 0x0F
+        Log. d("OdidMessageHandler:", "parse message, type " + header.type)
 
         return when (header.type) {
             OdidMessage.Type.BASIC_ID -> BasicIdMessage.fromBuffer(byteBuffer)

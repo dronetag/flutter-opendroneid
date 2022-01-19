@@ -17,6 +17,10 @@ import android.widget.Toast
 import android.os.SystemClock
 import java.lang.StringBuilder
 import kotlin.experimental.and
+import android.os.CountDownTimer
+
+
+
 
 
 class WifiScanner (
@@ -34,13 +38,18 @@ class WifiScanner (
     val resultList = ArrayList<ScanResult>()
 
     private val CIDLen = 3
-    private val DriStartByteOffset = 4
-    private val ScanTimerInterval = 2
-    private val DRI_CID = intArrayOf(0xFA, 0x0B, 0xBC)
-    private val VendorTypeLen = 1
-    private val VendorTypeValue = 0x0D
+    private val driStartByteOffset = 4
+    private val DRICID = intArrayOf(0xFA, 0x0B, 0xBC)
+    private val vendorTypeLen = 1
+    private val vendorTypeValue = 0x0D
     private val TAG: String = WifiScanner::class.java.getSimpleName()
+    private var scanSuccess = 0
+    private var scanFailed = 0
+    private val wifiScanEnabled = true
+    private val scanTimerInterval = 2
 
+
+    private var countDownTimer: CountDownTimer? = null
 
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(contxt: Context?, intent: Intent?) {
@@ -64,22 +73,6 @@ class WifiScanner (
                 }
                 scan()
             }
-
-           /* val resultList = wifiManager?.getScanResults() as ArrayList<ScanResult>
-            Log.d("wifi scanner", "wifi scan number of results: ${resultList.size}")
-            for (net in resultList) {
-                // example json from trasmitter raspberry program:
-                //D/wifi scanner: SSID: DroneIDTest, BSSID: e4:5f:01:7a:f2:90, capabilities: [WPA2-PSK-CCMP][ESS][V], level: -49, frequency: 2437, timestamp: 529905847455, distance: ?(cm), distanceSd: ?(cm), passpoint: no, ChannelBandwidth: 0, centerFreq0: 0, centerFreq1: 0, 80211mcResponder: is not supported, Carrier AP: no, Carrier AP EAP Type: -1, Carrier name: null, Radio Chain Infos: null
-
-                Log.d("wifi scanner", "$net")
-                val json: MutableMap<String, Any>  = mutableMapOf<String, Any>()
-                json["source"] = OdidMessage.Source.WIFI_BEACON.ordinal
-                json["type"] = OdidMessage.Type.OPERATOR_ID.ordinal
-                json["macAddress"] = net.BSSID
-                json["rssi"] = net.level
-                json["operatorID"] = net.SSID
-                messagesHandler.send(json)
-            }*/
         }
     }
 
@@ -98,18 +91,16 @@ class WifiScanner (
                 val id = valueId as Int
                 if (id == 221) {
                     val valueBytes = element.javaClass.getField("bytes")[element] ?: continue
-                    Log.d("wifi scanner", valueBytes.toString())
                     val buf: ByteBuffer =
                         ByteBuffer.wrap(valueBytes as ByteArray).asReadOnlyBuffer()
                     processRemoteIdVendorIE(scanResult, buf)
                 }
-                else
-                    Log.d("wifi scanner", "id is not 221")
             }
         } else {
             for (element in scanResult.informationElements) {
                 if (element != null && element.id == 221) {
                     val buf: ByteBuffer = element.bytes
+                    Log.d("wifi scanner", "bytes: "+ element.bytes.toString())
                     processRemoteIdVendorIE(scanResult, buf)
                 }
             }
@@ -117,34 +108,26 @@ class WifiScanner (
     }
 
     fun processRemoteIdVendorIE(scanResult: ScanResult, buf: ByteBuffer) {
-        Log.d("wifi scanner:processRemoteIdVendorIE", scanResult.SSID)
+
         if (buf.remaining() < 30){
-            Log.d("wifi scanner", "buffer too short")
             return
         }
         val dri_CID = ByteArray(CIDLen)
         val arr = ByteArray(buf.remaining())
         buf[dri_CID, 0, CIDLen]
-        val vendorType = ByteArray(VendorTypeLen)
+        val vendorType = ByteArray(vendorTypeLen)
         buf[vendorType]
-        if ((dri_CID[0] and 0xFF.toByte()) == DRI_CID.get(0).toByte()
-            && ((dri_CID[1] and 0xFF.toByte()) == DRI_CID.get(1).toByte())
-            && ((dri_CID[2] and 0xFF.toByte()) == DRI_CID.get(2).toByte())
-            && vendorType[0] == VendorTypeValue.toByte()
+        if ((dri_CID[0] and 0xFF.toByte()) == DRICID.get(0).toByte()
+            && ((dri_CID[1] and 0xFF.toByte()) == DRICID.get(1).toByte())
+            && ((dri_CID[2] and 0xFF.toByte()) == DRICID.get(2).toByte())
+            && vendorType[0] == vendorTypeValue.toByte()
         ) {
-            buf.position(DriStartByteOffset)
+            buf.position(driStartByteOffset)
             buf[arr, 0, buf.remaining()]
             val timeNano = SystemClock.elapsedRealtimeNanos()
             val transportType = "Beacon"
-            val receivedMessage: OdidMessage? = messageHandler.receiveDataWifiBeacon(arr);
-            if(receivedMessage==null) {
-                Log.d("wifi scanner", "null message")
-                return
-            }
-            else
-                Log.d("wifi scanner", "message received..")
-
-            Log.d("wifi scanner", "parsing scan result...")
+            val receivedMessage: OdidMessage = messageHandler.receiveDataWifiBeacon(arr) ?: return;
+            Log.d("wifi scanner", "message received..")
 
             val json = receivedMessage.toJson()
             json["type"] = receivedMessage.type.ordinal
@@ -154,19 +137,48 @@ class WifiScanner (
 
             messagesHandler.send(json)
         }
-        else{
-            Log.d("wifi scanner", "condition false")
-
-        }
     }
 
     fun cancel() {
-        Log.d("wifi scanner", "startScan cancel")
+        if (!wifiScanEnabled) {
+            return;
+        }
+        if (countDownTimer != null) {
+            countDownTimer!!.cancel();
+        }
+        Log.d(TAG, "Stopping WiFi Beacon scanning");
     }
 
     fun scan() {
-        val startRes = wifiManager?.startScan()
+        if (!wifiScanEnabled) {
+            return
+        }
         context.registerReceiver(broadcastReceiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
-        Log.d("wifi scanner", "startScan began: $startRes")
+        val ret = wifiManager!!.startScan()
+        if (ret) {
+            scanSuccess++
+        } else {
+            scanFailed++
+        }
+        Log.d(TAG, "start_scan:$ret")
+    }
+    // There are 2 ways to control WiFi scan:
+    // Continuous scan: Calls startSCan() from scan completion callback
+    // Periodic scan: countdown timer triggers startScan after expiry of the timer.
+    // If phone is debug mode and scan throttling is off, scan is triggered from onReceive() callback.
+    // But if scan throttling is turned on on the phone (default setting on the phone), then scan throttling kick in.
+    // In case of throttling, startScan() fails. We need timer thread to periodically kick off scanning.
+    fun startCountDownTimer() {
+        countDownTimer = object : CountDownTimer(
+            Long.MAX_VALUE,
+            (scanTimerInterval * 1000).toLong()
+        ) {
+            // This is called after every ScanTimerInterval sec.
+            override fun onTick(millisUntilFinished: Long) {
+                scan()
+            }
+
+            override fun onFinish() {}
+        }.start()
     }
 }
