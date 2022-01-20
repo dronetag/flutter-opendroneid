@@ -1,10 +1,18 @@
-.DS_Store
 .dart_tool/
 
 .packages
 .pub/
 .vscode/
-.idea/.*
+pubspec.lock
+example/pubspec.lock
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
 .idea/workspace.*
 
+# Mac
+.DS_Store
 build/
