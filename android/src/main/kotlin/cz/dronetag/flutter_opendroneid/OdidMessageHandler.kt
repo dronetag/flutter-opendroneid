@@ -54,7 +54,6 @@ class OdidMessageHandler {
         if (type > 5) return null
         header.type = OdidMessage.Type.values()[type]
         header.version = b and 0x0F
-        Log. d("OdidMessageHandler:", "parse message, type " + header.type)
 
         return when (header.type) {
             OdidMessage.Type.BASIC_ID -> BasicIdMessage.fromBuffer(byteBuffer)
