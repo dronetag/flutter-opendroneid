@@ -29,14 +29,7 @@ class WifiScanner (
     private val wifiManager: WifiManager?,
     private val context: Context
 ) {
-
-    private val serviceUuid = UUID.fromString("0000fffa-0000-1000-8000-00805f9b34fb")
-    private val serviceParcelUuid = ParcelUuid(serviceUuid)
-    private val odidAdCode = byteArrayOf(0x0D.toByte())
-
     private val messageHandler = OdidMessageHandler()
-    val resultList = ArrayList<ScanResult>()
-
     private val CIDLen = 3
     private val driStartByteOffset = 4
     private val DRICID = intArrayOf(0xFA, 0x0B, 0xBC)
@@ -47,7 +40,6 @@ class WifiScanner (
     private var scanFailed = 0
     private val wifiScanEnabled = true
     private val scanTimerInterval = 2
-
 
     private var countDownTimer: CountDownTimer? = null
 
