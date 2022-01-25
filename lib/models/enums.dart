@@ -22,6 +22,7 @@ enum IdType {
   Serial_Number,
   CAA_Registration_ID,
   UTM_Assigned_ID,
+  Specific_Session_ID,
 }
 
 /// Unmanned aircraft type
