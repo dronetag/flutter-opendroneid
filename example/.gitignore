@@ -14,8 +14,8 @@
 .idea/usage.statistics.xml
 .idea/shelf/
 .idea/*.iml
-.idea/*/*.iml
-.idea/libraries/
+.idea/**/*.iml
+.idea/libraries/*.xml
 
 
 # The .vscode folder contains launch configuration and tasks you configure in

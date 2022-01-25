@@ -10,9 +10,9 @@ example/pubspec.lock
 .idea/workspace.xml
 .idea/usage.statistics.xml
 .idea/shelf/
-.idea/*.iml
+
 .idea/*/*.iml
-.idea/libraries/
+
 
 
 # Mac
