@@ -3,25 +3,16 @@ package cz.dronetag.flutter_opendroneid
 import android.net.wifi.WifiManager
 import android.net.wifi.ScanResult
 import android.os.Build
-import android.os.ParcelUuid
 import android.content.*
 import android.net.wifi.ScanResult.InformationElement
 import cz.dronetag.flutter_opendroneid.models.BasicIdMessage
 import cz.dronetag.flutter_opendroneid.models.LocationMessage
 import cz.dronetag.flutter_opendroneid.models.OdidMessage
-import java.util.*
 import java.nio.ByteBuffer;
 import io.flutter.Log
-import kotlin.Unit
-import android.widget.Toast
 import android.os.SystemClock
-import java.lang.StringBuilder
 import kotlin.experimental.and
 import android.os.CountDownTimer
-
-
-
-
 
 class WifiScanner (
     private val messagesHandler: StreamHandler,
@@ -46,8 +37,6 @@ class WifiScanner (
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(contxt: Context?, intent: Intent?) {
             if (wifiManager == null) {
-                Toast.makeText(context, "WiFi beacon scanner attach failed.", Toast.LENGTH_LONG)
-                    .show()
                 return
             }
             val freshScanResult = intent!!.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false)
