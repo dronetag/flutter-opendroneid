@@ -70,7 +70,14 @@ class FlutterOpendroneidPlugin: FlutterPlugin, ActivityAware, MethodCallHandler 
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    scanner.cancel()
+    wifiScanner.cancel()
     channel.setMethodCallHandler(null)
+    StreamHandler.clearMultipleHandlers(binding.binaryMessenger, listOf(
+      "flutter_odid_basicid",
+      "flutter_odid_location",
+      "flutter_odid_bt_state"
+    ))
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
