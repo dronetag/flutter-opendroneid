@@ -33,6 +33,10 @@ class OdidMessageHandler {
         return parseAdvertisingData(data, 6)
     }
 
+    fun receiveDataWifiBeacon(data: ByteArray): OdidMessage? {
+        return parseAdvertisingData(data, 1)
+    }
+
     private fun parseAdvertisingData(payload: ByteArray, offset: Int): OdidMessage? {
         if (offset <= 0 || payload.size < offset + MAX_MESSAGE_SIZE) return null
 
@@ -41,7 +45,6 @@ class OdidMessageHandler {
 
     private fun parseMessage(payload: ByteArray, offset: Int): OdidMessage? {
         if (payload.size < offset + MAX_MESSAGE_SIZE) return null
-
         val byteBuffer = ByteBuffer.wrap(payload, offset, MAX_MESSAGE_SIZE)
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
 

@@ -1,6 +1,6 @@
 name: flutter_opendroneid
 description: A new flutter plugin project.
-version: 0.2.2
+version: 0.3.0
 homepage:
 
 environment:
@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+    
 dev_dependencies:
   flutter_test:
     sdk: flutter

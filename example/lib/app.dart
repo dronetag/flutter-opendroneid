@@ -27,6 +27,17 @@ class _FlutterOpenDroneIdAppState extends State<FlutterOpenDroneIdApp> {
   Future<void> initPlatformState() async {
     if (Platform.isAndroid) {
       Permission.location.request();
+      var status = await Permission.location.status;
+      if (status.isDenied) {
+        print('loc denied');
+      } else
+        print('loc enabled');
+      Permission.bluetooth.request();
+      status = await Permission.bluetooth.status;
+      if (status.isDenied) {
+        print('bt denied');
+      } else
+        print('bt enabled');
     }
   }
 

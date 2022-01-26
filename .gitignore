@@ -1,7 +1,28 @@
-.DS_Store
 .dart_tool/
 
 .packages
 .pub/
+.vscode/
+pubspec.lock
+example/pubspec.lock
 
+# IntelliJ
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+.idea/*.iml
+.idea/**/*.iml
+.idea/libraries/*.xml
+
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+.idea/*.iml
+**/.idea/**/*.iml
+**/.idea/libraries/*.xml
+
+
+
+# Mac
+.DS_Store
 build/
