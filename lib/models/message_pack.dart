@@ -7,14 +7,16 @@ import 'package:flutter_opendroneid/models/operatorid_message.dart';
 
 import 'odid_message.dart';
 
+import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
+
 class MessagePack {
   // FIXME: Rename to avoid clash with ODID MessagePack
   final String macAddress;
   final int? lastMessageRssi;
   final DateTime? lastUpdate;
-  final BasicIdMessage? basicIdMessage;
-  final LocationMessage? locationMessage;
-  final OperatorIdMessage? operatorIdMessage;
+  final pigeon.BasicIdMessage? basicIdMessage;
+  final pigeon.LocationMessage? locationMessage;
+  final pigeon.OperatorIdMessage? operatorIdMessage;
 
   MessagePack({
     required this.macAddress,
@@ -32,9 +34,9 @@ class MessagePack {
     String? macAddress,
     int? lastMessageRssi,
     DateTime? lastUpdate,
-    BasicIdMessage? basicIdMessage,
-    LocationMessage? locationMessage,
-    OperatorIdMessage? operatorIdMessage,
+    pigeon.BasicIdMessage? basicIdMessage,
+    pigeon.LocationMessage? locationMessage,
+    pigeon.OperatorIdMessage? operatorIdMessage,
   }) =>
       MessagePack(
         macAddress: macAddress ?? this.macAddress,
@@ -45,18 +47,16 @@ class MessagePack {
         operatorIdMessage: operatorIdMessage ?? this.operatorIdMessage,
       );
 
-  MessagePack updateWith(OdidMessage message) {
-    if (message is BasicIdMessage) {
-      return copyWith(basicIdMessage: message, lastMessageRssi: message.rssi);
-    }
-    if (message is LocationMessage) {
-      return copyWith(locationMessage: message, lastMessageRssi: message.rssi);
-    }
-    if (message is OperatorIdMessage) {
-      return copyWith(
-          operatorIdMessage: message, lastMessageRssi: message.rssi);
-    }
-    throw Exception('Unknown type of ODID message to have pack updated with');
+  MessagePack updateWithBasic(pigeon.BasicIdMessage message) {
+    return copyWith(basicIdMessage: message, lastMessageRssi: message.rssi);
+  }
+
+  MessagePack updateWithLocation(pigeon.LocationMessage message) {
+    return copyWith(locationMessage: message, lastMessageRssi: message.rssi);
+  }
+
+  MessagePack updateWithOperatorId(pigeon.OperatorIdMessage message) {
+    return copyWith(operatorIdMessage: message, lastMessageRssi: message.rssi);
   }
 
   /// Calculates a color from mac address, that uniquely identifies the device

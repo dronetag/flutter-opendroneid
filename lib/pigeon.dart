@@ -110,20 +110,20 @@ class BasicIdMessage {
   BasicIdMessage({
     required this.receivedTimestamp,
     required this.macAddress,
-    required this.source,
+    this.source,
     this.rssi,
     required this.uasId,
-    required this.idType,
-    required this.uaType,
+    this.idType,
+    this.uaType,
   });
 
   int receivedTimestamp;
   String macAddress;
-  MessageSource source;
+  MessageSource? source;
   int? rssi;
   String uasId;
-  IdType idType;
-  UaType uaType;
+  IdType? idType;
+  UaType? uaType;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -161,10 +161,10 @@ class LocationMessage {
   LocationMessage({
     required this.receivedTimestamp,
     required this.macAddress,
-    required this.source,
+    this.source,
     this.rssi,
-    required this.status,
-    required this.heightType,
+    this.status,
+    this.heightType,
     this.direction,
     this.speedHorizontal,
     this.speedVertical,
@@ -173,20 +173,20 @@ class LocationMessage {
     this.altitudePressure,
     this.altitudeGeodetic,
     this.height,
-    required this.horizontalAccuracy,
-    required this.verticalAccuracy,
-    required this.baroAccuracy,
-    required this.speedAccuracy,
+    this.horizontalAccuracy,
+    this.verticalAccuracy,
+    this.baroAccuracy,
+    this.speedAccuracy,
     this.time,
     this.timeAccuracy,
   });
 
   int receivedTimestamp;
   String macAddress;
-  MessageSource source;
+  MessageSource? source;
   int? rssi;
-  AircraftStatus status;
-  HeightType heightType;
+  AircraftStatus? status;
+  HeightType? heightType;
   int? direction;
   double? speedHorizontal;
   double? speedVertical;
@@ -195,10 +195,10 @@ class LocationMessage {
   double? altitudePressure;
   double? altitudeGeodetic;
   double? height;
-  HorizontalAccuracy horizontalAccuracy;
-  VerticalAccuracy verticalAccuracy;
-  VerticalAccuracy baroAccuracy;
-  SpeedAccuracy speedAccuracy;
+  HorizontalAccuracy? horizontalAccuracy;
+  VerticalAccuracy? verticalAccuracy;
+  VerticalAccuracy? baroAccuracy;
+  SpeedAccuracy? speedAccuracy;
   int? time;
   double? timeAccuracy;
 
