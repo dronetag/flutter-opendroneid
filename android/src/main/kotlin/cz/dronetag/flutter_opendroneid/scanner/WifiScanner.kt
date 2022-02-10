@@ -15,7 +15,9 @@ import kotlin.experimental.and
 import android.os.CountDownTimer
 
 class WifiScanner (
-    private val messagesHandler: StreamHandler,
+    private val basicMessagesHandler: StreamHandler,
+    private val locationMessagesHandler: StreamHandler,
+    private val operatorIdMessagesHandler: StreamHandler,
     private val bluetoothStateHandler: StreamHandler,
     private val wifiManager: WifiManager?,
     private val context: Context
@@ -89,7 +91,9 @@ class WifiScanner (
     }
 
     fun processRemoteIdVendorIE(scanResult: ScanResult, buf: ByteBuffer) {
-
+        
+        // to-do
+        /*
         if (buf.remaining() < 30){
             return
         }
@@ -118,6 +122,7 @@ class WifiScanner (
 
             messagesHandler.send(json)
         }
+         */
     }
 
     fun cancel() {

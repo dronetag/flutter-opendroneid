@@ -12,9 +12,13 @@ import cz.dronetag.flutter_opendroneid.models.LocationMessage
 import cz.dronetag.flutter_opendroneid.models.OdidMessage
 import io.flutter.Log
 import java.util.*
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 class BluetoothScanner(
-        private val messagesHandler: StreamHandler,
+        private val basicMessagesHandler: StreamHandler,
+        private val locationMessagesHandler: StreamHandler,
+        private val operatorIdMessagesHandler: StreamHandler,
         private val bluetoothStateHandler: StreamHandler,
         private val scanStateHandler: StreamHandler,
 ) {
@@ -37,7 +41,7 @@ class BluetoothScanner(
     private val serviceParcelUuid = ParcelUuid(serviceUuid)
     private val odidAdCode = byteArrayOf(0x0D.toByte())
 
-    private val messageHandler = OdidMessageHandler()
+    private val messageHandler: Pigeon.MessageApi = OdidMessageHandler()
 
     fun scan() {
         if (!bluetoothAdapter.isEnabled) return
@@ -103,17 +107,36 @@ class BluetoothScanner(
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             val scanRecord: ScanRecord = result.scanRecord ?: return
             val bytes = scanRecord.bytes ?: return
-            val receivedMessage: OdidMessage? = messageHandler.receiveDataBluetooth(bytes)
-            receivedMessage ?: return
-
-            val json = receivedMessage.toJson()
-
-            json["type"] = receivedMessage.type.ordinal
-            json["macAddress"] = result.device.address
-            json["source"] = OdidMessage.Source.BLUETOOTH_LEGACY.ordinal
-            json["rssi"] = result.rssi
-
-            messagesHandler.send(json)
+            val typeOrdinal = messageHandler.determineMessageType(bytes, 6);
+            val byteBuffer = ByteBuffer.wrap(bytes, 6, 25)
+            byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
+            if(typeOrdinal == null)
+                return;
+            val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
+            if(type == Pigeon.MessageType.BasicId)
+            {
+                val message: Pigeon.BasicIdMessage? = messageHandler.fromBufferBasic(bytes, 6)
+                message?.macAddress = result.device.address
+                message?.source = Pigeon.MessageSource.BluetoothLegacy;
+                message?.rssi = result.rssi.toLong();
+                basicMessagesHandler.send(message?.toMap() as Any)
+            }
+            else if(type == Pigeon.MessageType.Location)
+            {
+                val message =  messageHandler.fromBufferLocation(bytes, 6)
+                message?.macAddress = result.device.address
+                message?.source = Pigeon.MessageSource.BluetoothLegacy;
+                message?.rssi = result.rssi.toLong();
+                locationMessagesHandler.send(message?.toMap() as Any)
+            }
+            else if(type == Pigeon.MessageType.OperatorId)
+            {
+                val message = messageHandler.fromBufferOperatorId(bytes, 6)
+                message?.macAddress = result.device.address
+                message?.source = Pigeon.MessageSource.BluetoothLegacy;
+                message?.rssi = result.rssi.toLong();
+                operatorIdMessagesHandler.send(message?.toMap() as Any)
+            }
         }
 
         override fun onBatchScanResults(results: List<ScanResult?>?) {

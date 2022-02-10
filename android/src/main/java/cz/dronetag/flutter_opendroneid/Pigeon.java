@@ -190,12 +190,9 @@ public class Pigeon {
       this.macAddress = setterArg;
     }
 
-    private @NonNull MessageSource source;
-    public @NonNull MessageSource getSource() { return source; }
-    public void setSource(@NonNull MessageSource setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"source\" is null.");
-      }
+    private @Nullable MessageSource source;
+    public @Nullable MessageSource getSource() { return source; }
+    public void setSource(@Nullable MessageSource setterArg) {
       this.source = setterArg;
     }
 
@@ -214,21 +211,15 @@ public class Pigeon {
       this.uasId = setterArg;
     }
 
-    private @NonNull IdType idType;
-    public @NonNull IdType getIdType() { return idType; }
-    public void setIdType(@NonNull IdType setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"idType\" is null.");
-      }
+    private @Nullable IdType idType;
+    public @Nullable IdType getIdType() { return idType; }
+    public void setIdType(@Nullable IdType setterArg) {
       this.idType = setterArg;
     }
 
-    private @NonNull UaType uaType;
-    public @NonNull UaType getUaType() { return uaType; }
-    public void setUaType(@NonNull UaType setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"uaType\" is null.");
-      }
+    private @Nullable UaType uaType;
+    public @Nullable UaType getUaType() { return uaType; }
+    public void setUaType(@Nullable UaType setterArg) {
       this.uaType = setterArg;
     }
 
@@ -246,7 +237,7 @@ public class Pigeon {
         return this;
       }
       private @Nullable MessageSource source;
-      public @NonNull Builder setSource(@NonNull MessageSource setterArg) {
+      public @NonNull Builder setSource(@Nullable MessageSource setterArg) {
         this.source = setterArg;
         return this;
       }
@@ -261,12 +252,12 @@ public class Pigeon {
         return this;
       }
       private @Nullable IdType idType;
-      public @NonNull Builder setIdType(@NonNull IdType setterArg) {
+      public @NonNull Builder setIdType(@Nullable IdType setterArg) {
         this.idType = setterArg;
         return this;
       }
       private @Nullable UaType uaType;
-      public @NonNull Builder setUaType(@NonNull UaType setterArg) {
+      public @NonNull Builder setUaType(@Nullable UaType setterArg) {
         this.uaType = setterArg;
         return this;
       }
@@ -333,12 +324,9 @@ public class Pigeon {
       this.macAddress = setterArg;
     }
 
-    private @NonNull MessageSource source;
-    public @NonNull MessageSource getSource() { return source; }
-    public void setSource(@NonNull MessageSource setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"source\" is null.");
-      }
+    private @Nullable MessageSource source;
+    public @Nullable MessageSource getSource() { return source; }
+    public void setSource(@Nullable MessageSource setterArg) {
       this.source = setterArg;
     }
 
@@ -348,21 +336,15 @@ public class Pigeon {
       this.rssi = setterArg;
     }
 
-    private @NonNull AircraftStatus status;
-    public @NonNull AircraftStatus getStatus() { return status; }
-    public void setStatus(@NonNull AircraftStatus setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"status\" is null.");
-      }
+    private @Nullable AircraftStatus status;
+    public @Nullable AircraftStatus getStatus() { return status; }
+    public void setStatus(@Nullable AircraftStatus setterArg) {
       this.status = setterArg;
     }
 
-    private @NonNull HeightType heightType;
-    public @NonNull HeightType getHeightType() { return heightType; }
-    public void setHeightType(@NonNull HeightType setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"heightType\" is null.");
-      }
+    private @Nullable HeightType heightType;
+    public @Nullable HeightType getHeightType() { return heightType; }
+    public void setHeightType(@Nullable HeightType setterArg) {
       this.heightType = setterArg;
     }
 
@@ -414,39 +396,27 @@ public class Pigeon {
       this.height = setterArg;
     }
 
-    private @NonNull HorizontalAccuracy horizontalAccuracy;
-    public @NonNull HorizontalAccuracy getHorizontalAccuracy() { return horizontalAccuracy; }
-    public void setHorizontalAccuracy(@NonNull HorizontalAccuracy setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"horizontalAccuracy\" is null.");
-      }
+    private @Nullable HorizontalAccuracy horizontalAccuracy;
+    public @Nullable HorizontalAccuracy getHorizontalAccuracy() { return horizontalAccuracy; }
+    public void setHorizontalAccuracy(@Nullable HorizontalAccuracy setterArg) {
       this.horizontalAccuracy = setterArg;
     }
 
-    private @NonNull VerticalAccuracy verticalAccuracy;
-    public @NonNull VerticalAccuracy getVerticalAccuracy() { return verticalAccuracy; }
-    public void setVerticalAccuracy(@NonNull VerticalAccuracy setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"verticalAccuracy\" is null.");
-      }
+    private @Nullable VerticalAccuracy verticalAccuracy;
+    public @Nullable VerticalAccuracy getVerticalAccuracy() { return verticalAccuracy; }
+    public void setVerticalAccuracy(@Nullable VerticalAccuracy setterArg) {
       this.verticalAccuracy = setterArg;
     }
 
-    private @NonNull VerticalAccuracy baroAccuracy;
-    public @NonNull VerticalAccuracy getBaroAccuracy() { return baroAccuracy; }
-    public void setBaroAccuracy(@NonNull VerticalAccuracy setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"baroAccuracy\" is null.");
-      }
+    private @Nullable VerticalAccuracy baroAccuracy;
+    public @Nullable VerticalAccuracy getBaroAccuracy() { return baroAccuracy; }
+    public void setBaroAccuracy(@Nullable VerticalAccuracy setterArg) {
       this.baroAccuracy = setterArg;
     }
 
-    private @NonNull SpeedAccuracy speedAccuracy;
-    public @NonNull SpeedAccuracy getSpeedAccuracy() { return speedAccuracy; }
-    public void setSpeedAccuracy(@NonNull SpeedAccuracy setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"speedAccuracy\" is null.");
-      }
+    private @Nullable SpeedAccuracy speedAccuracy;
+    public @Nullable SpeedAccuracy getSpeedAccuracy() { return speedAccuracy; }
+    public void setSpeedAccuracy(@Nullable SpeedAccuracy setterArg) {
       this.speedAccuracy = setterArg;
     }
 
@@ -476,7 +446,7 @@ public class Pigeon {
         return this;
       }
       private @Nullable MessageSource source;
-      public @NonNull Builder setSource(@NonNull MessageSource setterArg) {
+      public @NonNull Builder setSource(@Nullable MessageSource setterArg) {
         this.source = setterArg;
         return this;
       }
@@ -486,12 +456,12 @@ public class Pigeon {
         return this;
       }
       private @Nullable AircraftStatus status;
-      public @NonNull Builder setStatus(@NonNull AircraftStatus setterArg) {
+      public @NonNull Builder setStatus(@Nullable AircraftStatus setterArg) {
         this.status = setterArg;
         return this;
       }
       private @Nullable HeightType heightType;
-      public @NonNull Builder setHeightType(@NonNull HeightType setterArg) {
+      public @NonNull Builder setHeightType(@Nullable HeightType setterArg) {
         this.heightType = setterArg;
         return this;
       }
@@ -536,22 +506,22 @@ public class Pigeon {
         return this;
       }
       private @Nullable HorizontalAccuracy horizontalAccuracy;
-      public @NonNull Builder setHorizontalAccuracy(@NonNull HorizontalAccuracy setterArg) {
+      public @NonNull Builder setHorizontalAccuracy(@Nullable HorizontalAccuracy setterArg) {
         this.horizontalAccuracy = setterArg;
         return this;
       }
       private @Nullable VerticalAccuracy verticalAccuracy;
-      public @NonNull Builder setVerticalAccuracy(@NonNull VerticalAccuracy setterArg) {
+      public @NonNull Builder setVerticalAccuracy(@Nullable VerticalAccuracy setterArg) {
         this.verticalAccuracy = setterArg;
         return this;
       }
       private @Nullable VerticalAccuracy baroAccuracy;
-      public @NonNull Builder setBaroAccuracy(@NonNull VerticalAccuracy setterArg) {
+      public @NonNull Builder setBaroAccuracy(@Nullable VerticalAccuracy setterArg) {
         this.baroAccuracy = setterArg;
         return this;
       }
       private @Nullable SpeedAccuracy speedAccuracy;
-      public @NonNull Builder setSpeedAccuracy(@NonNull SpeedAccuracy setterArg) {
+      public @NonNull Builder setSpeedAccuracy(@Nullable SpeedAccuracy setterArg) {
         this.speedAccuracy = setterArg;
         return this;
       }
