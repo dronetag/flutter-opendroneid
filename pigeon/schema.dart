@@ -178,7 +178,7 @@ class LocationMessage {
   late final SpeedAccuracy speedAccuracy;
 
   /// Time of the location report
-  late final DateTime? time;
+  late final int? time;
 
   /// Accuracy of timestamp values
   late final double? timeAccuracy;
