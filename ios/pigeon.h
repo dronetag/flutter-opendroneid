@@ -191,11 +191,11 @@ typedef NS_ENUM(NSUInteger, BluetoothState) {
 NSObject<FlutterMessageCodec> *ApiGetCodec(void);
 
 @protocol Api
-- (void)startScanWithError:(FlutterError *_Nullable *_Nonnull)error;
-- (void)stopScanWithError:(FlutterError *_Nullable *_Nonnull)error;
-- (void)setAutorestartEnable:(NSNumber *)enable error:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable NSNumber *)isScanningWithError:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable NSNumber *)bluetoothStateWithError:(FlutterError *_Nullable *_Nonnull)error;
+- (void)startScanWithCompletion:(void(^)(FlutterError *_Nullable))completion;
+- (void)stopScanWithCompletion:(void(^)(FlutterError *_Nullable))completion;
+- (void)setAutorestartEnable:(nullable NSNumber *)enable completion:(void(^)(FlutterError *_Nullable))completion;
+- (void)isScanningWithCompletion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
+- (void)bluetoothStateWithCompletion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 @end
 
 extern void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *_Nullable api);

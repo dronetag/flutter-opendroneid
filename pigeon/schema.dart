@@ -196,10 +196,15 @@ class OperatorIdMessage {
 
 @HostApi()
 abstract class Api {
+  @async
   void startScan();
+  @async
   void stopScan();
+  @async
   void setAutorestart(bool enable);
+  @async
   bool isScanning();
+  @async
   int bluetoothState();
 }
 

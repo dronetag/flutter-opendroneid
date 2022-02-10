@@ -219,11 +219,11 @@ void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
         binaryMessenger:binaryMessenger
         codec:ApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(startScanWithError:)], @"Api api (%@) doesn't respond to @selector(startScanWithError:)", api);
+      NSCAssert([api respondsToSelector:@selector(startScanWithCompletion:)], @"Api api (%@) doesn't respond to @selector(startScanWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        [api startScanWithError:&error];
-        callback(wrapResult(nil, error));
+        [api startScanWithCompletion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
       }];
     }
     else {
@@ -237,11 +237,11 @@ void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
         binaryMessenger:binaryMessenger
         codec:ApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(stopScanWithError:)], @"Api api (%@) doesn't respond to @selector(stopScanWithError:)", api);
+      NSCAssert([api respondsToSelector:@selector(stopScanWithCompletion:)], @"Api api (%@) doesn't respond to @selector(stopScanWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        [api stopScanWithError:&error];
-        callback(wrapResult(nil, error));
+        [api stopScanWithCompletion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
       }];
     }
     else {
@@ -255,13 +255,13 @@ void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
         binaryMessenger:binaryMessenger
         codec:ApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setAutorestartEnable:error:)], @"Api api (%@) doesn't respond to @selector(setAutorestartEnable:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(setAutorestartEnable:completion:)], @"Api api (%@) doesn't respond to @selector(setAutorestartEnable:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_enable = args[0];
-        FlutterError *error;
-        [api setAutorestartEnable:arg_enable error:&error];
-        callback(wrapResult(nil, error));
+        [api setAutorestartEnable:arg_enable completion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
       }];
     }
     else {
@@ -275,11 +275,11 @@ void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
         binaryMessenger:binaryMessenger
         codec:ApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(isScanningWithError:)], @"Api api (%@) doesn't respond to @selector(isScanningWithError:)", api);
+      NSCAssert([api respondsToSelector:@selector(isScanningWithCompletion:)], @"Api api (%@) doesn't respond to @selector(isScanningWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        NSNumber *output = [api isScanningWithError:&error];
-        callback(wrapResult(output, error));
+        [api isScanningWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
       }];
     }
     else {
@@ -293,11 +293,11 @@ void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
         binaryMessenger:binaryMessenger
         codec:ApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(bluetoothStateWithError:)], @"Api api (%@) doesn't respond to @selector(bluetoothStateWithError:)", api);
+      NSCAssert([api respondsToSelector:@selector(bluetoothStateWithCompletion:)], @"Api api (%@) doesn't respond to @selector(bluetoothStateWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        FlutterError *error;
-        NSNumber *output = [api bluetoothStateWithError:&error];
-        callback(wrapResult(output, error));
+        [api bluetoothStateWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
       }];
     }
     else {
