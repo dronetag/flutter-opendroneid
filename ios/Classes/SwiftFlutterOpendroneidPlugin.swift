@@ -1,8 +1,7 @@
 import Flutter
 import UIKit
 
-
-public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin {
+public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, Api {
     private var bluetoothScanner: BluetoothScanner? = nil
     private var wifiScanner: WifiScanner? = nil
     

@@ -1,1 +1,1 @@
-flutter pub run pigeon   --input pigeon/schema.dart   --dart_out lib/pigeon.dart   --objc_header_out ios/pigeon.h   --objc_source_out ios/pigeon.m   --java_out ./android/src/main/java/cz/dronetag/flutter_opendroneid/Pigeon.java   --java_package "cz.dronetag.flutter_opendroneid"
+flutter pub run pigeon   --input pigeon/schema.dart   --dart_out lib/pigeon.dart   --objc_header_out ios/Classes/pigeon.h   --objc_source_out ios/Classes/pigeon.m   --java_out ./android/src/main/java/cz/dronetag/flutter_opendroneid/Pigeon.java   --java_package "cz.dronetag.flutter_opendroneid"
