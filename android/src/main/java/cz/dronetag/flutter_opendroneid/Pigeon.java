@@ -754,6 +754,7 @@ public class Pigeon {
   public interface Api {
     void startScan();
     void stopScan();
+    void setAutorestart(Boolean enable);
     Boolean isScanning();
     Long bluetoothState();
 
@@ -791,6 +792,30 @@ public class Pigeon {
             Map<String, Object> wrapped = new HashMap<>();
             try {
               api.stopScan();
+              wrapped.put("result", null);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.setAutorestart", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              Boolean enableArg = (Boolean)args.get(0);
+              if (enableArg == null) {
+                throw new NullPointerException("enableArg unexpectedly null.");
+              }
+              api.setAutorestart(enableArg);
               wrapped.put("result", null);
             }
             catch (Error | RuntimeException exception) {

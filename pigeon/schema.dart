@@ -198,6 +198,7 @@ class OperatorIdMessage {
 abstract class Api {
   void startScan();
   void stopScan();
+  void setAutorestart(bool enable);
   bool isScanning();
   int bluetoothState();
 }

@@ -193,6 +193,7 @@ NSObject<FlutterMessageCodec> *ApiGetCodec(void);
 @protocol Api
 - (void)startScanWithError:(FlutterError *_Nullable *_Nonnull)error;
 - (void)stopScanWithError:(FlutterError *_Nullable *_Nonnull)error;
+- (void)setAutorestartEnable:(NSNumber *)enable error:(FlutterError *_Nullable *_Nonnull)error;
 - (nullable NSNumber *)isScanningWithError:(FlutterError *_Nullable *_Nonnull)error;
 - (nullable NSNumber *)bluetoothStateWithError:(FlutterError *_Nullable *_Nonnull)error;
 @end

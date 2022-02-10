@@ -251,6 +251,26 @@ void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.Api.setAutorestart"
+        binaryMessenger:binaryMessenger
+        codec:ApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(setAutorestartEnable:error:)], @"Api api (%@) doesn't respond to @selector(setAutorestartEnable:error:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSNumber *arg_enable = args[0];
+        FlutterError *error;
+        [api setAutorestartEnable:arg_enable error:&error];
+        callback(wrapResult(nil, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
         messageChannelWithName:@"dev.flutter.pigeon.Api.isScanning"
         binaryMessenger:binaryMessenger
         codec:ApiGetCodec()];
