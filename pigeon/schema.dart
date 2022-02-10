@@ -112,7 +112,7 @@ class BasicIdMessage {
   // common part
   late final int receivedTimestamp;
   late final String macAddress;
-  late final MessageSource source;
+  late final MessageSource? source;
   late final int? rssi;
 
   /// The primary identifier of UAS
@@ -120,26 +120,26 @@ class BasicIdMessage {
   late final String uasId;
 
   /// Identification type
-  late final IdType idType;
+  late final IdType? idType;
 
   /// Type of the aircraft
-  late UaType uaType;
+  late UaType? uaType;
 }
 
 class LocationMessage {
   // common part
   late final int receivedTimestamp;
   late final String macAddress;
-  late final MessageSource source;
+  late final MessageSource? source;
   late final int? rssi;
 
   /// The reported current status of the aircraft
-  late final AircraftStatus status;
+  late final AircraftStatus? status;
 
   /// The type of reported height
   ///
   /// (The default type is takeoff height)
-  late final HeightType heightType;
+  late final HeightType? heightType;
 
   /// Direction of the aircraft heading (in degrees)
   late final int? direction;
@@ -166,16 +166,16 @@ class LocationMessage {
   late final double? height;
 
   /// Horizontal accuracy of reported position via GNSS
-  late final HorizontalAccuracy horizontalAccuracy;
+  late final HorizontalAccuracy? horizontalAccuracy;
 
   /// Vertical accuracy of reported altitude via GNSS
-  late final VerticalAccuracy verticalAccuracy;
+  late final VerticalAccuracy? verticalAccuracy;
 
   /// Vertical accuracy of reported altitude via barometric pressure
-  late final VerticalAccuracy baroAccuracy;
+  late final VerticalAccuracy? baroAccuracy;
 
   /// Speed accuracy of reported position via GNSS
-  late final SpeedAccuracy speedAccuracy;
+  late final SpeedAccuracy? speedAccuracy;
 
   /// Time of the location report
   late final int? time;
