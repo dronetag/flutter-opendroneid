@@ -2,7 +2,9 @@ import Foundation
 import CoreBluetooth
 
 class BluetoothScanner: NSObject, CBCentralManagerDelegate {
-    private let messageHandler: StreamHandler
+    private let operatoridMessageHandler: StreamHandler
+    private let basicMmessageHandler: StreamHandler
+    private let locationMessageHandler: StreamHandler
     private let stateHandler: StreamHandler
     private let scanStateHandler: StreamHandler
     

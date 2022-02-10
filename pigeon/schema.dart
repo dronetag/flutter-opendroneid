@@ -196,6 +196,7 @@ class OperatorIdMessage {
 
 @HostApi()
 abstract class Api {
+  // to-do: create separate methods for wifi; bt
   @async
   void startScan();
   @async

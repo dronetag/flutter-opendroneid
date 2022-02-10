@@ -27,28 +27,28 @@ static id GetNullableObject(NSDictionary* dict, id key) {
 }
 
 
-@interface BasicIdMessage ()
-+ (BasicIdMessage *)fromMap:(NSDictionary *)dict;
+@interface DTGBasicIdMessage ()
++ (DTGBasicIdMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
-@interface LocationMessage ()
-+ (LocationMessage *)fromMap:(NSDictionary *)dict;
+@interface DTGLocationMessage ()
++ (DTGLocationMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
-@interface OperatorIdMessage ()
-+ (OperatorIdMessage *)fromMap:(NSDictionary *)dict;
+@interface DTGOperatorIdMessage ()
++ (DTGOperatorIdMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
 
-@implementation BasicIdMessage
+@implementation DTGBasicIdMessage
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
     macAddress:(NSString *)macAddress
-    source:(MessageSource)source
+    source:(DTGMessageSource)source
     rssi:(nullable NSNumber *)rssi
     uasId:(NSString *)uasId
-    idType:(IdType)idType
-    uaType:(UaType)uaType {
-  BasicIdMessage* pigeonResult = [[BasicIdMessage alloc] init];
+    idType:(DTGIdType)idType
+    uaType:(DTGUaType)uaType {
+  DTGBasicIdMessage* pigeonResult = [[DTGBasicIdMessage alloc] init];
   pigeonResult.receivedTimestamp = receivedTimestamp;
   pigeonResult.macAddress = macAddress;
   pigeonResult.source = source;
@@ -58,8 +58,8 @@ static id GetNullableObject(NSDictionary* dict, id key) {
   pigeonResult.uaType = uaType;
   return pigeonResult;
 }
-+ (BasicIdMessage *)fromMap:(NSDictionary *)dict {
-  BasicIdMessage *pigeonResult = [[BasicIdMessage alloc] init];
++ (DTGBasicIdMessage *)fromMap:(NSDictionary *)dict {
+  DTGBasicIdMessage *pigeonResult = [[DTGBasicIdMessage alloc] init];
   pigeonResult.receivedTimestamp = GetNullableObject(dict, @"receivedTimestamp");
   NSAssert(pigeonResult.receivedTimestamp != nil, @"");
   pigeonResult.macAddress = GetNullableObject(dict, @"macAddress");
@@ -77,13 +77,13 @@ static id GetNullableObject(NSDictionary* dict, id key) {
 }
 @end
 
-@implementation LocationMessage
+@implementation DTGLocationMessage
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
     macAddress:(NSString *)macAddress
-    source:(MessageSource)source
+    source:(DTGMessageSource)source
     rssi:(nullable NSNumber *)rssi
-    status:(AircraftStatus)status
-    heightType:(HeightType)heightType
+    status:(DTGAircraftStatus)status
+    heightType:(DTGHeightType)heightType
     direction:(nullable NSNumber *)direction
     speedHorizontal:(nullable NSNumber *)speedHorizontal
     speedVertical:(nullable NSNumber *)speedVertical
@@ -92,13 +92,13 @@ static id GetNullableObject(NSDictionary* dict, id key) {
     altitudePressure:(nullable NSNumber *)altitudePressure
     altitudeGeodetic:(nullable NSNumber *)altitudeGeodetic
     height:(nullable NSNumber *)height
-    horizontalAccuracy:(HorizontalAccuracy)horizontalAccuracy
-    verticalAccuracy:(VerticalAccuracy)verticalAccuracy
-    baroAccuracy:(VerticalAccuracy)baroAccuracy
-    speedAccuracy:(SpeedAccuracy)speedAccuracy
+    horizontalAccuracy:(DTGHorizontalAccuracy)horizontalAccuracy
+    verticalAccuracy:(DTGVerticalAccuracy)verticalAccuracy
+    baroAccuracy:(DTGVerticalAccuracy)baroAccuracy
+    speedAccuracy:(DTGSpeedAccuracy)speedAccuracy
     time:(nullable NSNumber *)time
     timeAccuracy:(nullable NSNumber *)timeAccuracy {
-  LocationMessage* pigeonResult = [[LocationMessage alloc] init];
+  DTGLocationMessage* pigeonResult = [[DTGLocationMessage alloc] init];
   pigeonResult.receivedTimestamp = receivedTimestamp;
   pigeonResult.macAddress = macAddress;
   pigeonResult.source = source;
@@ -121,8 +121,8 @@ static id GetNullableObject(NSDictionary* dict, id key) {
   pigeonResult.timeAccuracy = timeAccuracy;
   return pigeonResult;
 }
-+ (LocationMessage *)fromMap:(NSDictionary *)dict {
-  LocationMessage *pigeonResult = [[LocationMessage alloc] init];
++ (DTGLocationMessage *)fromMap:(NSDictionary *)dict {
+  DTGLocationMessage *pigeonResult = [[DTGLocationMessage alloc] init];
   pigeonResult.receivedTimestamp = GetNullableObject(dict, @"receivedTimestamp");
   NSAssert(pigeonResult.receivedTimestamp != nil, @"");
   pigeonResult.macAddress = GetNullableObject(dict, @"macAddress");
@@ -152,20 +152,20 @@ static id GetNullableObject(NSDictionary* dict, id key) {
 }
 @end
 
-@implementation OperatorIdMessage
+@implementation DTGOperatorIdMessage
 + (instancetype)makeWithMacAddress:(NSString *)macAddress
-    source:(MessageSource)source
+    source:(DTGMessageSource)source
     rssi:(nullable NSNumber *)rssi
     operatorId:(NSString *)operatorId {
-  OperatorIdMessage* pigeonResult = [[OperatorIdMessage alloc] init];
+  DTGOperatorIdMessage* pigeonResult = [[DTGOperatorIdMessage alloc] init];
   pigeonResult.macAddress = macAddress;
   pigeonResult.source = source;
   pigeonResult.rssi = rssi;
   pigeonResult.operatorId = operatorId;
   return pigeonResult;
 }
-+ (OperatorIdMessage *)fromMap:(NSDictionary *)dict {
-  OperatorIdMessage *pigeonResult = [[OperatorIdMessage alloc] init];
++ (DTGOperatorIdMessage *)fromMap:(NSDictionary *)dict {
+  DTGOperatorIdMessage *pigeonResult = [[DTGOperatorIdMessage alloc] init];
   pigeonResult.macAddress = GetNullableObject(dict, @"macAddress");
   NSAssert(pigeonResult.macAddress != nil, @"");
   pigeonResult.source = [GetNullableObject(dict, @"source") integerValue];
@@ -179,47 +179,47 @@ static id GetNullableObject(NSDictionary* dict, id key) {
 }
 @end
 
-@interface ApiCodecReader : FlutterStandardReader
+@interface DTGApiCodecReader : FlutterStandardReader
 @end
-@implementation ApiCodecReader
-@end
-
-@interface ApiCodecWriter : FlutterStandardWriter
-@end
-@implementation ApiCodecWriter
+@implementation DTGApiCodecReader
 @end
 
-@interface ApiCodecReaderWriter : FlutterStandardReaderWriter
+@interface DTGApiCodecWriter : FlutterStandardWriter
 @end
-@implementation ApiCodecReaderWriter
+@implementation DTGApiCodecWriter
+@end
+
+@interface DTGApiCodecReaderWriter : FlutterStandardReaderWriter
+@end
+@implementation DTGApiCodecReaderWriter
 - (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
-  return [[ApiCodecWriter alloc] initWithData:data];
+  return [[DTGApiCodecWriter alloc] initWithData:data];
 }
 - (FlutterStandardReader *)readerWithData:(NSData *)data {
-  return [[ApiCodecReader alloc] initWithData:data];
+  return [[DTGApiCodecReader alloc] initWithData:data];
 }
 @end
 
-NSObject<FlutterMessageCodec> *ApiGetCodec() {
+NSObject<FlutterMessageCodec> *DTGApiGetCodec() {
   static dispatch_once_t sPred = 0;
   static FlutterStandardMessageCodec *sSharedObject = nil;
   dispatch_once(&sPred, ^{
-    ApiCodecReaderWriter *readerWriter = [[ApiCodecReaderWriter alloc] init];
+    DTGApiCodecReaderWriter *readerWriter = [[DTGApiCodecReaderWriter alloc] init];
     sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
   });
   return sSharedObject;
 }
 
 
-void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
+void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *api) {
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
         messageChannelWithName:@"dev.flutter.pigeon.Api.startScan"
         binaryMessenger:binaryMessenger
-        codec:ApiGetCodec()];
+        codec:DTGApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(startScanWithCompletion:)], @"Api api (%@) doesn't respond to @selector(startScanWithCompletion:)", api);
+      NSCAssert([api respondsToSelector:@selector(startScanWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(startScanWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         [api startScanWithCompletion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
@@ -235,9 +235,9 @@ void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
       [FlutterBasicMessageChannel
         messageChannelWithName:@"dev.flutter.pigeon.Api.stopScan"
         binaryMessenger:binaryMessenger
-        codec:ApiGetCodec()];
+        codec:DTGApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(stopScanWithCompletion:)], @"Api api (%@) doesn't respond to @selector(stopScanWithCompletion:)", api);
+      NSCAssert([api respondsToSelector:@selector(stopScanWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(stopScanWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         [api stopScanWithCompletion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
@@ -253,9 +253,9 @@ void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
       [FlutterBasicMessageChannel
         messageChannelWithName:@"dev.flutter.pigeon.Api.setAutorestart"
         binaryMessenger:binaryMessenger
-        codec:ApiGetCodec()];
+        codec:DTGApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setAutorestartEnable:completion:)], @"Api api (%@) doesn't respond to @selector(setAutorestartEnable:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(setAutorestartEnable:completion:)], @"DTGApi api (%@) doesn't respond to @selector(setAutorestartEnable:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_enable = args[0];
@@ -273,9 +273,9 @@ void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
       [FlutterBasicMessageChannel
         messageChannelWithName:@"dev.flutter.pigeon.Api.isScanning"
         binaryMessenger:binaryMessenger
-        codec:ApiGetCodec()];
+        codec:DTGApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(isScanningWithCompletion:)], @"Api api (%@) doesn't respond to @selector(isScanningWithCompletion:)", api);
+      NSCAssert([api respondsToSelector:@selector(isScanningWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(isScanningWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         [api isScanningWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
@@ -291,9 +291,9 @@ void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
       [FlutterBasicMessageChannel
         messageChannelWithName:@"dev.flutter.pigeon.Api.bluetoothState"
         binaryMessenger:binaryMessenger
-        codec:ApiGetCodec()];
+        codec:DTGApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(bluetoothStateWithCompletion:)], @"Api api (%@) doesn't respond to @selector(bluetoothStateWithCompletion:)", api);
+      NSCAssert([api respondsToSelector:@selector(bluetoothStateWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(bluetoothStateWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         [api bluetoothStateWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
@@ -305,20 +305,20 @@ void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
     }
   }
 }
-@interface MessageApiCodecReader : FlutterStandardReader
+@interface DTGMessageApiCodecReader : FlutterStandardReader
 @end
-@implementation MessageApiCodecReader
+@implementation DTGMessageApiCodecReader
 - (nullable id)readValueOfType:(UInt8)type 
 {
   switch (type) {
     case 128:     
-      return [BasicIdMessage fromMap:[self readValue]];
+      return [DTGBasicIdMessage fromMap:[self readValue]];
     
     case 129:     
-      return [LocationMessage fromMap:[self readValue]];
+      return [DTGLocationMessage fromMap:[self readValue]];
     
     case 130:     
-      return [OperatorIdMessage fromMap:[self readValue]];
+      return [DTGOperatorIdMessage fromMap:[self readValue]];
     
     default:    
       return [super readValueOfType:type];
@@ -327,20 +327,20 @@ void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
 }
 @end
 
-@interface MessageApiCodecWriter : FlutterStandardWriter
+@interface DTGMessageApiCodecWriter : FlutterStandardWriter
 @end
-@implementation MessageApiCodecWriter
+@implementation DTGMessageApiCodecWriter
 - (void)writeValue:(id)value 
 {
-  if ([value isKindOfClass:[BasicIdMessage class]]) {
+  if ([value isKindOfClass:[DTGBasicIdMessage class]]) {
     [self writeByte:128];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[LocationMessage class]]) {
+  if ([value isKindOfClass:[DTGLocationMessage class]]) {
     [self writeByte:129];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[OperatorIdMessage class]]) {
+  if ([value isKindOfClass:[DTGOperatorIdMessage class]]) {
     [self writeByte:130];
     [self writeValue:[value toMap]];
   } else 
@@ -350,37 +350,37 @@ void ApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Api> *api) {
 }
 @end
 
-@interface MessageApiCodecReaderWriter : FlutterStandardReaderWriter
+@interface DTGMessageApiCodecReaderWriter : FlutterStandardReaderWriter
 @end
-@implementation MessageApiCodecReaderWriter
+@implementation DTGMessageApiCodecReaderWriter
 - (FlutterStandardWriter *)writerWithData:(NSMutableData *)data {
-  return [[MessageApiCodecWriter alloc] initWithData:data];
+  return [[DTGMessageApiCodecWriter alloc] initWithData:data];
 }
 - (FlutterStandardReader *)readerWithData:(NSData *)data {
-  return [[MessageApiCodecReader alloc] initWithData:data];
+  return [[DTGMessageApiCodecReader alloc] initWithData:data];
 }
 @end
 
-NSObject<FlutterMessageCodec> *MessageApiGetCodec() {
+NSObject<FlutterMessageCodec> *DTGMessageApiGetCodec() {
   static dispatch_once_t sPred = 0;
   static FlutterStandardMessageCodec *sSharedObject = nil;
   dispatch_once(&sPred, ^{
-    MessageApiCodecReaderWriter *readerWriter = [[MessageApiCodecReaderWriter alloc] init];
+    DTGMessageApiCodecReaderWriter *readerWriter = [[DTGMessageApiCodecReaderWriter alloc] init];
     sSharedObject = [FlutterStandardMessageCodec codecWithReaderWriter:readerWriter];
   });
   return sSharedObject;
 }
 
 
-void MessageApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<MessageApi> *api) {
+void DTGMessageApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGMessageApi> *api) {
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
         messageChannelWithName:@"dev.flutter.pigeon.MessageApi.determineMessageType"
         binaryMessenger:binaryMessenger
-        codec:MessageApiGetCodec()];
+        codec:DTGMessageApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(determineMessageTypePayload:offset:error:)], @"MessageApi api (%@) doesn't respond to @selector(determineMessageTypePayload:offset:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(determineMessageTypePayload:offset:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(determineMessageTypePayload:offset:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         FlutterStandardTypedData *arg_payload = args[0];
@@ -399,15 +399,15 @@ void MessageApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Messag
       [FlutterBasicMessageChannel
         messageChannelWithName:@"dev.flutter.pigeon.MessageApi.fromBufferBasic"
         binaryMessenger:binaryMessenger
-        codec:MessageApiGetCodec()];
+        codec:DTGMessageApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(fromBufferBasicPayload:offset:error:)], @"MessageApi api (%@) doesn't respond to @selector(fromBufferBasicPayload:offset:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(fromBufferBasicPayload:offset:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(fromBufferBasicPayload:offset:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         FlutterStandardTypedData *arg_payload = args[0];
         NSNumber *arg_offset = args[1];
         FlutterError *error;
-        BasicIdMessage *output = [api fromBufferBasicPayload:arg_payload offset:arg_offset error:&error];
+        DTGBasicIdMessage *output = [api fromBufferBasicPayload:arg_payload offset:arg_offset error:&error];
         callback(wrapResult(output, error));
       }];
     }
@@ -420,15 +420,15 @@ void MessageApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Messag
       [FlutterBasicMessageChannel
         messageChannelWithName:@"dev.flutter.pigeon.MessageApi.fromBufferLocation"
         binaryMessenger:binaryMessenger
-        codec:MessageApiGetCodec()];
+        codec:DTGMessageApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(fromBufferLocationPayload:offset:error:)], @"MessageApi api (%@) doesn't respond to @selector(fromBufferLocationPayload:offset:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(fromBufferLocationPayload:offset:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(fromBufferLocationPayload:offset:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         FlutterStandardTypedData *arg_payload = args[0];
         NSNumber *arg_offset = args[1];
         FlutterError *error;
-        LocationMessage *output = [api fromBufferLocationPayload:arg_payload offset:arg_offset error:&error];
+        DTGLocationMessage *output = [api fromBufferLocationPayload:arg_payload offset:arg_offset error:&error];
         callback(wrapResult(output, error));
       }];
     }
@@ -441,15 +441,15 @@ void MessageApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<Messag
       [FlutterBasicMessageChannel
         messageChannelWithName:@"dev.flutter.pigeon.MessageApi.fromBufferOperatorId"
         binaryMessenger:binaryMessenger
-        codec:MessageApiGetCodec()];
+        codec:DTGMessageApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(fromBufferOperatorIdPayload:offset:error:)], @"MessageApi api (%@) doesn't respond to @selector(fromBufferOperatorIdPayload:offset:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(fromBufferOperatorIdPayload:offset:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(fromBufferOperatorIdPayload:offset:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         FlutterStandardTypedData *arg_payload = args[0];
         NSNumber *arg_offset = args[1];
         FlutterError *error;
-        OperatorIdMessage *output = [api fromBufferOperatorIdPayload:arg_payload offset:arg_offset error:&error];
+        DTGOperatorIdMessage *output = [api fromBufferOperatorIdPayload:arg_payload offset:arg_offset error:&error];
         callback(wrapResult(output, error));
       }];
     }
