@@ -97,27 +97,30 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         )
     }
 
-    override fun startScan() {
+    override fun startScan(result: Pigeon.Result<Void>) {
         scanner.scan()
         wifiScanner.scan()
         Log.d("plugin", "Started scanning")
+        result.success(null)
     }
 
-    override fun stopScan() {
+    override fun stopScan(result: Pigeon.Result<Void>) {
         scanner.cancel()
         wifiScanner.cancel()
         Log.d("plugin", "Scan was stopped")
+        result.success(null)
     }
 
-    override fun isScanning(): Boolean {
-        return scanner.isScanning
+    override fun isScanning(result: Pigeon.Result<Boolean>){
+      result.success(scanner.isScanning)
     }
 
-    override fun bluetoothState(): Long {
-        return scanner.getAdapterState().toLong()
+    override fun bluetoothState(result: Pigeon.Result<Long>){
+        result.success(scanner.getAdapterState().toLong())
     }
 
-    override fun setAutorestart(enable: Boolean?) {
+    override fun setAutorestart(enable: Boolean?, result: Pigeon.Result<Void>) {
         scanner.shouldAutoRestart = enable ?: false
+        result.success(null)
     }
 }

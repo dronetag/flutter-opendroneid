@@ -1,9 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_opendroneid/models/odid_message.dart';
-
-import 'models/enums.dart';
 import 'models/message_pack.dart';
 
 import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
