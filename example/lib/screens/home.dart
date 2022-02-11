@@ -8,6 +8,7 @@ import 'package:flutter_opendroneid/models/enums.dart';
 import 'package:flutter_opendroneid/models/message_pack.dart';
 import 'package:flutter_opendroneid_example/widgets/aircraft_item.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
 
 class HomeScreen extends StatefulWidget {
   final Map<String, List<MessagePack>> receivedPacks;
@@ -29,7 +30,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription? _bluetoothStateSubscription;
   StreamSubscription? _scanStateSubscription;
-  BluetoothState bluetoothState = BluetoothState.Unknown;
+  pigeon.BluetoothState bluetoothState = pigeon.BluetoothState.Unknown;
   bool isScanning = false;
   bool autoRestartEnabled = false;
 

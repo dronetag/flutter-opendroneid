@@ -25,11 +25,11 @@ class FlutterOpenDroneId {
   static StreamSubscription? _basicMessagesSubscription;
   static StreamSubscription? _operatorIDMessagesSubscription;
 
-  static Stream<BluetoothState> get bluetoothState async* {
-    yield BluetoothState.values[await await _api.bluetoothState()];
+  static Stream<pigeon.BluetoothState> get bluetoothState async* {
+    yield pigeon.BluetoothState.values[await _api.bluetoothState()];
     yield* _btStateEventChannel
         .receiveBroadcastStream()
-        .asyncMap((event) => BluetoothState.values[event]);
+        .asyncMap((event) => pigeon.BluetoothState.values[event]);
   }
 
   static Stream<MessagePack> get allMessages => _packController.stream;
