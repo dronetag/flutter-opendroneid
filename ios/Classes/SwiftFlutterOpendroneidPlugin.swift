@@ -3,24 +3,40 @@ import UIKit
 
 @available(iOS 15.0.0, *)
 public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
+
     
-    public func startScan(completion: @escaping (FlutterError?) -> Void) {
+    public func startScanBluetooth(completion: @escaping (FlutterError?) -> Void) {
         bluetoothScanner?.scan()
+    }
+    
+    public func startScanWifi(completion: @escaping (FlutterError?) -> Void) {
         wifiScanner?.scan()
     }
     
-    public func stopScan(completion: @escaping (FlutterError?) -> Void) {
+    public func stopScanBluetooth(completion: @escaping (FlutterError?) -> Void) {
         bluetoothScanner?.cancel()
+    }
+    
+    public func stopScanWifi(completion: @escaping (FlutterError?) -> Void) {
         wifiScanner?.cancel()
     }
     
-    public func setAutorestartEnable(_ enable: NSNumber?) async -> FlutterError? {
+    public func setAutorestartBluetooth(_ enable: NSNumber?) async -> FlutterError? {
         bluetoothScanner?.autoRestart = enable as! Bool
         return nil
     }
     
-    public func isScanning() async -> (NSNumber?, FlutterError?) {
+    public func setAutorestartBluetoothEnable(_ enable: NSNumber?, completion: @escaping (FlutterError?) -> Void) {
+        bluetoothScanner?.autoRestart = enable as! Bool
+    }
+    
+    
+    public func isScanningBluetooth() async -> (NSNumber?, FlutterError?) {
         return ((bluetoothScanner?.isScanning()) as NSNumber?, nil)
+    }
+    
+    public func isScanningWifi() async -> (NSNumber?, FlutterError?) {
+        return ((wifiScanner?.isScanning()) as NSNumber?, nil)
     }
     
     public func bluetoothState() async -> (NSNumber?, FlutterError?) {

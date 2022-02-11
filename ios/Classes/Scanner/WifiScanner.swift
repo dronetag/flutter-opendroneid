@@ -13,6 +13,10 @@ class WifiScanner: NSObject{
         super.init()
     }
     
+    func isScanning() -> Bool {
+        return false;
+    }
+    
     func scan() {
         // to-do
     }
