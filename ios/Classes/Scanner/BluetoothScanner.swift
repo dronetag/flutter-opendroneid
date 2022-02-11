@@ -3,7 +3,7 @@ import CoreBluetooth
 
 class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     private let operatoridMessageHandler: StreamHandler
-    private let basicMmessageHandler: StreamHandler
+    private let basicMessageHandler: StreamHandler
     private let locationMessageHandler: StreamHandler
     private let stateHandler: StreamHandler
     private let scanStateHandler: StreamHandler
@@ -14,8 +14,10 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     
     static let serviceUUID = CBUUID(string: "0000fffa-0000-1000-8000-00805f9b34fb")
     
-    init(messageHandler: StreamHandler, stateHandler: StreamHandler, scanStateHandler: StreamHandler) {
-        self.messageHandler = messageHandler
+    init(basicMessageHandler: StreamHandler, locationMessageHandler: StreamHandler, operatoridMessageHandler: StreamHandler,  stateHandler: StreamHandler, scanStateHandler: StreamHandler) {
+        self.basicMessageHandler = basicMessageHandler
+        self.operatoridMessageHandler = operatoridMessageHandler
+        self.locationMessageHandler = locationMessageHandler
         self.stateHandler = stateHandler
         self.scanStateHandler = scanStateHandler
         self.centralManager = CBCentralManager(delegate: nil, queue: dispatchQueue)
@@ -70,7 +72,8 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
         
         do {
             let message = try OdidParser.parseData(data)
-            
+            // to-do : determine message type, send accordingly
+            /*
             messageHandler.send(
                 OdidParser.constructJson(
                     from: message,
@@ -79,6 +82,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
                     rssi: RSSI.intValue
                 )
             )
+             */
         } catch {
             NSLog("scanner", "Failed to parse ODID message: \(error)")
             return

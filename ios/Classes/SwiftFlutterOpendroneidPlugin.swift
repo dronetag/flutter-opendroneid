@@ -58,7 +58,7 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
 
         // Register bluetooth scanner
         instance.wifiScanner = WifiScanner(
-            messageHandler: instance.messagesStreamHandler,
+            messageHandler: instance.basicMessagesStreamHandler,
             stateHandler: instance.bluetoothStateStreamHandler
         )
     }
