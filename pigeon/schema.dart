@@ -196,15 +196,20 @@ class OperatorIdMessage {
 
 @HostApi()
 abstract class Api {
-  // to-do: create separate methods for wifi; bt
   @async
-  void startScan();
+  void startScanBluetooth();
   @async
-  void stopScan();
+  void startScanWifi();
   @async
-  void setAutorestart(bool enable);
+  void stopScanBluetooth();
   @async
-  bool isScanning();
+  void stopScanWifi();
+  @async
+  void setAutorestartBluetooth(bool enable);
+  @async
+  bool isScanningBluetooth();
+  @async
+  bool isScanningWifi();
   @async
   int bluetoothState();
 }

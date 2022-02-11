@@ -97,29 +97,43 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         )
     }
 
-    override fun startScan(result: Pigeon.Result<Void>) {
+    override fun startScanBluetooth(result: Pigeon.Result<Void>) {
         scanner.scan()
+        Log.d("plugin", "Started scanning Bt")
+        result.success(null)
+    }
+
+    override fun startScanWifi(result: Pigeon.Result<Void>) {
         wifiScanner.scan()
-        Log.d("plugin", "Started scanning")
+        Log.d("plugin", "Started scanning WiFi")
         result.success(null)
     }
 
-    override fun stopScan(result: Pigeon.Result<Void>) {
+    override fun stopScanBluetooth(result: Pigeon.Result<Void>) {
         scanner.cancel()
-        wifiScanner.cancel()
-        Log.d("plugin", "Scan was stopped")
+        Log.d("plugin", "Bt Scan was stopped")
         result.success(null)
     }
 
-    override fun isScanning(result: Pigeon.Result<Boolean>){
+    override fun stopScanWifi(result: Pigeon.Result<Void>) {
+        wifiScanner.cancel()
+        Log.d("plugin", "Wifi Scan was stopped")
+        result.success(null)
+    }
+
+    override fun isScanningBluetooth(result: Pigeon.Result<Boolean>){
       result.success(scanner.isScanning)
+    }
+
+    override fun isScanningWifi(result: Pigeon.Result<Boolean>){
+        result.success(wifiScanner.isScanning)
     }
 
     override fun bluetoothState(result: Pigeon.Result<Long>){
         result.success(scanner.getAdapterState().toLong())
     }
 
-    override fun setAutorestart(enable: Boolean?, result: Pigeon.Result<Void>) {
+    override fun setAutorestartBluetooth(enable: Boolean?, result: Pigeon.Result<Void>) {
         scanner.shouldAutoRestart = enable ?: false
         result.success(null)
     }

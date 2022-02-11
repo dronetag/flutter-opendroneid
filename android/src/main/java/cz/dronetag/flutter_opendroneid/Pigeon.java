@@ -727,10 +727,13 @@ public class Pigeon {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface Api {
-    void startScan(Result<Void> result);
-    void stopScan(Result<Void> result);
-    void setAutorestart(Boolean enable, Result<Void> result);
-    void isScanning(Result<Boolean> result);
+    void startScanBluetooth(Result<Void> result);
+    void startScanWifi(Result<Void> result);
+    void stopScanBluetooth(Result<Void> result);
+    void stopScanWifi(Result<Void> result);
+    void setAutorestartBluetooth(Boolean enable, Result<Void> result);
+    void isScanningBluetooth(Result<Boolean> result);
+    void isScanningWifi(Result<Boolean> result);
     void bluetoothState(Result<Long> result);
 
     /** The codec used by Api. */
@@ -742,7 +745,7 @@ public class Pigeon {
     static void setup(BinaryMessenger binaryMessenger, Api api) {
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.startScan", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.startScanBluetooth", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -758,7 +761,7 @@ public class Pigeon {
                 }
               };
 
-              api.startScan(resultCallback);
+              api.startScanBluetooth(resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));
@@ -771,7 +774,7 @@ public class Pigeon {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.stopScan", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.startScanWifi", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -787,7 +790,7 @@ public class Pigeon {
                 }
               };
 
-              api.stopScan(resultCallback);
+              api.startScanWifi(resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));
@@ -800,7 +803,65 @@ public class Pigeon {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.setAutorestart", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.stopScanBluetooth", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              Result<Void> resultCallback = new Result<Void>() {
+                public void success(Void result) {
+                  wrapped.put("result", null);
+                  reply.reply(wrapped);
+                }
+                public void error(Throwable error) {
+                  wrapped.put("error", wrapError(error));
+                  reply.reply(wrapped);
+                }
+              };
+
+              api.stopScanBluetooth(resultCallback);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
+            }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.stopScanWifi", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              Result<Void> resultCallback = new Result<Void>() {
+                public void success(Void result) {
+                  wrapped.put("result", null);
+                  reply.reply(wrapped);
+                }
+                public void error(Throwable error) {
+                  wrapped.put("error", wrapError(error));
+                  reply.reply(wrapped);
+                }
+              };
+
+              api.stopScanWifi(resultCallback);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
+            }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.setAutorestartBluetooth", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -821,7 +882,7 @@ public class Pigeon {
                 }
               };
 
-              api.setAutorestart(enableArg, resultCallback);
+              api.setAutorestartBluetooth(enableArg, resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));
@@ -834,7 +895,7 @@ public class Pigeon {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.isScanning", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.isScanningBluetooth", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -850,7 +911,36 @@ public class Pigeon {
                 }
               };
 
-              api.isScanning(resultCallback);
+              api.isScanningBluetooth(resultCallback);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
+            }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.isScanningWifi", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              Result<Boolean> resultCallback = new Result<Boolean>() {
+                public void success(Boolean result) {
+                  wrapped.put("result", result);
+                  reply.reply(wrapped);
+                }
+                public void error(Throwable error) {
+                  wrapped.put("error", wrapError(error));
+                  reply.reply(wrapped);
+                }
+              };
+
+              api.isScanningWifi(resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));

@@ -215,13 +215,13 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.Api.startScan"
+        messageChannelWithName:@"dev.flutter.pigeon.Api.startScanBluetooth"
         binaryMessenger:binaryMessenger
         codec:DTGApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(startScanWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(startScanWithCompletion:)", api);
+      NSCAssert([api respondsToSelector:@selector(startScanBluetoothWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(startScanBluetoothWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        [api startScanWithCompletion:^(FlutterError *_Nullable error) {
+        [api startScanBluetoothWithCompletion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];
@@ -233,13 +233,13 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.Api.stopScan"
+        messageChannelWithName:@"dev.flutter.pigeon.Api.startScanWifi"
         binaryMessenger:binaryMessenger
         codec:DTGApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(stopScanWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(stopScanWithCompletion:)", api);
+      NSCAssert([api respondsToSelector:@selector(startScanWifiWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(startScanWifiWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        [api stopScanWithCompletion:^(FlutterError *_Nullable error) {
+        [api startScanWifiWithCompletion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];
@@ -251,15 +251,51 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.Api.setAutorestart"
+        messageChannelWithName:@"dev.flutter.pigeon.Api.stopScanBluetooth"
         binaryMessenger:binaryMessenger
         codec:DTGApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setAutorestartEnable:completion:)], @"DTGApi api (%@) doesn't respond to @selector(setAutorestartEnable:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(stopScanBluetoothWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(stopScanBluetoothWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api stopScanBluetoothWithCompletion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.Api.stopScanWifi"
+        binaryMessenger:binaryMessenger
+        codec:DTGApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(stopScanWifiWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(stopScanWifiWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api stopScanWifiWithCompletion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.Api.setAutorestartBluetooth"
+        binaryMessenger:binaryMessenger
+        codec:DTGApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(setAutorestartBluetoothEnable:completion:)], @"DTGApi api (%@) doesn't respond to @selector(setAutorestartBluetoothEnable:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSNumber *arg_enable = args[0];
-        [api setAutorestartEnable:arg_enable completion:^(FlutterError *_Nullable error) {
+        [api setAutorestartBluetoothEnable:arg_enable completion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];
@@ -271,13 +307,31 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
   {
     FlutterBasicMessageChannel *channel =
       [FlutterBasicMessageChannel
-        messageChannelWithName:@"dev.flutter.pigeon.Api.isScanning"
+        messageChannelWithName:@"dev.flutter.pigeon.Api.isScanningBluetooth"
         binaryMessenger:binaryMessenger
         codec:DTGApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(isScanningWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(isScanningWithCompletion:)", api);
+      NSCAssert([api respondsToSelector:@selector(isScanningBluetoothWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(isScanningBluetoothWithCompletion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        [api isScanningWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+        [api isScanningBluetoothWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.Api.isScanningWifi"
+        binaryMessenger:binaryMessenger
+        codec:DTGApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(isScanningWifiWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(isScanningWifiWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api isScanningWifiWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
         }];
       }];

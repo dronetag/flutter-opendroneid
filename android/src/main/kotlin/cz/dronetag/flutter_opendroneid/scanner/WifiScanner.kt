@@ -34,6 +34,7 @@ class WifiScanner (
     private var scanFailed = 0
     private val wifiScanEnabled = true
     private val scanTimerInterval = 2
+    var isScanning = false
 
     private var countDownTimer: CountDownTimer? = null
 
@@ -157,6 +158,7 @@ class WifiScanner (
         if (!wifiScanEnabled) {
             return;
         }
+        isScanning = false;
         if (countDownTimer != null) {
             countDownTimer!!.cancel();
         }
@@ -167,6 +169,7 @@ class WifiScanner (
         if (!wifiScanEnabled) {
             return
         }
+        isScanning = true
         context.registerReceiver(broadcastReceiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
         val ret = wifiManager!!.startScan()
         if (ret) {

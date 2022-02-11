@@ -20,7 +20,8 @@ class _FlutterOpenDroneIdAppState extends State<FlutterOpenDroneIdApp> {
   @override
   void initState() {
     initPlatformState();
-    _updateScanningState();
+    _updateScanningStateBluetooth();
+    _updateScanningStateWifi();
     super.initState();
   }
 
@@ -59,13 +60,15 @@ class _FlutterOpenDroneIdAppState extends State<FlutterOpenDroneIdApp> {
       });
     });
     FlutterOpenDroneId.startScan();
-    _updateScanningState();
+    _updateScanningStateBluetooth();
+    _updateScanningStateWifi();
   }
 
   void stop() {
     listener?.cancel();
     FlutterOpenDroneId.stopScan();
-    _updateScanningState();
+    _updateScanningStateBluetooth();
+    _updateScanningStateWifi();
   }
 
   void clear() {
@@ -74,8 +77,12 @@ class _FlutterOpenDroneIdAppState extends State<FlutterOpenDroneIdApp> {
     });
   }
 
-  void _updateScanningState() async {
-    final value = await FlutterOpenDroneId.isScanning;
+  void _updateScanningStateBluetooth() async {
+    final value = await FlutterOpenDroneId.isScanningBluetooth;
+  }
+
+  void _updateScanningStateWifi() async {
+    final value = await FlutterOpenDroneId.isScanningWifi;
   }
 
   @override

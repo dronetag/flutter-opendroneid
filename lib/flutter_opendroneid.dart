@@ -61,22 +61,27 @@ class FlutterOpenDroneId {
       if (message == null) return;
       _updatePacksWithOperatorId(message);
     });
-    await _api.startScan();
+    await _api.startScanBluetooth();
+    await _api.startScanWifi();
   }
 
   /// Stops any currently running scan
   static Future<void> stopScan() async {
-    await _api.stopScan();
+    await _api.stopScanBluetooth();
+    await _api.stopScanWifi();
     _locationMessagesSubscription?.cancel();
     _basicMessagesSubscription?.cancel();
     _operatorIDMessagesSubscription?.cancel();
   }
 
   static Future<void> enableAutoRestart({required bool enable}) async {
-    await _api.setAutorestart(enable);
+    await _api.setAutorestartBluetooth(enable);
   }
 
-  static Future<bool> get isScanning async => await _api.isScanning();
+  static Future<bool> get isScanningBluetooth async =>
+      await _api.isScanningBluetooth();
+
+  static Future<bool> get isScanningWifi async => await _api.isScanningWifi();
 
   static void _updatePacksWithBasic(pigeon.BasicIdMessage message) {
     if (message.macAddress == null) return;
