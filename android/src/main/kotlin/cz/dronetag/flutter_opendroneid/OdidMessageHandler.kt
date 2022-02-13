@@ -101,7 +101,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
 
         message.speedHorizontal = calcSpeed((byteBuffer.get() and 0xFF.toByte()).toInt(), speedMult)
         message.speedVertical = calcSpeed(byteBuffer.get().toInt(), speedMult)
-
+        
         message.latitude = LAT_LONG_MULTIPLIER * byteBuffer.int
         message.longitude = LAT_LONG_MULTIPLIER * byteBuffer.int
 
@@ -113,9 +113,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
         message.verticalAccuracy = Pigeon.VerticalAccuracy.values()[horiVertAccuracy and 0xF0 shr 4]
         val speedBaroAccuracy = byteBuffer.get().toInt()
         message.baroAccuracy = Pigeon.VerticalAccuracy.values()[speedBaroAccuracy and 0xF0 shr 4]
-        // to-do: fix
-        Log.d("Message Handler", "Speed accacy" + (speedBaroAccuracy and 0x0F))
-        message.speedAccuracy = Pigeon.SpeedAccuracy.values()[speedBaroAccuracy and 0x0F]
+        message.speedAccuracy = speedAccToEnum(speedBaroAccuracy and 0x0F)
         message.time = byteBuffer.short.toUShort().toLong()
         message.timeAccuracy = (byteBuffer.get() and 0x0F).toInt() * 0.1
 
@@ -140,6 +138,17 @@ class OdidMessageHandler: Pigeon.MessageApi {
 
     private fun calcSpeed(value: Int, mult: Int): Double {
         return if (mult == 0) value * 0.25 else value * 0.75 + 255 * 0.25
+    }
+
+    private fun speedAccToEnum(acc: Int): Pigeon.SpeedAccuracy {
+        if(acc == 10)   
+            return Pigeon.SpeedAccuracy.meter_per_second_10
+        else if(acc == 3)   
+            return Pigeon.SpeedAccuracy.meter_per_second_3
+        else if(acc == 1)   
+            return Pigeon.SpeedAccuracy.meter_per_second_1
+        //meter_per_second_0_3
+        return Pigeon.SpeedAccuracy.Unknown
     }
 
     private fun calcDirection(value: Int, EW: Int): Int {
