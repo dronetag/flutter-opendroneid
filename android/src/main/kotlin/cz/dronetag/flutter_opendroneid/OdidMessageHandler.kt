@@ -9,6 +9,8 @@ import cz.dronetag.flutter_opendroneid.models.OdidMessage
 import cz.dronetag.flutter_opendroneid.models.OperatorIdMessage
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.sql.Time
+import java.text.DateFormat
 import kotlin.experimental.and
 
 class OdidMessageHandler: Pigeon.MessageApi {
@@ -66,22 +68,26 @@ class OdidMessageHandler: Pigeon.MessageApi {
 
     private fun parseBasicMessage(byteBuffer: ByteBuffer): Pigeon.BasicIdMessage {
         val builder = Pigeon.BasicIdMessage.Builder();
-        val message = builder.build()
         val type: Int = byteBuffer.get().toInt()
-        message.idType = Pigeon.IdType.values()[type and 0xF0 shr 4]
-        message.uaType = Pigeon.UaType.values()[type and 0x0F]
         val uasId = ByteArray(OdidMessageHandler.MAX_ID_BYTE_SIZE)
-        byteBuffer.get(uasId, 0, OdidMessageHandler.MAX_ID_BYTE_SIZE)
+        var uasIdStr = String(uasId)
 
-        message.uasId = String(uasId)
-        if (message.uasId.contains('\u0000')) {
-            message.uasId = message.uasId.split('\u0000').first()
+        builder.setReceivedTimestamp(System.currentTimeMillis())
+        builder.setIdType(Pigeon.IdType.values()[type and 0xF0 shr 4])
+        builder.setUaType(Pigeon.UaType.values()[type and 0x0F])
+        builder.setMacAddress("Unknown")
+        byteBuffer.get(uasId, 0, OdidMessageHandler.MAX_ID_BYTE_SIZE)
+        if (uasIdStr.contains('\u0000')) {
+            uasIdStr = uasIdStr.split('\u0000').first()
         }
-        return message
+        builder.setUasId(uasIdStr)
+        return builder.build()
     }
 
     private fun parseLocationMessage(byteBuffer: ByteBuffer): Pigeon.LocationMessage {
         val builder = Pigeon.LocationMessage.Builder();
+        builder.setMacAddress("Unknown")
+        builder.setReceivedTimestamp(System.currentTimeMillis())
         val message = builder.build()
         val b = byteBuffer.get().toInt()
         val status = b and 0xF0 shr 4
@@ -108,6 +114,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
         val speedBaroAccuracy = byteBuffer.get().toInt()
         message.baroAccuracy = Pigeon.VerticalAccuracy.values()[speedBaroAccuracy and 0xF0 shr 4]
         // to-do: fix
+        Log.d("Message Handler", "Speed accacy" + (speedBaroAccuracy and 0x0F))
         message.speedAccuracy = Pigeon.SpeedAccuracy.values()[speedBaroAccuracy and 0x0F]
         message.time = byteBuffer.short.toUShort().toLong()
         message.timeAccuracy = (byteBuffer.get() and 0x0F).toInt() * 0.1
@@ -117,17 +124,18 @@ class OdidMessageHandler: Pigeon.MessageApi {
 
     private fun parseOperatorIdMessage(byteBuffer: ByteBuffer): Pigeon.OperatorIdMessage {
         val builder = Pigeon.OperatorIdMessage.Builder();
-        val message = builder.build()
-        val type: Int = byteBuffer.get().toInt()
+        builder.setMacAddress("Unknown")
+        builder.setReceivedTimestamp(System.currentTimeMillis())
         val operatorId = ByteArray(OdidMessageHandler.MAX_ID_BYTE_SIZE)
+
         byteBuffer.get(operatorId, 0, OdidMessageHandler.MAX_ID_BYTE_SIZE)
+        var operatorIdStr =  String(operatorId);
 
-        message.operatorId = String(operatorId)
-
-        if (message.operatorId.contains('\u0000')) {
-            message.operatorId = message.operatorId.split('\u0000').first()
+        if (operatorIdStr.contains('\u0000')) {
+            operatorIdStr = operatorIdStr.split('\u0000').first()
         }
-        return message
+        builder.setOperatorId(operatorIdStr)
+        return builder.build()
     }
 
     private fun calcSpeed(value: Int, mult: Int): Double {

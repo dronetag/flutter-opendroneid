@@ -186,7 +186,7 @@ class LocationMessage {
 
 class OperatorIdMessage {
   /// Operator ID
-  /// late final int receivedTimestamp;
+  late final int receivedTimestamp;
   late final String macAddress;
   late final MessageSource? source;
   late final int? rssi;
