@@ -41,7 +41,7 @@ class BluetoothScanner(
     private val serviceParcelUuid = ParcelUuid(serviceUuid)
     private val odidAdCode = byteArrayOf(0x0D.toByte())
 
-    private val messageHandler: Pigeon.MessageApi = OdidMessageHandler()
+    private val messageHandler: OdidMessageHandler = OdidMessageHandler()
 
     fun scan() {
         if (!bluetoothAdapter.isEnabled) return
@@ -108,8 +108,6 @@ class BluetoothScanner(
             val scanRecord: ScanRecord = result.scanRecord ?: return
             val bytes = scanRecord.bytes ?: return
             val typeOrdinal = messageHandler.determineMessageType(bytes, 6);
-            val byteBuffer = ByteBuffer.wrap(bytes, 6, 25)
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
             if(typeOrdinal == null)
                 return;
             val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]

@@ -36,6 +36,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
         if (payload.size < offset + MAX_MESSAGE_SIZE) return null
         val byteBuffer = ByteBuffer.wrap(payload, offset.toInt(), MAX_MESSAGE_SIZE)
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
+        val b: Int = (byteBuffer.get() and 0xFF.toByte()).toInt()
         return parseBasicMessage(byteBuffer)
     }
 
@@ -43,6 +44,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
         if (payload.size < offset + MAX_MESSAGE_SIZE) return null
         val byteBuffer = ByteBuffer.wrap(payload, offset.toInt(), MAX_MESSAGE_SIZE)
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
+        val b: Int = (byteBuffer.get() and 0xFF.toByte()).toInt()
         return parseLocationMessage(byteBuffer)
     }
 
@@ -50,6 +52,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
         if (payload.size < offset + MAX_MESSAGE_SIZE) return null
         val byteBuffer = ByteBuffer.wrap(payload, offset.toInt(), MAX_MESSAGE_SIZE)
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
+        val b: Int = (byteBuffer.get() and 0xFF.toByte()).toInt()
         return parseOperatorIdMessage(byteBuffer)
     }
 
@@ -86,9 +89,6 @@ class OdidMessageHandler: Pigeon.MessageApi {
 
     private fun parseLocationMessage(byteBuffer: ByteBuffer): Pigeon.LocationMessage {
         val builder = Pigeon.LocationMessage.Builder();
-        builder.setMacAddress("Unknown")
-        builder.setReceivedTimestamp(System.currentTimeMillis())
-        val message = builder.build()
         val b = byteBuffer.get().toInt()
         val status = b and 0xF0 shr 4
         val heightType = b and 0x04 shr 2
@@ -96,34 +96,36 @@ class OdidMessageHandler: Pigeon.MessageApi {
         val speedMult = b and 0x01
         val LAT_LONG_MULTIPLIER = 1e-7
 
-        message.direction =
-                calcDirection((byteBuffer.get() and 0xFF.toByte()).toInt(), ewDirection).toLong()
-
-        message.speedHorizontal = calcSpeed((byteBuffer.get() and 0xFF.toByte()).toInt(), speedMult)
-        message.speedVertical = calcSpeed(byteBuffer.get().toInt(), speedMult)
-        
-        message.latitude = LAT_LONG_MULTIPLIER * byteBuffer.int
-        message.longitude = LAT_LONG_MULTIPLIER * byteBuffer.int
-
-        message.altitudePressure = calcAltitude(byteBuffer.short.toUShort().toInt())
-        message.altitudeGeodetic = calcAltitude(byteBuffer.short.toUShort().toInt())
-        message.height = calcAltitude(byteBuffer.short.toUShort().toInt())
+        builder.setMacAddress("Unknown")
+        builder.setReceivedTimestamp(System.currentTimeMillis())
+        builder.setDirection(
+                calcDirection((byteBuffer.get() and 0xFF.toByte()).toInt(), ewDirection).toLong())
+        builder.setSpeedHorizontal(calcSpeed((byteBuffer.get() and 0xFF.toByte()).toInt(), speedMult))
+        builder.setSpeedVertical(calcSpeed(byteBuffer.get().toInt(), speedMult))
+        val lat = LAT_LONG_MULTIPLIER * byteBuffer.int
+        builder.setLatitude(lat)
+        builder.setLongitude(LAT_LONG_MULTIPLIER * byteBuffer.int)
+        builder.setAltitudePressure(calcAltitude(byteBuffer.short.toUShort().toInt()))
+        builder.setAltitudeGeodetic(calcAltitude(byteBuffer.short.toUShort().toInt()))
+        builder.setHeight(calcAltitude(byteBuffer.short.toUShort().toInt()))
         val horiVertAccuracy = byteBuffer.get().toInt()
-        message.horizontalAccuracy = Pigeon.HorizontalAccuracy.values()[horiVertAccuracy and 0x0F]
-        message.verticalAccuracy = Pigeon.VerticalAccuracy.values()[horiVertAccuracy and 0xF0 shr 4]
+        builder.setHorizontalAccuracy(Pigeon.HorizontalAccuracy.values()[horiVertAccuracy and 0x0F])
+        builder.setVerticalAccuracy(Pigeon.VerticalAccuracy.values()[horiVertAccuracy and 0xF0 shr 4])
         val speedBaroAccuracy = byteBuffer.get().toInt()
-        message.baroAccuracy = Pigeon.VerticalAccuracy.values()[speedBaroAccuracy and 0xF0 shr 4]
-        message.speedAccuracy = speedAccToEnum(speedBaroAccuracy and 0x0F)
-        message.time = byteBuffer.short.toUShort().toLong()
-        message.timeAccuracy = (byteBuffer.get() and 0x0F).toInt() * 0.1
-
-        return message
+        builder.setBaroAccuracy(Pigeon.VerticalAccuracy.values()[speedBaroAccuracy and 0xF0 shr 4])
+        builder.setSpeedAccuracy(speedAccToEnum(speedBaroAccuracy and 0x0F))
+        builder.setTime(byteBuffer.short.toUShort().toLong())
+        builder.setTimeAccuracy((byteBuffer.get() and 0x0F).toInt() * 0.1)
+        builder.setStatus(Pigeon.AircraftStatus.values()[status])
+        builder.setHeightType(Pigeon.HeightType.values()[heightType])
+        return builder.build()
     }
 
     private fun parseOperatorIdMessage(byteBuffer: ByteBuffer): Pigeon.OperatorIdMessage {
         val builder = Pigeon.OperatorIdMessage.Builder();
         builder.setMacAddress("Unknown")
         builder.setReceivedTimestamp(System.currentTimeMillis())
+        val type: Int = byteBuffer.get().toInt()
         val operatorId = ByteArray(OdidMessageHandler.MAX_ID_BYTE_SIZE)
 
         byteBuffer.get(operatorId, 0, OdidMessageHandler.MAX_ID_BYTE_SIZE)
@@ -133,6 +135,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
             operatorIdStr = operatorIdStr.split('\u0000').first()
         }
         builder.setOperatorId(operatorIdStr)
+
         return builder.build()
     }
 
@@ -158,13 +161,6 @@ class OdidMessageHandler: Pigeon.MessageApi {
     private fun calcAltitude(value: Int): Double {
         return value.toDouble() / 2 - 1000
     }
-
-
-
-
-
-
-
 
     // to-do: remove
 
