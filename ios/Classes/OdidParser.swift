@@ -5,9 +5,24 @@ enum OdidParseFail: Error {
     case NotSupportedMessageType
 }
 
-class OdidParser: NSObject {
+class OdidParser: NSObject, DTGMessageApi {
     static let odidAdCode: [UInt8] = [ 0x0D ]
     
+    public func determineMessageTypePayload(payload: FlutterStandardTypedData) -> NSNumber? {
+
+    }
+
+    public func fromBufferBasicPayload(payload: FlutterStandardTypedData, offset: NSNumber, error: FlutterError? ) -> DTGBasicIdMessage? {
+
+    }
+
+    public func fromBufferLocationPayload(payload: FlutterStandardTypedData, offset: NSNumber, error: FlutterError?) -> DTGLocationMessage? {
+
+    }
+    public func fromBufferOperatorIdPayload(payload: FlutterStandardTypedData, offset: NSNumber, error: FlutterError?) -> DTGOperatorIdMessage? {
+
+    }
+
     static func parseData(_ data: Data) throws -> OdidMessage {
         // Make sure its ODID message
         guard data.starts(with: OdidParser.odidAdCode) else {
