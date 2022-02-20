@@ -49,7 +49,7 @@ class OdidParser: NSObject, DTGMessageApi {
         let timestamp = Int(dataSlice[20...21].uint16)
         let timeAccuracy = Int(dataSlice[22] & 0x0F)
         
-        return DTGLocationMessage.make(withReceivedTimestamp: 0, macAddress: "", source: DTGMessageSource.bluetoothLegacy, rssi: 0, status: DTGAircraftStatus(rawValue: UInt(status))!, heightType: DTGHeightType(rawValue: UInt(heightType))!, direction: direction as NSNumber, speedHorizontal: speedHori as NSNumber, speedVertical: speedVert as NSNumber, latitude: latitude as NSNumber, longitude: longitude as NSNumber, altitudePressure: altitudePressure as NSNumber, altitudeGeodetic: altitudeGeodetic as NSNumber, height: height as NSNumber, horizontalAccuracy: DTGHorizontalAccuracy(rawValue: UInt(horizontalAccuracy))!, verticalAccuracy: DTGVerticalAccuracy(rawValue: UInt(verticalAccuracy))!, baroAccuracy: DTGVerticalAccuracy(rawValue: UInt(baroAccuracy))!, speedAccuracy: DTGSpeedAccuracy(rawValue: UInt(timeAccuracy))!, time: timestamp as NSNumber, timeAccuracy: timeAccuracy as NSNumber)
+        return DTGLocationMessage.make(withReceivedTimestamp: 0, macAddress: "", source: DTGMessageSource.bluetoothLegacy, rssi: 0, status: DTGAircraftStatus(rawValue: UInt(status))!, heightType: DTGHeightType(rawValue: UInt(heightType))!, direction: direction as NSNumber, speedHorizontal: speedHori as NSNumber, speedVertical: speedVert as NSNumber, latitude: latitude as NSNumber, longitude: longitude as NSNumber, altitudePressure: altitudePressure as NSNumber, altitudeGeodetic: altitudeGeodetic as NSNumber, height: height as NSNumber, horizontalAccuracy: DTGHorizontalAccuracy(rawValue: UInt(horizontalAccuracy))!, verticalAccuracy: DTGVerticalAccuracy(rawValue: UInt(verticalAccuracy))!, baroAccuracy: DTGVerticalAccuracy(rawValue: UInt(baroAccuracy))!, speedAccuracy: DTGSpeedAccuracy(rawValue: UInt(speedAccuracy))!, time: timestamp as NSNumber, timeAccuracy: timeAccuracy as NSNumber)
     }
     
     func fromBufferOperatorIdPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGOperatorIdMessage? {
@@ -84,6 +84,18 @@ class OdidParser: NSObject, DTGMessageApi {
         default:
             throw OdidParseFail.NotSupportedMessageType
         }
+    }
+    
+    static func decodeSpeed(value: Int, multiplier: Int) -> Double {
+        return multiplier == 0 ? Double(value) * 0.25 : Double(value) * 0.75 + 255 * 0.25 // 🤨
+    }
+    
+    static func decodeDirection(value: Int, ew: Int) -> Int {
+        return ew == 0 ? value : (value + 180)
+    }
+    
+    static func decodeAltitude(value: Int) -> Double {
+        return Double(value) / 2 - 1000
     }
     
     static func constructJson(from message: OdidMessage, source: OdidMessageSource, macAddress: String, rssi: Int?) -> Dictionary<String, Any> {

@@ -4,20 +4,23 @@ import UIKit
 @available(iOS 15.0.0, *)
 public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
 
-    
     public func startScanBluetooth(completion: @escaping (FlutterError?) -> Void) {
+        NSLog("Start Scan BT")
         bluetoothScanner?.scan()
     }
     
     public func startScanWifi(completion: @escaping (FlutterError?) -> Void) {
+        NSLog("Start Scan WiFi")
         wifiScanner?.scan()
     }
     
     public func stopScanBluetooth(completion: @escaping (FlutterError?) -> Void) {
+        NSLog("Stop Scan BT")
         bluetoothScanner?.cancel()
     }
     
     public func stopScanWifi(completion: @escaping (FlutterError?) -> Void) {
+        NSLog("Stop Scan WiFi")
         wifiScanner?.cancel()
     }
     
@@ -54,7 +57,11 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
     private let wifiStateStreamHandler = StreamHandler()
     
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let instance = SwiftFlutterOpendroneidPlugin()
+        let messenger : FlutterBinaryMessenger = registrar.messenger()
+        let instance : SwiftFlutterOpendroneidPlugin & DTGApi & NSObjectProtocol = SwiftFlutterOpendroneidPlugin.init()
+        DTGApiSetup(messenger, instance);
+        
+        //let instance = SwiftFlutterOpendroneidPlugin()
         
         // Event channels
         FlutterEventChannel(name: "flutter_location_messages", binaryMessenger: registrar.messenger()).setStreamHandler(instance.locationMessagesStreamHandler)
@@ -72,7 +79,7 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
             scanStateHandler: instance.scanStateStreamHandler
         )
 
-        // Register bluetooth scanner
+        // Register wifi scanner
         instance.wifiScanner = WifiScanner(
             messageHandler: instance.basicMessagesStreamHandler,
             stateHandler: instance.bluetoothStateStreamHandler
