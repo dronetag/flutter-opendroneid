@@ -7,6 +7,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     private let locationMessageHandler: StreamHandler
     private let stateHandler: StreamHandler
     private let scanStateHandler: StreamHandler
+    private let dataParser: OdidParser
     
     var centralManager: CBCentralManager
     var autoRestart: Bool = false
@@ -21,6 +22,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
         self.stateHandler = stateHandler
         self.scanStateHandler = scanStateHandler
         self.centralManager = CBCentralManager(delegate: nil, queue: dispatchQueue)
+        self.dataParser = OdidParser()
         super.init()
         self.centralManager.delegate = self
     }
@@ -71,25 +73,37 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
         }
         
         do {
-            let message = try OdidParser.parseData(data)
-            // to-do : determine message type, send accordingly
-            /*
-            messageHandler.send(
-                OdidParser.constructJson(
-                    from: message,
-                    source: .BLUETOOTH_LEGACY,
-                    macAddress: peripheral.identifier.uuidString,
-                    rssi: RSSI.intValue
-                )
-            )
-             */
+            var err: FlutterError?
+            let typeOrdinal = UInt(exactly: dataParser.determineMessageTypePayload(data, offset: 6, error: &err)!)
+            let type = DTGMessageType(rawValue: typeOrdinal!)
+            if(type == DTGMessageType.basicId)
+            {
+                let message = dataParser.fromBufferBasicPayload(data, offset: 6, error: &err)
+                message!.macAddress = peripheral.identifier.uuidString
+                message!.rssi = RSSI.intValue as NSNumber
+                basicMessageHandler.send(message! as Any)
+            }
+            else if(type == DTGMessageType.location)
+            {
+                let message = dataParser.fromBufferBasicPayload(data, offset: 6, error: &err)
+                message!.macAddress = peripheral.identifier.uuidString
+                message!.rssi = RSSI.intValue as NSNumber
+                locationMessageHandler.send(message as Any)
+            }
+            else if(type == DTGMessageType.operatorId)
+            {
+                let message = dataParser.fromBufferBasicPayload(data, offset: 6, error: &err)
+                message!.macAddress = peripheral.identifier.uuidString
+                message!.rssi = RSSI.intValue as NSNumber
+                operatoridMessageHandler.send(message as Any)
+            }
         } catch {
             NSLog("scanner", "Failed to parse ODID message: \(error)")
             return
         }
     }
     
-    private func getOdidPayload(from advertisementData: [String : Any]) -> Data? {
+    private func getOdidPayload(from advertisementData: [String : Any]) -> FlutterStandardTypedData? {
         // Peripheral must have service data
         guard let serviceData = advertisementData["kCBAdvDataServiceData"] else {
             return nil
@@ -102,10 +116,10 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
             return nil
         }
         
-        let data = serviceDataDict[BluetoothScanner.serviceUUID] as! Data
+        let data = serviceDataDict[BluetoothScanner.serviceUUID] as! FlutterStandardTypedData
         
         // All data must start with 0x0D
-        guard data.starts(with: OdidParser.odidAdCode) else {
+        guard (serviceDataDict[BluetoothScanner.serviceUUID] as! Data).starts(with: OdidParser.odidAdCode) else {
             return nil
         }
         
