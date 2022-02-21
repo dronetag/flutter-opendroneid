@@ -33,7 +33,6 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
         bluetoothScanner?.autoRestart = enable as! Bool
     }
     
-    
     public func isScanningBluetooth() async -> (NSNumber?, FlutterError?) {
         return ((bluetoothScanner?.isScanning()) as NSNumber?, nil)
     }
