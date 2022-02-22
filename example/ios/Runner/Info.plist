@@ -26,6 +26,10 @@
 	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Application use Bluetooth to scan aircrafts in your vicinity</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Application use Bluetooth to scan aircrafts in your vicinity</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>App needs location permission to work</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

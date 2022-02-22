@@ -67,6 +67,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     }
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+
         guard let data = getOdidPayload(from: advertisementData) else {
             // This advertisement is not an ODID ad data
             return
@@ -116,13 +117,12 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
             return nil
         }
         
-        let data = serviceDataDict[BluetoothScanner.serviceUUID] as! FlutterStandardTypedData
-        
+        let data = serviceDataDict[BluetoothScanner.serviceUUID] as! Data
+        let dataF = FlutterStandardTypedData(bytes: data)
         // All data must start with 0x0D
-        guard (serviceDataDict[BluetoothScanner.serviceUUID] as! Data).starts(with: OdidParser.odidAdCode) else {
+        guard data.starts(with: OdidParser.odidAdCode) else {
             return nil
         }
-        
-        return data
+        return dataF
     }
 }
