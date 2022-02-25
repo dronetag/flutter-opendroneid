@@ -30,26 +30,33 @@ class OdidParser: NSObject, DTGMessageApi {
         NSLog("from buffer loc")
         let bytes = Array(payload.data)
         let dataSlice = Data(bytes)
-        let meta = bytes[0]
+        let meta = bytes[3]
         
         let status = Int((meta & 0xF0) >> 4)
         let heightType = Int((meta & 0x04) >> 2)
         let ewDirection = Int((meta & 0x02) >> 1)
         let speedMult = Int((meta & 0x01))
-        let direction = OdidParser.decodeDirection(value: Int(dataSlice[1] & 0xFF), ew: ewDirection)
-        let speedHori = OdidParser.decodeSpeed(value: Int(dataSlice[2] & 0xFF), multiplier: speedMult)
-        let speedVert = OdidParser.decodeSpeed(value: Int(dataSlice[3]), multiplier: speedMult)
-        let latitude = OdidParser.LAT_LONG_MULTIPLIER * Double(dataSlice[4...7].uint32)
-        let longitude = LocationMessage.LAT_LONG_MULTIPLIER * Double(dataSlice[8...11].uint32)
-        let altitudePressure = OdidParser.decodeAltitude(value: Int(dataSlice[12...13].uint16))
-        let altitudeGeodetic = OdidParser.decodeAltitude(value: Int(dataSlice[14...15].uint16))
-        let height = OdidParser.decodeAltitude(value: Int(dataSlice[16...17].uint16))
-        let horizontalAccuracy = Int(dataSlice[18] & 0x0F)
-        let verticalAccuracy = Int((dataSlice[18] & 0xF0) >> 4)
-        let baroAccuracy = Int((dataSlice[19] & 0xF0) >> 4)
-        let speedAccuracy = Int(dataSlice[19] & 0x0F)
+        let direction = OdidParser.decodeDirection(value: Int(dataSlice[4] & 0xFF), ew: ewDirection)
+        let speedHori = OdidParser.decodeSpeed(value: Int(dataSlice[5] & 0xFF), multiplier: speedMult)
+        let speedVert = OdidParser.decodeSpeed(value: Int(dataSlice[6]), multiplier: speedMult)
+        var latRaw = Int32(littleEndian: dataSlice[7...10].withUnsafeBytes { $0.pointee })
+        var longRaw = Int32(littleEndian: dataSlice[11...14].withUnsafeBytes { $0.pointee })
+        
+        
+        let latitude = OdidParser.LAT_LONG_MULTIPLIER * Double(latRaw)
+        let longitude = OdidParser.LAT_LONG_MULTIPLIER * Double(longRaw)
+        let altPressureRaw = UInt16(littleEndian: dataSlice[15...16].withUnsafeBytes { $0.pointee })
+        let altGeodeticRaw = UInt16(littleEndian: dataSlice[17...18].withUnsafeBytes { $0.pointee })
+        let altitudePressure = OdidParser.decodeAltitude(value: Int(altPressureRaw))
+        let altitudeGeodetic = OdidParser.decodeAltitude(value: Int(altGeodeticRaw))
+        let heightRaw = UInt16(littleEndian: dataSlice[19...20].withUnsafeBytes { $0.pointee })
+        let height = OdidParser.decodeAltitude(value: Int(heightRaw))
+        let horizontalAccuracy = Int(dataSlice[21] & 0x0F)
+        let verticalAccuracy = Int((dataSlice[21] & 0xF0) >> 4)
+        let baroAccuracy = Int((dataSlice[22] & 0xF0) >> 4)
+        let speedAccuracy = Int(dataSlice[22] & 0x0F)
         let timestamp = Int(dataSlice[20...21].uint16)
-        let timeAccuracy = Double(dataSlice[22] & 0x0F) * 0.1
+        let timeAccuracy = Double(dataSlice[25] & 0x0F) * 0.1
         return DTGLocationMessage.make(withReceivedTimestamp: 0, macAddress: "", source: DTGMessageSource.bluetoothLegacy, rssi: 0, status: DTGAircraftStatus(rawValue: UInt(status))!, heightType: DTGHeightType(rawValue: UInt(heightType))!, direction: direction as NSNumber, speedHorizontal: speedHori as NSNumber, speedVertical: speedVert as NSNumber, latitude: latitude as NSNumber, longitude: longitude as NSNumber, altitudePressure: altitudePressure as NSNumber, altitudeGeodetic: altitudeGeodetic as NSNumber, height: height as NSNumber, horizontalAccuracy: DTGHorizontalAccuracy(rawValue: UInt(horizontalAccuracy))!, verticalAccuracy: DTGVerticalAccuracy(rawValue: UInt(verticalAccuracy))!, baroAccuracy: DTGVerticalAccuracy(rawValue: UInt(baroAccuracy))!, speedAccuracy: OdidParser.decodeSpeedAccuracy(acc: speedAccuracy), time: timestamp as NSNumber, timeAccuracy: timeAccuracy as NSNumber)
     }
     
