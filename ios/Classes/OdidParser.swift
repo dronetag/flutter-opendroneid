@@ -16,6 +16,7 @@ class OdidParser: NSObject, DTGMessageApi {
     }
     
     func fromBufferBasicPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGBasicIdMessage? {
+        NSLog("from buffer basic")
         let bytes = Array(payload.data)
         let typeByte = bytes[0]
         let idType = Int((typeByte & 0xF0) >> 4)
@@ -26,6 +27,7 @@ class OdidParser: NSObject, DTGMessageApi {
     }
     
     func fromBufferLocationPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGLocationMessage? {
+        NSLog("from buffer loc")
         let bytes = Array(payload.data)
         let dataSlice = Data(bytes)
         let meta = bytes[0]
@@ -34,25 +36,25 @@ class OdidParser: NSObject, DTGMessageApi {
         let heightType = Int((meta & 0x04) >> 2)
         let ewDirection = Int((meta & 0x02) >> 1)
         let speedMult = Int((meta & 0x01))
-        let direction = Int(dataSlice[1] & 0xFF)
-        let speedHori = Int(dataSlice[2] & 0xFF)
-        let speedVert = Int(dataSlice[3])
-        let latitude = Int(dataSlice[4...7].uint32)
-        let longitude = Int(dataSlice[8...11].uint32)
-        let altitudePressure = Int(dataSlice[12...13].uint16)
-        let altitudeGeodetic = Int(dataSlice[14...15].uint16)
-        let height = Int(dataSlice[16...17].uint16)
+        let direction = OdidParser.decodeDirection(value: Int(dataSlice[1] & 0xFF), ew: ewDirection)
+        let speedHori = OdidParser.decodeSpeed(value: Int(dataSlice[2] & 0xFF), multiplier: speedMult)
+        let speedVert = OdidParser.decodeSpeed(value: Int(dataSlice[3]), multiplier: speedMult)
+        let latitude = OdidParser.LAT_LONG_MULTIPLIER * Double(dataSlice[4...7].uint32)
+        let longitude = LocationMessage.LAT_LONG_MULTIPLIER * Double(dataSlice[8...11].uint32)
+        let altitudePressure = OdidParser.decodeAltitude(value: Int(dataSlice[12...13].uint16))
+        let altitudeGeodetic = OdidParser.decodeAltitude(value: Int(dataSlice[14...15].uint16))
+        let height = OdidParser.decodeAltitude(value: Int(dataSlice[16...17].uint16))
         let horizontalAccuracy = Int(dataSlice[18] & 0x0F)
         let verticalAccuracy = Int((dataSlice[18] & 0xF0) >> 4)
-        let baroAccuracy = Int(dataSlice[19] & 0x0F)
-        let speedAccuracy = Int((dataSlice[19] & 0xF0) >> 4)
+        let baroAccuracy = Int((dataSlice[19] & 0xF0) >> 4)
+        let speedAccuracy = Int(dataSlice[19] & 0x0F)
         let timestamp = Int(dataSlice[20...21].uint16)
-        let timeAccuracy = Int(dataSlice[22] & 0x0F)
-        
-        return DTGLocationMessage.make(withReceivedTimestamp: 0, macAddress: "", source: DTGMessageSource.bluetoothLegacy, rssi: 0, status: DTGAircraftStatus(rawValue: UInt(status))!, heightType: DTGHeightType(rawValue: UInt(heightType))!, direction: direction as NSNumber, speedHorizontal: speedHori as NSNumber, speedVertical: speedVert as NSNumber, latitude: latitude as NSNumber, longitude: longitude as NSNumber, altitudePressure: altitudePressure as NSNumber, altitudeGeodetic: altitudeGeodetic as NSNumber, height: height as NSNumber, horizontalAccuracy: DTGHorizontalAccuracy(rawValue: UInt(horizontalAccuracy))!, verticalAccuracy: DTGVerticalAccuracy(rawValue: UInt(verticalAccuracy))!, baroAccuracy: DTGVerticalAccuracy(rawValue: UInt(baroAccuracy))!, speedAccuracy: DTGSpeedAccuracy(rawValue: UInt(speedAccuracy))!, time: timestamp as NSNumber, timeAccuracy: timeAccuracy as NSNumber)
+        let timeAccuracy = Double(dataSlice[22] & 0x0F) * 0.1
+        return DTGLocationMessage.make(withReceivedTimestamp: 0, macAddress: "", source: DTGMessageSource.bluetoothLegacy, rssi: 0, status: DTGAircraftStatus(rawValue: UInt(status))!, heightType: DTGHeightType(rawValue: UInt(heightType))!, direction: direction as NSNumber, speedHorizontal: speedHori as NSNumber, speedVertical: speedVert as NSNumber, latitude: latitude as NSNumber, longitude: longitude as NSNumber, altitudePressure: altitudePressure as NSNumber, altitudeGeodetic: altitudeGeodetic as NSNumber, height: height as NSNumber, horizontalAccuracy: DTGHorizontalAccuracy(rawValue: UInt(horizontalAccuracy))!, verticalAccuracy: DTGVerticalAccuracy(rawValue: UInt(verticalAccuracy))!, baroAccuracy: DTGVerticalAccuracy(rawValue: UInt(baroAccuracy))!, speedAccuracy: OdidParser.decodeSpeedAccuracy(acc: speedAccuracy), time: timestamp as NSNumber, timeAccuracy: timeAccuracy as NSNumber)
     }
     
     func fromBufferOperatorIdPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGOperatorIdMessage? {
+        NSLog("from buffer op id")
         let idBytes = Array(payload.data)[1...]
         let operatorId = String(cString: Array(idBytes))
         
@@ -60,7 +62,7 @@ class OdidParser: NSObject, DTGMessageApi {
     }
     
     static let odidAdCode: [UInt8] = [ 0x0D ]
-    
+    static let LAT_LONG_MULTIPLIER = 1e-7
 
 
     static func parseData(_ data: Data) throws -> OdidMessage {
@@ -88,6 +90,21 @@ class OdidParser: NSObject, DTGMessageApi {
     
     static func decodeSpeed(value: Int, multiplier: Int) -> Double {
         return multiplier == 0 ? Double(value) * 0.25 : Double(value) * 0.75 + 255 * 0.25 // 🤨
+    }
+    
+    static func decodeSpeedAccuracy(acc: Int) -> DTGSpeedAccuracy {
+        if(acc == 10){
+            return DTGSpeedAccuracy.meter_per_second_10
+            
+        }
+        else if(acc == 3){
+                return DTGSpeedAccuracy.meter_per_second_3
+        }
+        else if(acc == 1){
+            return DTGSpeedAccuracy.meter_per_second_1
+        }
+            //meter_per_second_0_3
+        return DTGSpeedAccuracy.unknown
     }
     
     static func decodeDirection(value: Int, ew: Int) -> Int {

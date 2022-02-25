@@ -77,26 +77,27 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
             var err: FlutterError?
             let typeOrdinal = UInt(exactly: dataParser.determineMessageTypePayload(data, offset: 6, error: &err)!)
             let type = DTGMessageType(rawValue: typeOrdinal!)
+            NSLog("new odid msg: \(typeOrdinal)")
             if(type == DTGMessageType.basicId)
             {
-                let message = dataParser.fromBufferBasicPayload(data, offset: 6, error: &err)
+                let message : DTGBasicIdMessage? = dataParser.fromBufferBasicPayload(data, offset: 6, error: &err)
                 message!.macAddress = peripheral.identifier.uuidString
                 message!.rssi = RSSI.intValue as NSNumber
-                basicMessageHandler.send(message! as Any)
+                basicMessageHandler.send(message!.toMap() as Any)
             }
             else if(type == DTGMessageType.location)
             {
-                let message = dataParser.fromBufferBasicPayload(data, offset: 6, error: &err)
+                let message : DTGLocationMessage? = dataParser.fromBufferLocationPayload(data, offset: 6, error: &err)
                 message!.macAddress = peripheral.identifier.uuidString
                 message!.rssi = RSSI.intValue as NSNumber
-                locationMessageHandler.send(message as Any)
+                locationMessageHandler.send(message!.toMap() as Any)
             }
             else if(type == DTGMessageType.operatorId)
             {
-                let message = dataParser.fromBufferBasicPayload(data, offset: 6, error: &err)
+                let message : DTGOperatorIdMessage? = dataParser.fromBufferOperatorIdPayload(data, offset: 6, error: &err)
                 message!.macAddress = peripheral.identifier.uuidString
                 message!.rssi = RSSI.intValue as NSNumber
-                operatoridMessageHandler.send(message as Any)
+                operatoridMessageHandler.send(message!.toMap() as Any)
             }
         } catch {
             NSLog("scanner", "Failed to parse ODID message: \(error)")

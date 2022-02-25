@@ -113,6 +113,7 @@ typedef NS_ENUM(NSUInteger, DTGBluetoothState) {
 @interface DTGBasicIdMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
+- (NSDictionary *)toMap;
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
     macAddress:(NSString *)macAddress
     source:(DTGMessageSource)source
@@ -132,6 +133,7 @@ typedef NS_ENUM(NSUInteger, DTGBluetoothState) {
 @interface DTGLocationMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
+- (NSDictionary *)toMap;
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
     macAddress:(NSString *)macAddress
     source:(DTGMessageSource)source
@@ -177,6 +179,7 @@ typedef NS_ENUM(NSUInteger, DTGBluetoothState) {
 @interface DTGOperatorIdMessage : NSObject
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
+- (NSDictionary *)toMap;
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
     macAddress:(NSString *)macAddress
     source:(DTGMessageSource)source
