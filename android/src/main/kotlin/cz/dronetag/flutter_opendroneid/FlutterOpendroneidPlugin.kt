@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.IntentFilter
 import android.net.wifi.WifiManager
+import android.net.wifi.aware.WifiAwareManager
 import androidx.annotation.NonNull
 import io.flutter.Log
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -34,6 +35,7 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
                     scanStateStreamHandler,
             )
     private lateinit var wifiScanner: WifiScanner
+    private lateinit var wifiNaNScanner: WifiNaNScanner
 
     override fun onAttachedToEngine(
             @NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
@@ -55,12 +57,22 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
 
         val wifiManager: WifiManager? =
                 context.getSystemService(Context.WIFI_SERVICE) as WifiManager?
+        val wifiAwareManager: WifiAwareManager? =
+                context.getSystemService(Context.WIFI_AWARE_SERVICE) as WifiAwareManager?
+
 
         wifiScanner =
                 WifiScanner(
                         basicStreamHandler, locationStreamHandler, operatorIdStreamHandler,
                         bluetoothStateStreamHandler,
                         wifiManager,
+                        context
+                )
+        wifiNaNScanner =
+                WifiNaNScanner(
+                        basicStreamHandler, locationStreamHandler, operatorIdStreamHandler,
+                        bluetoothStateStreamHandler,
+                        wifiAwareManager,
                         context
                 )
     }
