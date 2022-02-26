@@ -5,12 +5,8 @@ import android.net.wifi.ScanResult
 import android.os.Build
 import android.content.*
 import android.net.wifi.ScanResult.InformationElement
-import cz.dronetag.flutter_opendroneid.models.BasicIdMessage
-import cz.dronetag.flutter_opendroneid.models.LocationMessage
-import cz.dronetag.flutter_opendroneid.models.OdidMessage
 import java.nio.ByteBuffer;
 import io.flutter.Log
-import android.os.SystemClock
 import kotlin.experimental.and
 import android.os.CountDownTimer
 import java.nio.ByteOrder
@@ -108,11 +104,6 @@ class WifiScanner (
         ) {
             buf.position(driStartByteOffset)
             buf[arr, 0, buf.remaining()]
-            val timeNano = SystemClock.elapsedRealtimeNanos()
-            val transportType = "Beacon"
-            val receivedMessage: OdidMessage = messageHandler.receiveDataWifiBeacon(arr) ?: return;
-            Log.d("wifi scanner", "message received..")
-
             val typeOrdinal = messageHandler.determineMessageType(arr, 1);
             val byteBuffer = ByteBuffer.wrap(arr, 1, 25)
             byteBuffer.order(ByteOrder.LITTLE_ENDIAN)

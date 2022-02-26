@@ -13,7 +13,7 @@
             <option value="$PROJECT_DIR$/../../android" />
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/../../../../flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-8.1.4+1/android" />
+            <option value="$PROJECT_DIR$/../../../../flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-8.3.0/android" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -117,6 +117,7 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
 
     override fun startScanWifi(result: Pigeon.Result<Void>) {
         wifiScanner.scan()
+        wifiNaNScanner.scan()
         Log.d("plugin", "Started scanning WiFi")
         result.success(null)
     }
@@ -129,6 +130,7 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
 
     override fun stopScanWifi(result: Pigeon.Result<Void>) {
         wifiScanner.cancel()
+        wifiNaNScanner.cancel()
         Log.d("plugin", "Wifi Scan was stopped")
         result.success(null)
     }
