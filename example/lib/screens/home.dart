@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_opendroneid/flutter_opendroneid.dart';
-import 'package:flutter_opendroneid/models/enums.dart';
 import 'package:flutter_opendroneid/models/message_pack.dart';
 import 'package:flutter_opendroneid_example/widgets/aircraft_item.dart';
 import 'package:latlong2/latlong.dart';
@@ -67,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ? Theme.of(context).primaryColor
             : Theme.of(context).primaryColorDark,
         actions: [
-          if (bluetoothState != BluetoothState.PoweredOn)
+          if (bluetoothState != pigeon.BluetoothState.PoweredOn)
             Tooltip(
               child: Icon(Icons.bluetooth_disabled, color: Colors.orangeAccent),
               message: bluetoothState.toString(),
