@@ -67,7 +67,6 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     }
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-
         guard let data = getOdidPayload(from: advertisementData) else {
             // This advertisement is not an ODID ad data
             return
@@ -77,7 +76,6 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
             var err: FlutterError?
             let typeOrdinal = UInt(exactly: dataParser.determineMessageTypePayload(data, offset: 6, error: &err)!)
             let type = DTGMessageType(rawValue: typeOrdinal!)
-            NSLog("new odid msg: \(typeOrdinal)")
             if(type == DTGMessageType.basicId)
             {
                 let message : DTGBasicIdMessage? = dataParser.fromBufferBasicPayload(data, offset: 6, error: &err)
