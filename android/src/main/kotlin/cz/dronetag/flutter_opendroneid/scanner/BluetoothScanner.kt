@@ -113,24 +113,21 @@ class BluetoothScanner(
             val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
             if(type == Pigeon.MessageType.BasicId)
             {
-                val message: Pigeon.BasicIdMessage? = messageHandler.fromBufferBasic(bytes, 6)
-                message?.macAddress = result.device.address
+                val message: Pigeon.BasicIdMessage? = messageHandler.fromBufferBasic(bytes, 6, result.device.address)
                 message?.source = Pigeon.MessageSource.BluetoothLegacy;
                 message?.rssi = result.rssi.toLong();
                 basicMessagesHandler.send(message?.toMap() as Any)
             }
             else if(type == Pigeon.MessageType.Location)
             {
-                val message =  messageHandler.fromBufferLocation(bytes, 6)
-                message?.macAddress = result.device.address
+                val message =  messageHandler.fromBufferLocation(bytes, 6, result.device.address)
                 message?.source = Pigeon.MessageSource.BluetoothLegacy;
                 message?.rssi = result.rssi.toLong();
                 locationMessagesHandler.send(message?.toMap() as Any)
             }
             else if(type == Pigeon.MessageType.OperatorId)
             {
-                val message = messageHandler.fromBufferOperatorId(bytes, 6)
-                message?.macAddress = result.device.address
+                val message = messageHandler.fromBufferOperatorId(bytes, 6, result.device.address)
                 message?.source = Pigeon.MessageSource.BluetoothLegacy;
                 message?.rssi = result.rssi.toLong();
                 operatorIdMessagesHandler.send(message?.toMap() as Any)

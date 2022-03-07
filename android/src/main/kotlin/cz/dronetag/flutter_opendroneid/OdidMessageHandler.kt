@@ -32,28 +32,28 @@ class OdidMessageHandler: Pigeon.MessageApi {
     }
 
 
-    override fun fromBufferBasic(payload: ByteArray, offset: Long): Pigeon.BasicIdMessage? {
+    override fun fromBufferBasic(payload: ByteArray, offset: Long, macAddress: String): Pigeon.BasicIdMessage? {
         if (payload.size < offset + MAX_MESSAGE_SIZE) return null
         val byteBuffer = ByteBuffer.wrap(payload, offset.toInt(), MAX_MESSAGE_SIZE)
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
         val b: Int = (byteBuffer.get() and 0xFF.toByte()).toInt()
-        return parseBasicMessage(byteBuffer)
+        return parseBasicMessage(byteBuffer, macAddress)
     }
 
-    override fun fromBufferLocation(payload: ByteArray, offset: Long): Pigeon.LocationMessage? {
+    override fun fromBufferLocation(payload: ByteArray, offset: Long, macAddress: String): Pigeon.LocationMessage? {
         if (payload.size < offset + MAX_MESSAGE_SIZE) return null
         val byteBuffer = ByteBuffer.wrap(payload, offset.toInt(), MAX_MESSAGE_SIZE)
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
         val b: Int = (byteBuffer.get() and 0xFF.toByte()).toInt()
-        return parseLocationMessage(byteBuffer)
+        return parseLocationMessage(byteBuffer, macAddress)
     }
 
-    override fun fromBufferOperatorId(payload: ByteArray, offset: Long): Pigeon.OperatorIdMessage? {
+    override fun fromBufferOperatorId(payload: ByteArray, offset: Long, macAddress: String): Pigeon.OperatorIdMessage? {
         if (payload.size < offset + MAX_MESSAGE_SIZE) return null
         val byteBuffer = ByteBuffer.wrap(payload, offset.toInt(), MAX_MESSAGE_SIZE)
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
         val b: Int = (byteBuffer.get() and 0xFF.toByte()).toInt()
-        return parseOperatorIdMessage(byteBuffer)
+        return parseOperatorIdMessage(byteBuffer, macAddress)
     }
 
     override fun determineMessageType(payload: ByteArray, offset: Long): Long? {
@@ -69,7 +69,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
         return typeData.toLong()
     }
 
-    private fun parseBasicMessage(byteBuffer: ByteBuffer): Pigeon.BasicIdMessage {
+    private fun parseBasicMessage(byteBuffer: ByteBuffer, , macAddress: String): Pigeon.BasicIdMessage {
         val builder = Pigeon.BasicIdMessage.Builder();
         val type: Int = byteBuffer.get().toInt()
         val uasId = ByteArray(OdidMessageHandler.MAX_ID_BYTE_SIZE)
@@ -78,7 +78,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
         builder.setReceivedTimestamp(System.currentTimeMillis())
         builder.setIdType(Pigeon.IdType.values()[type and 0xF0 shr 4])
         builder.setUaType(Pigeon.UaType.values()[type and 0x0F])
-        builder.setMacAddress("Unknown")
+        builder.setMacAddress(macAddress)
         byteBuffer.get(uasId, 0, OdidMessageHandler.MAX_ID_BYTE_SIZE)
         if (uasIdStr.contains('\u0000')) {
             uasIdStr = uasIdStr.split('\u0000').first()
@@ -87,7 +87,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
         return builder.build()
     }
 
-    private fun parseLocationMessage(byteBuffer: ByteBuffer): Pigeon.LocationMessage {
+    private fun parseLocationMessage(byteBuffer: ByteBuffer, macAddress: String): Pigeon.LocationMessage {
         val builder = Pigeon.LocationMessage.Builder();
         val b = byteBuffer.get().toInt()
         val status = b and 0xF0 shr 4
@@ -96,7 +96,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
         val speedMult = b and 0x01
         val LAT_LONG_MULTIPLIER = 1e-7
 
-        builder.setMacAddress("Unknown")
+        builder.setMacAddress(macAddress)
         builder.setReceivedTimestamp(System.currentTimeMillis())
         builder.setDirection(
                 calcDirection((byteBuffer.get() and 0xFF.toByte()).toInt(), ewDirection).toLong())
@@ -121,9 +121,9 @@ class OdidMessageHandler: Pigeon.MessageApi {
         return builder.build()
     }
 
-    private fun parseOperatorIdMessage(byteBuffer: ByteBuffer): Pigeon.OperatorIdMessage {
+    private fun parseOperatorIdMessage(byteBuffer: ByteBuffer, macAddress: String): Pigeon.OperatorIdMessage {
         val builder = Pigeon.OperatorIdMessage.Builder();
-        builder.setMacAddress("Unknown")
+        builder.setMacAddress(macAddress)
         builder.setReceivedTimestamp(System.currentTimeMillis())
         val type: Int = byteBuffer.get().toInt()
         val operatorId = ByteArray(OdidMessageHandler.MAX_ID_BYTE_SIZE)
