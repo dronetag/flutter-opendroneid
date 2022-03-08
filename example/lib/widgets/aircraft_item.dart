@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_opendroneid/models/enums.dart';
 import 'package:flutter_opendroneid/models/message_pack.dart';
+import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
 
 class AircraftItem extends StatelessWidget {
   final MessagePack messagePack;
@@ -14,7 +14,7 @@ class AircraftItem extends StatelessWidget {
     final countryCode =
         messagePack.operatorIdMessage?.operatorId.substring(0, 2);
     final isAirborne =
-        messagePack.locationMessage?.status == AircraftStatus.Airborne;
+        messagePack.locationMessage?.status == pigeon.AircraftStatus.Airborne;
     final icon = isAirborne ? Icons.flight_takeoff : Icons.flight_land;
     return Opacity(
       opacity: isAirborne ? 1.0 : 0.75,
