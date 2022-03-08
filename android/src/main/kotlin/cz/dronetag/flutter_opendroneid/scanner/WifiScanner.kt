@@ -112,36 +112,25 @@ class WifiScanner (
             val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
             if(type == Pigeon.MessageType.BasicId)
             {
-                val message: Pigeon.BasicIdMessage? = messageHandler.fromBufferBasic(arr, 6)
-                message?.macAddress = scanResult.BSSID
+                val message: Pigeon.BasicIdMessage? = messageHandler.fromBufferBasic(arr, 6, scanResult.BSSID)
                 message?.source = Pigeon.MessageSource.WifiBeacon;
                 message?.rssi = scanResult.level.toLong();
                 basicMessagesHandler.send(message?.toMap() as Any)
             }
             else if(type == Pigeon.MessageType.Location)
             {
-                val message =  messageHandler.fromBufferLocation(arr, 1)
-                message?.macAddress = scanResult.BSSID
+                val message =  messageHandler.fromBufferLocation(arr, 1,scanResult.BSSID)
                 message?.source = Pigeon.MessageSource.WifiBeacon;
                 message?.rssi = scanResult.level.toLong();
                 locationMessagesHandler.send(message?.toMap() as Any)
             }
             else if(type == Pigeon.MessageType.OperatorId)
             {
-                val message = messageHandler.fromBufferOperatorId(arr, 1)
-                message?.macAddress = scanResult.BSSID
+                val message = messageHandler.fromBufferOperatorId(arr, 1, scanResult.BSSID)
                 message?.source = Pigeon.MessageSource.WifiBeacon;
                 message?.rssi = scanResult.level.toLong();
                 operatorIdMessagesHandler.send(message?.toMap() as Any)
             }
-
-            /*val json = receivedMessage.toJson()
-            json["type"] = receivedMessage.type.ordinal
-            json["source"] = OdidMessage.Source.WIFI_BEACON.ordinal
-            json["rssi"] = scanResult.level
-            Log.d("scanner", json.toString())
-
-            messagesHandler.send(json)*/
         }
     }
 

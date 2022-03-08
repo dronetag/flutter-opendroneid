@@ -69,7 +69,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
         return typeData.toLong()
     }
 
-    private fun parseBasicMessage(byteBuffer: ByteBuffer, , macAddress: String): Pigeon.BasicIdMessage {
+    private fun parseBasicMessage(byteBuffer: ByteBuffer, macAddress: String): Pigeon.BasicIdMessage {
         val builder = Pigeon.BasicIdMessage.Builder();
         val type: Int = byteBuffer.get().toInt()
         val uasId = ByteArray(OdidMessageHandler.MAX_ID_BYTE_SIZE)

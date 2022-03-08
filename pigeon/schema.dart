@@ -217,7 +217,10 @@ abstract class Api {
 @HostApi()
 abstract class MessageApi {
   int determineMessageType(Uint8List payload, int offset);
-  BasicIdMessage fromBufferBasic(Uint8List payload, int offset);
-  LocationMessage fromBufferLocation(Uint8List payload, int offset);
-  OperatorIdMessage fromBufferOperatorId(Uint8List payload, int offset);
+  BasicIdMessage fromBufferBasic(
+      Uint8List payload, int offset, String macAddress);
+  LocationMessage fromBufferLocation(
+      Uint8List payload, int offset, String macAddress);
+  OperatorIdMessage fromBufferOperatorId(
+      Uint8List payload, int offset, String macAddress);
 }

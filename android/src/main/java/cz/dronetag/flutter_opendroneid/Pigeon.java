@@ -1043,9 +1043,9 @@ public class Pigeon {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface MessageApi {
     Long determineMessageType(byte[] payload, Long offset);
-    BasicIdMessage fromBufferBasic(byte[] payload, Long offset);
-    LocationMessage fromBufferLocation(byte[] payload, Long offset);
-    OperatorIdMessage fromBufferOperatorId(byte[] payload, Long offset);
+    BasicIdMessage fromBufferBasic(byte[] payload, Long offset, String macAddress);
+    LocationMessage fromBufferLocation(byte[] payload, Long offset, String macAddress);
+    OperatorIdMessage fromBufferOperatorId(byte[] payload, Long offset, String macAddress);
 
     /** The codec used by MessageApi. */
     static MessageCodec<Object> getCodec() {
@@ -1098,7 +1098,11 @@ public class Pigeon {
               if (offsetArg == null) {
                 throw new NullPointerException("offsetArg unexpectedly null.");
               }
-              BasicIdMessage output = api.fromBufferBasic(payloadArg, offsetArg.longValue());
+              String macAddressArg = (String)args.get(2);
+              if (macAddressArg == null) {
+                throw new NullPointerException("macAddressArg unexpectedly null.");
+              }
+              BasicIdMessage output = api.fromBufferBasic(payloadArg, offsetArg.longValue(), macAddressArg);
               wrapped.put("result", output);
             }
             catch (Error | RuntimeException exception) {
@@ -1126,7 +1130,11 @@ public class Pigeon {
               if (offsetArg == null) {
                 throw new NullPointerException("offsetArg unexpectedly null.");
               }
-              LocationMessage output = api.fromBufferLocation(payloadArg, offsetArg.longValue());
+              String macAddressArg = (String)args.get(2);
+              if (macAddressArg == null) {
+                throw new NullPointerException("macAddressArg unexpectedly null.");
+              }
+              LocationMessage output = api.fromBufferLocation(payloadArg, offsetArg.longValue(), macAddressArg);
               wrapped.put("result", output);
             }
             catch (Error | RuntimeException exception) {
@@ -1154,7 +1162,11 @@ public class Pigeon {
               if (offsetArg == null) {
                 throw new NullPointerException("offsetArg unexpectedly null.");
               }
-              OperatorIdMessage output = api.fromBufferOperatorId(payloadArg, offsetArg.longValue());
+              String macAddressArg = (String)args.get(2);
+              if (macAddressArg == null) {
+                throw new NullPointerException("macAddressArg unexpectedly null.");
+              }
+              OperatorIdMessage output = api.fromBufferOperatorId(payloadArg, offsetArg.longValue(), macAddressArg);
               wrapped.put("result", output);
             }
             catch (Error | RuntimeException exception) {

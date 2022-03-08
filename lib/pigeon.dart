@@ -578,11 +578,11 @@ class MessageApi {
     }
   }
 
-  Future<BasicIdMessage> fromBufferBasic(Uint8List arg_payload, int arg_offset) async {
+  Future<BasicIdMessage> fromBufferBasic(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.MessageApi.fromBufferBasic', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object>[arg_payload, arg_offset]) as Map<Object?, Object?>?;
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -601,11 +601,11 @@ class MessageApi {
     }
   }
 
-  Future<LocationMessage> fromBufferLocation(Uint8List arg_payload, int arg_offset) async {
+  Future<LocationMessage> fromBufferLocation(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.MessageApi.fromBufferLocation', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object>[arg_payload, arg_offset]) as Map<Object?, Object?>?;
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -624,11 +624,11 @@ class MessageApi {
     }
   }
 
-  Future<OperatorIdMessage> fromBufferOperatorId(Uint8List arg_payload, int arg_offset) async {
+  Future<OperatorIdMessage> fromBufferOperatorId(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.MessageApi.fromBufferOperatorId', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object>[arg_payload, arg_offset]) as Map<Object?, Object?>?;
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
