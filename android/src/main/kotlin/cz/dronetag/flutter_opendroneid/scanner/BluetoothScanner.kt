@@ -7,9 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.ParcelUuid
-import cz.dronetag.flutter_opendroneid.models.BasicIdMessage
-import cz.dronetag.flutter_opendroneid.models.LocationMessage
-import cz.dronetag.flutter_opendroneid.models.OdidMessage
 import io.flutter.Log
 import java.util.*
 import java.nio.ByteBuffer
