@@ -78,22 +78,19 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
             let type = DTGMessageType(rawValue: typeOrdinal!)
             if(type == DTGMessageType.basicId)
             {
-                let message : DTGBasicIdMessage? = dataParser.fromBufferBasicPayload(data, offset: 6, error: &err)
-                message!.macAddress = peripheral.identifier.uuidString
+                let message : DTGBasicIdMessage? = dataParser.fromBufferBasicPayload(data, offset: 6, macAddress: peripheral.identifier.uuidString, error: &err)
                 message!.rssi = RSSI.intValue as NSNumber
                 basicMessageHandler.send(message!.toMap() as Any)
             }
             else if(type == DTGMessageType.location)
             {
-                let message : DTGLocationMessage? = dataParser.fromBufferLocationPayload(data, offset: 6, error: &err)
-                message!.macAddress = peripheral.identifier.uuidString
+                let message : DTGLocationMessage? = dataParser.fromBufferLocationPayload(data, offset: 6, macAddress: peripheral.identifier.uuidString, error: &err)
                 message!.rssi = RSSI.intValue as NSNumber
                 locationMessageHandler.send(message!.toMap() as Any)
             }
             else if(type == DTGMessageType.operatorId)
             {
-                let message : DTGOperatorIdMessage? = dataParser.fromBufferOperatorIdPayload(data, offset: 6, error: &err)
-                message!.macAddress = peripheral.identifier.uuidString
+                let message : DTGOperatorIdMessage? = dataParser.fromBufferOperatorIdPayload(data, offset: 6, macAddress: peripheral.identifier.uuidString, error: &err)
                 message!.rssi = RSSI.intValue as NSNumber
                 operatoridMessageHandler.send(message!.toMap() as Any)
             }

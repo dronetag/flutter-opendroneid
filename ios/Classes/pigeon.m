@@ -459,13 +459,14 @@ void DTGMessageApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTG
         binaryMessenger:binaryMessenger
         codec:DTGMessageApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(fromBufferBasicPayload:offset:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(fromBufferBasicPayload:offset:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(fromBufferBasicPayload:offset:macAddress:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(fromBufferBasicPayload:offset:macAddress:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         FlutterStandardTypedData *arg_payload = args[0];
         NSNumber *arg_offset = args[1];
+        NSString *arg_macAddress = args[2];
         FlutterError *error;
-        DTGBasicIdMessage *output = [api fromBufferBasicPayload:arg_payload offset:arg_offset error:&error];
+        DTGBasicIdMessage *output = [api fromBufferBasicPayload:arg_payload offset:arg_offset macAddress:arg_macAddress error:&error];
         callback(wrapResult(output, error));
       }];
     }
@@ -480,13 +481,14 @@ void DTGMessageApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTG
         binaryMessenger:binaryMessenger
         codec:DTGMessageApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(fromBufferLocationPayload:offset:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(fromBufferLocationPayload:offset:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(fromBufferLocationPayload:offset:macAddress:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(fromBufferLocationPayload:offset:macAddress:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         FlutterStandardTypedData *arg_payload = args[0];
         NSNumber *arg_offset = args[1];
+        NSString *arg_macAddress = args[2];
         FlutterError *error;
-        DTGLocationMessage *output = [api fromBufferLocationPayload:arg_payload offset:arg_offset error:&error];
+        DTGLocationMessage *output = [api fromBufferLocationPayload:arg_payload offset:arg_offset macAddress:arg_macAddress error:&error];
         callback(wrapResult(output, error));
       }];
     }
@@ -501,13 +503,14 @@ void DTGMessageApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTG
         binaryMessenger:binaryMessenger
         codec:DTGMessageApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(fromBufferOperatorIdPayload:offset:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(fromBufferOperatorIdPayload:offset:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(fromBufferOperatorIdPayload:offset:macAddress:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(fromBufferOperatorIdPayload:offset:macAddress:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         FlutterStandardTypedData *arg_payload = args[0];
         NSNumber *arg_offset = args[1];
+        NSString *arg_macAddress = args[2];
         FlutterError *error;
-        DTGOperatorIdMessage *output = [api fromBufferOperatorIdPayload:arg_payload offset:arg_offset error:&error];
+        DTGOperatorIdMessage *output = [api fromBufferOperatorIdPayload:arg_payload offset:arg_offset macAddress:arg_macAddress error:&error];
         callback(wrapResult(output, error));
       }];
     }

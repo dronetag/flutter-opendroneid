@@ -111,9 +111,9 @@ typedef NS_ENUM(NSUInteger, DTGBluetoothState) {
 @class DTGOperatorIdMessage;
 
 @interface DTGBasicIdMessage : NSObject
+- (NSDictionary *)toMap;
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
-- (NSDictionary *)toMap;
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
     macAddress:(NSString *)macAddress
     source:(DTGMessageSource)source
@@ -131,9 +131,9 @@ typedef NS_ENUM(NSUInteger, DTGBluetoothState) {
 @end
 
 @interface DTGLocationMessage : NSObject
+- (NSDictionary *)toMap;
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
-- (NSDictionary *)toMap;
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
     macAddress:(NSString *)macAddress
     source:(DTGMessageSource)source
@@ -177,9 +177,9 @@ typedef NS_ENUM(NSUInteger, DTGBluetoothState) {
 @end
 
 @interface DTGOperatorIdMessage : NSObject
+- (NSDictionary *)toMap;
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
-- (NSDictionary *)toMap;
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
     macAddress:(NSString *)macAddress
     source:(DTGMessageSource)source
@@ -213,9 +213,9 @@ NSObject<FlutterMessageCodec> *DTGMessageApiGetCodec(void);
 
 @protocol DTGMessageApi
 - (nullable NSNumber *)determineMessageTypePayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset error:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable DTGBasicIdMessage *)fromBufferBasicPayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset error:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable DTGLocationMessage *)fromBufferLocationPayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset error:(FlutterError *_Nullable *_Nonnull)error;
-- (nullable DTGOperatorIdMessage *)fromBufferOperatorIdPayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable DTGBasicIdMessage *)fromBufferBasicPayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset macAddress:(NSString *)macAddress error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable DTGLocationMessage *)fromBufferLocationPayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset macAddress:(NSString *)macAddress error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable DTGOperatorIdMessage *)fromBufferOperatorIdPayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset macAddress:(NSString *)macAddress error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void DTGMessageApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGMessageApi> *_Nullable api);

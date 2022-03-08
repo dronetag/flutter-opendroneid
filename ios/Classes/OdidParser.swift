@@ -15,17 +15,17 @@ class OdidParser: NSObject, DTGMessageApi {
         return type as NSNumber
     }
     
-    func fromBufferBasicPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGBasicIdMessage? {
+    func fromBufferBasicPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, macAddress: String, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGBasicIdMessage? {
         let bytes = Array(payload.data)
         let typeByte = bytes[3]
         let idType = Int((typeByte & 0xF0) >> 4)
         let uaType = Int(typeByte & 0x0F)
         let uasId = String(bytes: bytes[4...], encoding: .ascii) ?? ""
         
-        return DTGBasicIdMessage.make(withReceivedTimestamp: 0, macAddress: "", source: DTGMessageSource.bluetoothLegacy, rssi: 0, uasId: uasId, idType: DTGIdType(rawValue: UInt(idType))!, uaType: DTGUaType(rawValue: UInt(uaType))!)
+        return DTGBasicIdMessage.make(withReceivedTimestamp: 0, macAddress: macAddress, source: DTGMessageSource.bluetoothLegacy, rssi: 0, uasId: uasId, idType: DTGIdType(rawValue: UInt(idType))!, uaType: DTGUaType(rawValue: UInt(uaType))!)
     }
     
-    func fromBufferLocationPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGLocationMessage? {
+    func fromBufferLocationPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, macAddress: String, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGLocationMessage? {
         let bytes = Array(payload.data)
         let dataSlice = Data(bytes)
         let meta = bytes[3]
@@ -53,15 +53,15 @@ class OdidParser: NSObject, DTGMessageApi {
         let speedAccuracy = Int(dataSlice[22] & 0x0F)
         let timestamp = Int(dataSlice[20...21].uint16)
         let timeAccuracy = Double(dataSlice[25] & 0x0F) * 0.1
-        return DTGLocationMessage.make(withReceivedTimestamp: 0, macAddress: "", source: DTGMessageSource.bluetoothLegacy, rssi: 0, status: DTGAircraftStatus(rawValue: UInt(status))!, heightType: DTGHeightType(rawValue: UInt(heightType))!, direction: direction as NSNumber, speedHorizontal: speedHori as NSNumber, speedVertical: speedVert as NSNumber, latitude: latitude as NSNumber, longitude: longitude as NSNumber, altitudePressure: altitudePressure as NSNumber, altitudeGeodetic: altitudeGeodetic as NSNumber, height: height as NSNumber, horizontalAccuracy: DTGHorizontalAccuracy(rawValue: UInt(horizontalAccuracy))!, verticalAccuracy: DTGVerticalAccuracy(rawValue: UInt(verticalAccuracy))!, baroAccuracy: DTGVerticalAccuracy(rawValue: UInt(baroAccuracy))!, speedAccuracy: OdidParser.decodeSpeedAccuracy(acc: speedAccuracy), time: timestamp as NSNumber, timeAccuracy: timeAccuracy as NSNumber)
+        return DTGLocationMessage.make(withReceivedTimestamp: 0, macAddress: macAddress, source: DTGMessageSource.bluetoothLegacy, rssi: 0, status: DTGAircraftStatus(rawValue: UInt(status))!, heightType: DTGHeightType(rawValue: UInt(heightType))!, direction: direction as NSNumber, speedHorizontal: speedHori as NSNumber, speedVertical: speedVert as NSNumber, latitude: latitude as NSNumber, longitude: longitude as NSNumber, altitudePressure: altitudePressure as NSNumber, altitudeGeodetic: altitudeGeodetic as NSNumber, height: height as NSNumber, horizontalAccuracy: DTGHorizontalAccuracy(rawValue: UInt(horizontalAccuracy))!, verticalAccuracy: DTGVerticalAccuracy(rawValue: UInt(verticalAccuracy))!, baroAccuracy: DTGVerticalAccuracy(rawValue: UInt(baroAccuracy))!, speedAccuracy: OdidParser.decodeSpeedAccuracy(acc: speedAccuracy), time: timestamp as NSNumber, timeAccuracy: timeAccuracy as NSNumber)
     }
     
-    func fromBufferOperatorIdPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGOperatorIdMessage? {
+    func fromBufferOperatorIdPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, macAddress: String, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGOperatorIdMessage? {
         let idBytes = Array(payload.data)[4...]
                 
         let operatorId = String(cString: Array(idBytes))
         
-        return DTGOperatorIdMessage.make(withReceivedTimestamp: 0, macAddress: "", source: DTGMessageSource.bluetoothLegacy, rssi: 0, operatorId: operatorId)
+        return DTGOperatorIdMessage.make(withReceivedTimestamp: 0, macAddress: macAddress, source: DTGMessageSource.bluetoothLegacy, rssi: 0, operatorId: operatorId)
     }
     
     static let odidAdCode: [UInt8] = [ 0x0D ]
