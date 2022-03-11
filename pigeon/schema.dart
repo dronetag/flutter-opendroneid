@@ -108,6 +108,46 @@ enum BluetoothState {
   PoweredOn,
 }
 
+enum AuthType {
+  None,
+  UAS_ID_Signature,
+  Operator_ID_Signature,
+  Message_Set_Signature,
+  Network_Remote_ID,
+  Specific_Authentication,
+  Private_Use_0xA,
+  Private_Use_0xB,
+  Private_Use_0xC,
+  Private_Use_0xD,
+  Private_Use_0xE,
+  Private_Use_0xF
+}
+
+enum AircraftCategory {
+  Undeclared,
+  EU_Open,
+  EU_Specific,
+  EU_Certified,
+}
+
+enum AircraftClass {
+  Undeclared,
+  EU_Class_0,
+  EU_Class_1,
+  EU_Class_2,
+  EU_Class_3,
+  EU_Class_4,
+  EU_Class_5,
+  EU_Class_6,
+}
+
+enum OperatorLocationType { TakeOff, LiveGNSS, FixedLocation, Invalid }
+
+enum ClassificationType {
+  Undeclared,
+  EU, // European Union
+}
+
 class BasicIdMessage {
   // common part
   late final int receivedTimestamp;
@@ -192,6 +232,65 @@ class OperatorIdMessage {
   late final int? rssi;
 
   late final String operatorId;
+}
+
+class AuthenticationMessage {
+  // common part
+  late final int receivedTimestamp;
+  late final String macAddress;
+  late final MessageSource? source;
+  late final int? rssi;
+
+  late final AuthType authType;
+  late final int authDataPage;
+  late final int authLastPageIndex;
+  late final int authLength;
+  late final int authTimestamp;
+  late final String authData;
+}
+
+class SelfIdMessage {
+  // common part
+  late final int receivedTimestamp;
+  late final String macAddress;
+  late final MessageSource? source;
+  late final int? rssi;
+
+  late final int descriptionType;
+  late final String operationDescription;
+}
+
+class SystemDataMessage {
+  // common part
+  late final int receivedTimestamp;
+  late final String macAddress;
+  late final MessageSource? source;
+  late final int? rssi;
+
+  late final OperatorLocationType operatorLocationType;
+  late final ClassificationType classificationType;
+  late final double operatorLatitude;
+  late final double operatorLongitude;
+  late final int areaCount;
+  late final int areaRadius;
+  late final double areaCeiling;
+  late final double areaFloor;
+  late final AircraftCategory category;
+  late final AircraftClass classValue;
+  late final double operatorAltitudeGeo;
+}
+
+class ConnectionMessage {
+  // common part
+  late final int receivedTimestamp;
+  late final String macAddress;
+  late final MessageSource? source;
+  late final int? rssi;
+
+  late final String transportType;
+  late final int lastSeen;
+  late final int firstSeen;
+  late final int msgDelta;
 }
 
 @HostApi()

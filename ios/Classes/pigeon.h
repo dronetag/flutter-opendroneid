@@ -106,12 +106,56 @@ typedef NS_ENUM(NSUInteger, DTGBluetoothState) {
   DTGBluetoothStatePoweredOn = 5,
 };
 
+typedef NS_ENUM(NSUInteger, DTGAuthType) {
+  DTGAuthTypeNone = 0,
+  DTGAuthTypeUAS_ID_Signature = 1,
+  DTGAuthTypeOperator_ID_Signature = 2,
+  DTGAuthTypeMessage_Set_Signature = 3,
+  DTGAuthTypeNetwork_Remote_ID = 4,
+  DTGAuthTypeSpecific_Authentication = 5,
+  DTGAuthTypePrivate_Use_0xA = 6,
+  DTGAuthTypePrivate_Use_0xB = 7,
+  DTGAuthTypePrivate_Use_0xC = 8,
+  DTGAuthTypePrivate_Use_0xD = 9,
+  DTGAuthTypePrivate_Use_0xE = 10,
+  DTGAuthTypePrivate_Use_0xF = 11,
+};
+
+typedef NS_ENUM(NSUInteger, DTGAircraftCategory) {
+  DTGAircraftCategoryUndeclared = 0,
+  DTGAircraftCategoryEU_Open = 1,
+  DTGAircraftCategoryEU_Specific = 2,
+  DTGAircraftCategoryEU_Certified = 3,
+};
+
+typedef NS_ENUM(NSUInteger, DTGAircraftClass) {
+  DTGAircraftClassUndeclared = 0,
+  DTGAircraftClassEU_Class_0 = 1,
+  DTGAircraftClassEU_Class_1 = 2,
+  DTGAircraftClassEU_Class_2 = 3,
+  DTGAircraftClassEU_Class_3 = 4,
+  DTGAircraftClassEU_Class_4 = 5,
+  DTGAircraftClassEU_Class_5 = 6,
+  DTGAircraftClassEU_Class_6 = 7,
+};
+
+typedef NS_ENUM(NSUInteger, DTGOperatorLocationType) {
+  DTGOperatorLocationTypeTakeOff = 0,
+  DTGOperatorLocationTypeLiveGNSS = 1,
+  DTGOperatorLocationTypeFixedLocation = 2,
+  DTGOperatorLocationTypeInvalid = 3,
+};
+
+typedef NS_ENUM(NSUInteger, DTGClassificationType) {
+  DTGClassificationTypeUndeclared = 0,
+  DTGClassificationTypeEU = 1,
+};
+
 @class DTGBasicIdMessage;
 @class DTGLocationMessage;
 @class DTGOperatorIdMessage;
 
 @interface DTGBasicIdMessage : NSObject
-- (NSDictionary *)toMap;
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
@@ -131,7 +175,6 @@ typedef NS_ENUM(NSUInteger, DTGBluetoothState) {
 @end
 
 @interface DTGLocationMessage : NSObject
-- (NSDictionary *)toMap;
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
@@ -177,7 +220,6 @@ typedef NS_ENUM(NSUInteger, DTGBluetoothState) {
 @end
 
 @interface DTGOperatorIdMessage : NSObject
-- (NSDictionary *)toMap;
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp

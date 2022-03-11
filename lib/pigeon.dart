@@ -106,6 +106,51 @@ enum BluetoothState {
   PoweredOn,
 }
 
+enum AuthType {
+  None,
+  UAS_ID_Signature,
+  Operator_ID_Signature,
+  Message_Set_Signature,
+  Network_Remote_ID,
+  Specific_Authentication,
+  Private_Use_0xA,
+  Private_Use_0xB,
+  Private_Use_0xC,
+  Private_Use_0xD,
+  Private_Use_0xE,
+  Private_Use_0xF,
+}
+
+enum AircraftCategory {
+  Undeclared,
+  EU_Open,
+  EU_Specific,
+  EU_Certified,
+}
+
+enum AircraftClass {
+  Undeclared,
+  EU_Class_0,
+  EU_Class_1,
+  EU_Class_2,
+  EU_Class_3,
+  EU_Class_4,
+  EU_Class_5,
+  EU_Class_6,
+}
+
+enum OperatorLocationType {
+  TakeOff,
+  LiveGNSS,
+  FixedLocation,
+  Invalid,
+}
+
+enum ClassificationType {
+  Undeclared,
+  EU,
+}
+
 class BasicIdMessage {
   BasicIdMessage({
     required this.receivedTimestamp,

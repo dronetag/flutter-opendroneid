@@ -170,6 +170,76 @@ public class Pigeon {
     }
   }
 
+  public enum AuthType {
+    None(0),
+    UAS_ID_Signature(1),
+    Operator_ID_Signature(2),
+    Message_Set_Signature(3),
+    Network_Remote_ID(4),
+    Specific_Authentication(5),
+    Private_Use_0xA(6),
+    Private_Use_0xB(7),
+    Private_Use_0xC(8),
+    Private_Use_0xD(9),
+    Private_Use_0xE(10),
+    Private_Use_0xF(11);
+
+    private int index;
+    private AuthType(final int index) {
+      this.index = index;
+    }
+  }
+
+  public enum AircraftCategory {
+    Undeclared(0),
+    EU_Open(1),
+    EU_Specific(2),
+    EU_Certified(3);
+
+    private int index;
+    private AircraftCategory(final int index) {
+      this.index = index;
+    }
+  }
+
+  public enum AircraftClass {
+    Undeclared(0),
+    EU_Class_0(1),
+    EU_Class_1(2),
+    EU_Class_2(3),
+    EU_Class_3(4),
+    EU_Class_4(5),
+    EU_Class_5(6),
+    EU_Class_6(7);
+
+    private int index;
+    private AircraftClass(final int index) {
+      this.index = index;
+    }
+  }
+
+  public enum OperatorLocationType {
+    TakeOff(0),
+    LiveGNSS(1),
+    FixedLocation(2),
+    Invalid(3);
+
+    private int index;
+    private OperatorLocationType(final int index) {
+      this.index = index;
+    }
+  }
+
+  public enum ClassificationType {
+    Undeclared(0),
+    EU(1);
+
+    private int index;
+    private ClassificationType(final int index) {
+      this.index = index;
+    }
+  }
+
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class BasicIdMessage {
     private @NonNull Long receivedTimestamp;
