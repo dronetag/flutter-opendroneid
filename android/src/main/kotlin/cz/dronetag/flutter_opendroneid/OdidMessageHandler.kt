@@ -25,6 +25,14 @@ class OdidMessageHandler: Pigeon.MessageApi {
     companion object {
         const val MAX_MESSAGE_SIZE = 25
         const val MAX_ID_BYTE_SIZE = 20
+        const val MAX_STRING_BYTE_SIZE = 23
+        const val MAX_AUTH_DATA_PAGES = 16
+        const val MAX_AUTH_PAGE_ZERO_SIZE = 17
+        const val MAX_AUTH_PAGE_NON_ZERO_SIZE = 23
+        const val MAX_AUTH_DATA =
+            MAX_AUTH_PAGE_ZERO_SIZE + (MAX_AUTH_DATA_PAGES - 1) * MAX_AUTH_PAGE_NON_ZERO_SIZE
+        const val MAX_MESSAGES_IN_PACK = 9
+        val MAX_MESSAGE_PACK_SIZE: Int = MAX_MESSAGE_SIZE * MAX_MESSAGES_IN_PACK
     }
 
 
@@ -169,21 +177,94 @@ class OdidMessageHandler: Pigeon.MessageApi {
 
     private fun parseSelfIdMessage(byteBuffer: ByteBuffer, macAddress: String): Pigeon.SelfIdMessage {
         val builder = Pigeon.SelfIdMessage.Builder();
+        var opDesc: String = ""
+        var it = 0
+        builder.setMacAddress(macAddress)
+        builder.setReceivedTimestamp(System.currentTimeMillis())
+        builder.setDescriptionType((byteBuffer.get() and 0xFF.toByte()).toLong())
+        while(it < MAX_STRING_BYTE_SIZE) {
+         opDesc += byteBuffer.get()
+        }
+        builder.setOperationDescription(opDesc)
         return builder.build()
     }
 
     private fun parseAuthenticationMessage(byteBuffer: ByteBuffer, macAddress: String): Pigeon.AuthenticationMessage {
         val builder = Pigeon.AuthenticationMessage.Builder();
+        builder.setMacAddress(macAddress)
+        builder.setReceivedTimestamp(System.currentTimeMillis())
+        val type = byteBuffer.get().toInt()
+        val authType = type and 0xF0 shr 4
+        val authDataPage: Long = (type and 0x0F).toLong()
+        var authLength: Long = 0
+        var authTimestamp: Long = 0
+        var authLastPageIndex: Long = 0
+        var authData: String = ""
+
+        var offset: Long = 0
+        var amount: Int = MAX_AUTH_PAGE_ZERO_SIZE
+        if (authDataPage === 0L) {
+            authLastPageIndex = (byteBuffer.get() and 0xFF.toByte()).toLong()
+            authLength = (byteBuffer.get() and 0xFF.toByte()).toLong()
+            authTimestamp = (byteBuffer.int and 0xFFFFFFFFL.toInt()).toLong()
+
+            // For an explanation, please see the description for struct ODID_Auth_data in:
+            // https://github.com/opendroneid/opendroneid-core-c/blob/master/libopendroneid/opendroneid.h
+            val len: Long =
+                (authLastPageIndex * MAX_AUTH_PAGE_NON_ZERO_SIZE +
+                        MAX_AUTH_PAGE_ZERO_SIZE).toLong()
+            if (authLastPageIndex >= MAX_AUTH_DATA_PAGES || authLength > len) {
+                authLastPageIndex = 0
+                authLength = 0
+                authTimestamp = 0
+            } else {
+                // Display both normal authentication data and any possible additional data
+                authLength = len
+            }
+        } else {
+            offset = MAX_AUTH_PAGE_ZERO_SIZE +
+                    (authDataPage - 1) * MAX_AUTH_PAGE_NON_ZERO_SIZE
+            amount = MAX_AUTH_PAGE_NON_ZERO_SIZE
+        }
+        if (authDataPage >= 0 && authDataPage < MAX_AUTH_DATA_PAGES)
+            for (i in offset until offset + amount)
+                authData += byteBuffer.get();
+        builder.setAuthLength(authLength)
+        builder.setAuthData(authData)
+        builder.setAuthLastPageIndex(authLastPageIndex)
+        builder.setAuthTimestamp(authTimestamp)
+        builder.setAuthType(Pigeon.AuthType.values()[authType])
+        builder.setAuthDataPage(authDataPage)
+
         return builder.build()
     }
 
     private fun parseConnectionMessage(byteBuffer: ByteBuffer, macAddress: String): Pigeon.ConnectionMessage {
         val builder = Pigeon.ConnectionMessage.Builder();
+        builder.setMacAddress(macAddress)
+        builder.setReceivedTimestamp(System.currentTimeMillis())
         return builder.build()
     }
 
     private fun parseSystemDataMessage(byteBuffer: ByteBuffer, macAddress: String): Pigeon.SystemDataMessage {
         val builder = Pigeon.SystemDataMessage.Builder();
+        builder.setMacAddress(macAddress)
+        builder.setReceivedTimestamp(System.currentTimeMillis())
+
+        var b = byteBuffer.get().toInt()
+        builder.setOperatorLocationType(Pigeon.OperatorLocationType.values()[b and 0x03])
+        builder.setClassificationType(Pigeon.ClassificationType.values()[ b and 0x1C shr 2])
+        builder.setOperatorLatitude(byteBuffer.int.toDouble())
+        builder.setOperatorLongitude(byteBuffer.int.toDouble())
+        builder.setAreaCount((byteBuffer.short and 0xFFFF.toShort()).toLong())
+        builder.setAreaRadius((byteBuffer.get() and 0xFF.toByte()).toLong())
+        builder.setAreaCeiling((byteBuffer.short and 0xFFFF.toShort()).toDouble())
+        builder.setAreaFloor((byteBuffer.short and 0xFFFF.toShort()).toDouble())
+        b = byteBuffer.get().toInt()
+        builder.setCategory(Pigeon.AircraftCategory.values()[b and 0xF0 shr 4])
+        builder.setClassValue(Pigeon.AircraftClass.values()[b and 0x0F])
+        builder.setOperatorAltitudeGeo((byteBuffer.short and 0xFFFF.toShort()).toDouble())
+
         return builder.build()
     }
 
