@@ -63,7 +63,27 @@ class OdidParser: NSObject, DTGMessageApi {
         
         return DTGOperatorIdMessage.make(withReceivedTimestamp: 0, macAddress: macAddress, source: DTGMessageSource.bluetoothLegacy, rssi: 0, operatorId: operatorId)
     }
-    
+
+    func fromBufferSelfIdPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, macAddress: String, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGSelfIdMessage? {
+        // to-do -
+        return DTGSelfIdMessage.make(withReceivedTimestamp: 0, macAddress: macAddress, source: DTGMessageSource.bluetoothLegacy, rssi: 0, descriptionType: 1, operationDescription: "");
+    }
+
+    func fromBufferConnectionPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, macAddress: String, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGConnectionMessage? {
+        // to-do
+        return DTGConnectionMessage.make(withReceivedTimestamp: 0, macAddress: macAddress, source: DTGMessageSource.bluetoothLegacy, rssi: 0, transportType: "", lastSeen: 0, firstSeen: 0, msgDelta: 0)
+    }
+
+    func fromBufferAuthenticationPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, macAddress: String, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGAuthenticationMessage? {
+        // to-do
+        return DTGAuthenticationMessage.make(withReceivedTimestamp: 0, macAddress: macAddress, source: DTGMessageSource.bluetoothLegacy, rssi: 0, authType: DTGAuthType(rawValue: 0)!, authDataPage: 0, authLastPageIndex: 1, authLength: 2, authTimestamp: 1000000, authData: "")
+    }
+
+    func fromBufferSystemDataPayload(_ payload: FlutterStandardTypedData, offset: NSNumber, macAddress: String, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGSystemDataMessage? {
+        // to-do
+        return DTGSystemDataMessage.make(withReceivedTimestamp: 0, macAddress: macAddress, source: DTGMessageSource.bluetoothLegacy, rssi: 0, operatorLocationType: DTGOperatorLocationType(rawValue: 0)!, classificationType: DTGClassificationType(rawValue: 0)!, operatorLatitude: 0, operatorLongitude: 0, areaCount: 1, areaRadius: 2, areaCeiling: 3, areaFloor: 2, category: DTGAircraftCategory(rawValue: 0)!, classValue: DTGAircraftClass(rawValue: 0)!, operatorAltitudeGeo: 10)
+    }
+
     static let odidAdCode: [UInt8] = [ 0x0D ]
     static let LAT_LONG_MULTIPLIER = 1e-7
     

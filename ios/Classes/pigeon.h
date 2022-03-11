@@ -154,8 +154,13 @@ typedef NS_ENUM(NSUInteger, DTGClassificationType) {
 @class DTGBasicIdMessage;
 @class DTGLocationMessage;
 @class DTGOperatorIdMessage;
+@class DTGAuthenticationMessage;
+@class DTGSelfIdMessage;
+@class DTGSystemDataMessage;
+@class DTGConnectionMessage;
 
 @interface DTGBasicIdMessage : NSObject
+- (NSDictionary *)toMap;
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
@@ -175,6 +180,7 @@ typedef NS_ENUM(NSUInteger, DTGClassificationType) {
 @end
 
 @interface DTGLocationMessage : NSObject
+- (NSDictionary *)toMap;
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
@@ -220,6 +226,7 @@ typedef NS_ENUM(NSUInteger, DTGClassificationType) {
 @end
 
 @interface DTGOperatorIdMessage : NSObject
+- (NSDictionary *)toMap;
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
@@ -232,6 +239,107 @@ typedef NS_ENUM(NSUInteger, DTGClassificationType) {
 @property(nonatomic, assign) DTGMessageSource source;
 @property(nonatomic, strong, nullable) NSNumber * rssi;
 @property(nonatomic, copy) NSString * operatorId;
+@end
+
+@interface DTGAuthenticationMessage : NSObject
+- (NSDictionary *)toMap;
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
+    macAddress:(NSString *)macAddress
+    source:(DTGMessageSource)source
+    rssi:(nullable NSNumber *)rssi
+    authType:(DTGAuthType)authType
+    authDataPage:(NSNumber *)authDataPage
+    authLastPageIndex:(NSNumber *)authLastPageIndex
+    authLength:(NSNumber *)authLength
+    authTimestamp:(NSNumber *)authTimestamp
+    authData:(NSString *)authData;
+@property(nonatomic, strong) NSNumber * receivedTimestamp;
+@property(nonatomic, copy) NSString * macAddress;
+@property(nonatomic, assign) DTGMessageSource source;
+@property(nonatomic, strong, nullable) NSNumber * rssi;
+@property(nonatomic, assign) DTGAuthType authType;
+@property(nonatomic, strong) NSNumber * authDataPage;
+@property(nonatomic, strong) NSNumber * authLastPageIndex;
+@property(nonatomic, strong) NSNumber * authLength;
+@property(nonatomic, strong) NSNumber * authTimestamp;
+@property(nonatomic, copy) NSString * authData;
+@end
+
+@interface DTGSelfIdMessage : NSObject
+- (NSDictionary *)toMap;
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
+    macAddress:(NSString *)macAddress
+    source:(DTGMessageSource)source
+    rssi:(nullable NSNumber *)rssi
+    descriptionType:(NSNumber *)descriptionType
+    operationDescription:(NSString *)operationDescription;
+@property(nonatomic, strong) NSNumber * receivedTimestamp;
+@property(nonatomic, copy) NSString * macAddress;
+@property(nonatomic, assign) DTGMessageSource source;
+@property(nonatomic, strong, nullable) NSNumber * rssi;
+@property(nonatomic, strong) NSNumber * descriptionType;
+@property(nonatomic, copy) NSString * operationDescription;
+@end
+
+@interface DTGSystemDataMessage : NSObject
+- (NSDictionary *)toMap;
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
+    macAddress:(NSString *)macAddress
+    source:(DTGMessageSource)source
+    rssi:(nullable NSNumber *)rssi
+    operatorLocationType:(DTGOperatorLocationType)operatorLocationType
+    classificationType:(DTGClassificationType)classificationType
+    operatorLatitude:(NSNumber *)operatorLatitude
+    operatorLongitude:(NSNumber *)operatorLongitude
+    areaCount:(NSNumber *)areaCount
+    areaRadius:(NSNumber *)areaRadius
+    areaCeiling:(NSNumber *)areaCeiling
+    areaFloor:(NSNumber *)areaFloor
+    category:(DTGAircraftCategory)category
+    classValue:(DTGAircraftClass)classValue
+    operatorAltitudeGeo:(NSNumber *)operatorAltitudeGeo;
+@property(nonatomic, strong) NSNumber * receivedTimestamp;
+@property(nonatomic, copy) NSString * macAddress;
+@property(nonatomic, assign) DTGMessageSource source;
+@property(nonatomic, strong, nullable) NSNumber * rssi;
+@property(nonatomic, assign) DTGOperatorLocationType operatorLocationType;
+@property(nonatomic, assign) DTGClassificationType classificationType;
+@property(nonatomic, strong) NSNumber * operatorLatitude;
+@property(nonatomic, strong) NSNumber * operatorLongitude;
+@property(nonatomic, strong) NSNumber * areaCount;
+@property(nonatomic, strong) NSNumber * areaRadius;
+@property(nonatomic, strong) NSNumber * areaCeiling;
+@property(nonatomic, strong) NSNumber * areaFloor;
+@property(nonatomic, assign) DTGAircraftCategory category;
+@property(nonatomic, assign) DTGAircraftClass classValue;
+@property(nonatomic, strong) NSNumber * operatorAltitudeGeo;
+@end
+
+@interface DTGConnectionMessage : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
+    macAddress:(NSString *)macAddress
+    source:(DTGMessageSource)source
+    rssi:(nullable NSNumber *)rssi
+    transportType:(NSString *)transportType
+    lastSeen:(NSNumber *)lastSeen
+    firstSeen:(NSNumber *)firstSeen
+    msgDelta:(NSNumber *)msgDelta;
+@property(nonatomic, strong) NSNumber * receivedTimestamp;
+@property(nonatomic, copy) NSString * macAddress;
+@property(nonatomic, assign) DTGMessageSource source;
+@property(nonatomic, strong, nullable) NSNumber * rssi;
+@property(nonatomic, copy) NSString * transportType;
+@property(nonatomic, strong) NSNumber * lastSeen;
+@property(nonatomic, strong) NSNumber * firstSeen;
+@property(nonatomic, strong) NSNumber * msgDelta;
 @end
 
 /// The codec used by DTGApi.
@@ -258,6 +366,10 @@ NSObject<FlutterMessageCodec> *DTGMessageApiGetCodec(void);
 - (nullable DTGBasicIdMessage *)fromBufferBasicPayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset macAddress:(NSString *)macAddress error:(FlutterError *_Nullable *_Nonnull)error;
 - (nullable DTGLocationMessage *)fromBufferLocationPayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset macAddress:(NSString *)macAddress error:(FlutterError *_Nullable *_Nonnull)error;
 - (nullable DTGOperatorIdMessage *)fromBufferOperatorIdPayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset macAddress:(NSString *)macAddress error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable DTGSelfIdMessage *)fromBufferSelfIdPayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset macAddress:(NSString *)macAddress error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable DTGAuthenticationMessage *)fromBufferAuthenticationPayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset macAddress:(NSString *)macAddress error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable DTGSystemDataMessage *)fromBufferSystemDataPayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset macAddress:(NSString *)macAddress error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable DTGConnectionMessage *)fromBufferConnectionPayload:(FlutterStandardTypedData *)payload offset:(NSNumber *)offset macAddress:(NSString *)macAddress error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void DTGMessageApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGMessageApi> *_Nullable api);

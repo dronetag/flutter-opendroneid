@@ -804,6 +804,749 @@ public class Pigeon {
     }
   }
 
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class AuthenticationMessage {
+    private @NonNull Long receivedTimestamp;
+    public @NonNull Long getReceivedTimestamp() { return receivedTimestamp; }
+    public void setReceivedTimestamp(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"receivedTimestamp\" is null.");
+      }
+      this.receivedTimestamp = setterArg;
+    }
+
+    private @NonNull String macAddress;
+    public @NonNull String getMacAddress() { return macAddress; }
+    public void setMacAddress(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"macAddress\" is null.");
+      }
+      this.macAddress = setterArg;
+    }
+
+    private @Nullable MessageSource source;
+    public @Nullable MessageSource getSource() { return source; }
+    public void setSource(@Nullable MessageSource setterArg) {
+      this.source = setterArg;
+    }
+
+    private @Nullable Long rssi;
+    public @Nullable Long getRssi() { return rssi; }
+    public void setRssi(@Nullable Long setterArg) {
+      this.rssi = setterArg;
+    }
+
+    private @Nullable AuthType authType;
+    public @Nullable AuthType getAuthType() { return authType; }
+    public void setAuthType(@Nullable AuthType setterArg) {
+      this.authType = setterArg;
+    }
+
+    private @NonNull Long authDataPage;
+    public @NonNull Long getAuthDataPage() { return authDataPage; }
+    public void setAuthDataPage(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"authDataPage\" is null.");
+      }
+      this.authDataPage = setterArg;
+    }
+
+    private @NonNull Long authLastPageIndex;
+    public @NonNull Long getAuthLastPageIndex() { return authLastPageIndex; }
+    public void setAuthLastPageIndex(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"authLastPageIndex\" is null.");
+      }
+      this.authLastPageIndex = setterArg;
+    }
+
+    private @NonNull Long authLength;
+    public @NonNull Long getAuthLength() { return authLength; }
+    public void setAuthLength(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"authLength\" is null.");
+      }
+      this.authLength = setterArg;
+    }
+
+    private @NonNull Long authTimestamp;
+    public @NonNull Long getAuthTimestamp() { return authTimestamp; }
+    public void setAuthTimestamp(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"authTimestamp\" is null.");
+      }
+      this.authTimestamp = setterArg;
+    }
+
+    private @NonNull String authData;
+    public @NonNull String getAuthData() { return authData; }
+    public void setAuthData(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"authData\" is null.");
+      }
+      this.authData = setterArg;
+    }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private AuthenticationMessage() {}
+    public static class Builder {
+      private @Nullable Long receivedTimestamp;
+      public @NonNull Builder setReceivedTimestamp(@NonNull Long setterArg) {
+        this.receivedTimestamp = setterArg;
+        return this;
+      }
+      private @Nullable String macAddress;
+      public @NonNull Builder setMacAddress(@NonNull String setterArg) {
+        this.macAddress = setterArg;
+        return this;
+      }
+      private @Nullable MessageSource source;
+      public @NonNull Builder setSource(@Nullable MessageSource setterArg) {
+        this.source = setterArg;
+        return this;
+      }
+      private @Nullable Long rssi;
+      public @NonNull Builder setRssi(@Nullable Long setterArg) {
+        this.rssi = setterArg;
+        return this;
+      }
+      private @Nullable AuthType authType;
+      public @NonNull Builder setAuthType(@Nullable AuthType setterArg) {
+        this.authType = setterArg;
+        return this;
+      }
+      private @Nullable Long authDataPage;
+      public @NonNull Builder setAuthDataPage(@NonNull Long setterArg) {
+        this.authDataPage = setterArg;
+        return this;
+      }
+      private @Nullable Long authLastPageIndex;
+      public @NonNull Builder setAuthLastPageIndex(@NonNull Long setterArg) {
+        this.authLastPageIndex = setterArg;
+        return this;
+      }
+      private @Nullable Long authLength;
+      public @NonNull Builder setAuthLength(@NonNull Long setterArg) {
+        this.authLength = setterArg;
+        return this;
+      }
+      private @Nullable Long authTimestamp;
+      public @NonNull Builder setAuthTimestamp(@NonNull Long setterArg) {
+        this.authTimestamp = setterArg;
+        return this;
+      }
+      private @Nullable String authData;
+      public @NonNull Builder setAuthData(@NonNull String setterArg) {
+        this.authData = setterArg;
+        return this;
+      }
+      public @NonNull AuthenticationMessage build() {
+        AuthenticationMessage pigeonReturn = new AuthenticationMessage();
+        pigeonReturn.setReceivedTimestamp(receivedTimestamp);
+        pigeonReturn.setMacAddress(macAddress);
+        pigeonReturn.setSource(source);
+        pigeonReturn.setRssi(rssi);
+        pigeonReturn.setAuthType(authType);
+        pigeonReturn.setAuthDataPage(authDataPage);
+        pigeonReturn.setAuthLastPageIndex(authLastPageIndex);
+        pigeonReturn.setAuthLength(authLength);
+        pigeonReturn.setAuthTimestamp(authTimestamp);
+        pigeonReturn.setAuthData(authData);
+        return pigeonReturn;
+      }
+    }
+    @NonNull Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("receivedTimestamp", receivedTimestamp);
+      toMapResult.put("macAddress", macAddress);
+      toMapResult.put("source", source == null ? null : source.index);
+      toMapResult.put("rssi", rssi);
+      toMapResult.put("authType", authType == null ? null : authType.index);
+      toMapResult.put("authDataPage", authDataPage);
+      toMapResult.put("authLastPageIndex", authLastPageIndex);
+      toMapResult.put("authLength", authLength);
+      toMapResult.put("authTimestamp", authTimestamp);
+      toMapResult.put("authData", authData);
+      return toMapResult;
+    }
+    static @NonNull AuthenticationMessage fromMap(@NonNull Map<String, Object> map) {
+      AuthenticationMessage pigeonResult = new AuthenticationMessage();
+      Object receivedTimestamp = map.get("receivedTimestamp");
+      pigeonResult.setReceivedTimestamp((receivedTimestamp == null) ? null : ((receivedTimestamp instanceof Integer) ? (Integer)receivedTimestamp : (Long)receivedTimestamp));
+      Object macAddress = map.get("macAddress");
+      pigeonResult.setMacAddress((String)macAddress);
+      Object source = map.get("source");
+      pigeonResult.setSource(source == null ? null : MessageSource.values()[(int)source]);
+      Object rssi = map.get("rssi");
+      pigeonResult.setRssi((rssi == null) ? null : ((rssi instanceof Integer) ? (Integer)rssi : (Long)rssi));
+      Object authType = map.get("authType");
+      pigeonResult.setAuthType(authType == null ? null : AuthType.values()[(int)authType]);
+      Object authDataPage = map.get("authDataPage");
+      pigeonResult.setAuthDataPage((authDataPage == null) ? null : ((authDataPage instanceof Integer) ? (Integer)authDataPage : (Long)authDataPage));
+      Object authLastPageIndex = map.get("authLastPageIndex");
+      pigeonResult.setAuthLastPageIndex((authLastPageIndex == null) ? null : ((authLastPageIndex instanceof Integer) ? (Integer)authLastPageIndex : (Long)authLastPageIndex));
+      Object authLength = map.get("authLength");
+      pigeonResult.setAuthLength((authLength == null) ? null : ((authLength instanceof Integer) ? (Integer)authLength : (Long)authLength));
+      Object authTimestamp = map.get("authTimestamp");
+      pigeonResult.setAuthTimestamp((authTimestamp == null) ? null : ((authTimestamp instanceof Integer) ? (Integer)authTimestamp : (Long)authTimestamp));
+      Object authData = map.get("authData");
+      pigeonResult.setAuthData((String)authData);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class SelfIdMessage {
+    private @NonNull Long receivedTimestamp;
+    public @NonNull Long getReceivedTimestamp() { return receivedTimestamp; }
+    public void setReceivedTimestamp(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"receivedTimestamp\" is null.");
+      }
+      this.receivedTimestamp = setterArg;
+    }
+
+    private @NonNull String macAddress;
+    public @NonNull String getMacAddress() { return macAddress; }
+    public void setMacAddress(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"macAddress\" is null.");
+      }
+      this.macAddress = setterArg;
+    }
+
+    private @Nullable MessageSource source;
+    public @Nullable MessageSource getSource() { return source; }
+    public void setSource(@Nullable MessageSource setterArg) {
+      this.source = setterArg;
+    }
+
+    private @Nullable Long rssi;
+    public @Nullable Long getRssi() { return rssi; }
+    public void setRssi(@Nullable Long setterArg) {
+      this.rssi = setterArg;
+    }
+
+    private @NonNull Long descriptionType;
+    public @NonNull Long getDescriptionType() { return descriptionType; }
+    public void setDescriptionType(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"descriptionType\" is null.");
+      }
+      this.descriptionType = setterArg;
+    }
+
+    private @NonNull String operationDescription;
+    public @NonNull String getOperationDescription() { return operationDescription; }
+    public void setOperationDescription(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"operationDescription\" is null.");
+      }
+      this.operationDescription = setterArg;
+    }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private SelfIdMessage() {}
+    public static class Builder {
+      private @Nullable Long receivedTimestamp;
+      public @NonNull Builder setReceivedTimestamp(@NonNull Long setterArg) {
+        this.receivedTimestamp = setterArg;
+        return this;
+      }
+      private @Nullable String macAddress;
+      public @NonNull Builder setMacAddress(@NonNull String setterArg) {
+        this.macAddress = setterArg;
+        return this;
+      }
+      private @Nullable MessageSource source;
+      public @NonNull Builder setSource(@Nullable MessageSource setterArg) {
+        this.source = setterArg;
+        return this;
+      }
+      private @Nullable Long rssi;
+      public @NonNull Builder setRssi(@Nullable Long setterArg) {
+        this.rssi = setterArg;
+        return this;
+      }
+      private @Nullable Long descriptionType;
+      public @NonNull Builder setDescriptionType(@NonNull Long setterArg) {
+        this.descriptionType = setterArg;
+        return this;
+      }
+      private @Nullable String operationDescription;
+      public @NonNull Builder setOperationDescription(@NonNull String setterArg) {
+        this.operationDescription = setterArg;
+        return this;
+      }
+      public @NonNull SelfIdMessage build() {
+        SelfIdMessage pigeonReturn = new SelfIdMessage();
+        pigeonReturn.setReceivedTimestamp(receivedTimestamp);
+        pigeonReturn.setMacAddress(macAddress);
+        pigeonReturn.setSource(source);
+        pigeonReturn.setRssi(rssi);
+        pigeonReturn.setDescriptionType(descriptionType);
+        pigeonReturn.setOperationDescription(operationDescription);
+        return pigeonReturn;
+      }
+    }
+    @NonNull Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("receivedTimestamp", receivedTimestamp);
+      toMapResult.put("macAddress", macAddress);
+      toMapResult.put("source", source == null ? null : source.index);
+      toMapResult.put("rssi", rssi);
+      toMapResult.put("descriptionType", descriptionType);
+      toMapResult.put("operationDescription", operationDescription);
+      return toMapResult;
+    }
+    static @NonNull SelfIdMessage fromMap(@NonNull Map<String, Object> map) {
+      SelfIdMessage pigeonResult = new SelfIdMessage();
+      Object receivedTimestamp = map.get("receivedTimestamp");
+      pigeonResult.setReceivedTimestamp((receivedTimestamp == null) ? null : ((receivedTimestamp instanceof Integer) ? (Integer)receivedTimestamp : (Long)receivedTimestamp));
+      Object macAddress = map.get("macAddress");
+      pigeonResult.setMacAddress((String)macAddress);
+      Object source = map.get("source");
+      pigeonResult.setSource(source == null ? null : MessageSource.values()[(int)source]);
+      Object rssi = map.get("rssi");
+      pigeonResult.setRssi((rssi == null) ? null : ((rssi instanceof Integer) ? (Integer)rssi : (Long)rssi));
+      Object descriptionType = map.get("descriptionType");
+      pigeonResult.setDescriptionType((descriptionType == null) ? null : ((descriptionType instanceof Integer) ? (Integer)descriptionType : (Long)descriptionType));
+      Object operationDescription = map.get("operationDescription");
+      pigeonResult.setOperationDescription((String)operationDescription);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class SystemDataMessage {
+    private @NonNull Long receivedTimestamp;
+    public @NonNull Long getReceivedTimestamp() { return receivedTimestamp; }
+    public void setReceivedTimestamp(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"receivedTimestamp\" is null.");
+      }
+      this.receivedTimestamp = setterArg;
+    }
+
+    private @NonNull String macAddress;
+    public @NonNull String getMacAddress() { return macAddress; }
+    public void setMacAddress(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"macAddress\" is null.");
+      }
+      this.macAddress = setterArg;
+    }
+
+    private @Nullable MessageSource source;
+    public @Nullable MessageSource getSource() { return source; }
+    public void setSource(@Nullable MessageSource setterArg) {
+      this.source = setterArg;
+    }
+
+    private @Nullable Long rssi;
+    public @Nullable Long getRssi() { return rssi; }
+    public void setRssi(@Nullable Long setterArg) {
+      this.rssi = setterArg;
+    }
+
+    private @Nullable OperatorLocationType operatorLocationType;
+    public @Nullable OperatorLocationType getOperatorLocationType() { return operatorLocationType; }
+    public void setOperatorLocationType(@Nullable OperatorLocationType setterArg) {
+      this.operatorLocationType = setterArg;
+    }
+
+    private @Nullable ClassificationType classificationType;
+    public @Nullable ClassificationType getClassificationType() { return classificationType; }
+    public void setClassificationType(@Nullable ClassificationType setterArg) {
+      this.classificationType = setterArg;
+    }
+
+    private @NonNull Double operatorLatitude;
+    public @NonNull Double getOperatorLatitude() { return operatorLatitude; }
+    public void setOperatorLatitude(@NonNull Double setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"operatorLatitude\" is null.");
+      }
+      this.operatorLatitude = setterArg;
+    }
+
+    private @NonNull Double operatorLongitude;
+    public @NonNull Double getOperatorLongitude() { return operatorLongitude; }
+    public void setOperatorLongitude(@NonNull Double setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"operatorLongitude\" is null.");
+      }
+      this.operatorLongitude = setterArg;
+    }
+
+    private @NonNull Long areaCount;
+    public @NonNull Long getAreaCount() { return areaCount; }
+    public void setAreaCount(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"areaCount\" is null.");
+      }
+      this.areaCount = setterArg;
+    }
+
+    private @NonNull Long areaRadius;
+    public @NonNull Long getAreaRadius() { return areaRadius; }
+    public void setAreaRadius(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"areaRadius\" is null.");
+      }
+      this.areaRadius = setterArg;
+    }
+
+    private @NonNull Double areaCeiling;
+    public @NonNull Double getAreaCeiling() { return areaCeiling; }
+    public void setAreaCeiling(@NonNull Double setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"areaCeiling\" is null.");
+      }
+      this.areaCeiling = setterArg;
+    }
+
+    private @NonNull Double areaFloor;
+    public @NonNull Double getAreaFloor() { return areaFloor; }
+    public void setAreaFloor(@NonNull Double setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"areaFloor\" is null.");
+      }
+      this.areaFloor = setterArg;
+    }
+
+    private @Nullable AircraftCategory category;
+    public @Nullable AircraftCategory getCategory() { return category; }
+    public void setCategory(@Nullable AircraftCategory setterArg) {
+      this.category = setterArg;
+    }
+
+    private @Nullable AircraftClass classValue;
+    public @Nullable AircraftClass getClassValue() { return classValue; }
+    public void setClassValue(@Nullable AircraftClass setterArg) {
+      this.classValue = setterArg;
+    }
+
+    private @NonNull Double operatorAltitudeGeo;
+    public @NonNull Double getOperatorAltitudeGeo() { return operatorAltitudeGeo; }
+    public void setOperatorAltitudeGeo(@NonNull Double setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"operatorAltitudeGeo\" is null.");
+      }
+      this.operatorAltitudeGeo = setterArg;
+    }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private SystemDataMessage() {}
+    public static class Builder {
+      private @Nullable Long receivedTimestamp;
+      public @NonNull Builder setReceivedTimestamp(@NonNull Long setterArg) {
+        this.receivedTimestamp = setterArg;
+        return this;
+      }
+      private @Nullable String macAddress;
+      public @NonNull Builder setMacAddress(@NonNull String setterArg) {
+        this.macAddress = setterArg;
+        return this;
+      }
+      private @Nullable MessageSource source;
+      public @NonNull Builder setSource(@Nullable MessageSource setterArg) {
+        this.source = setterArg;
+        return this;
+      }
+      private @Nullable Long rssi;
+      public @NonNull Builder setRssi(@Nullable Long setterArg) {
+        this.rssi = setterArg;
+        return this;
+      }
+      private @Nullable OperatorLocationType operatorLocationType;
+      public @NonNull Builder setOperatorLocationType(@Nullable OperatorLocationType setterArg) {
+        this.operatorLocationType = setterArg;
+        return this;
+      }
+      private @Nullable ClassificationType classificationType;
+      public @NonNull Builder setClassificationType(@Nullable ClassificationType setterArg) {
+        this.classificationType = setterArg;
+        return this;
+      }
+      private @Nullable Double operatorLatitude;
+      public @NonNull Builder setOperatorLatitude(@NonNull Double setterArg) {
+        this.operatorLatitude = setterArg;
+        return this;
+      }
+      private @Nullable Double operatorLongitude;
+      public @NonNull Builder setOperatorLongitude(@NonNull Double setterArg) {
+        this.operatorLongitude = setterArg;
+        return this;
+      }
+      private @Nullable Long areaCount;
+      public @NonNull Builder setAreaCount(@NonNull Long setterArg) {
+        this.areaCount = setterArg;
+        return this;
+      }
+      private @Nullable Long areaRadius;
+      public @NonNull Builder setAreaRadius(@NonNull Long setterArg) {
+        this.areaRadius = setterArg;
+        return this;
+      }
+      private @Nullable Double areaCeiling;
+      public @NonNull Builder setAreaCeiling(@NonNull Double setterArg) {
+        this.areaCeiling = setterArg;
+        return this;
+      }
+      private @Nullable Double areaFloor;
+      public @NonNull Builder setAreaFloor(@NonNull Double setterArg) {
+        this.areaFloor = setterArg;
+        return this;
+      }
+      private @Nullable AircraftCategory category;
+      public @NonNull Builder setCategory(@Nullable AircraftCategory setterArg) {
+        this.category = setterArg;
+        return this;
+      }
+      private @Nullable AircraftClass classValue;
+      public @NonNull Builder setClassValue(@Nullable AircraftClass setterArg) {
+        this.classValue = setterArg;
+        return this;
+      }
+      private @Nullable Double operatorAltitudeGeo;
+      public @NonNull Builder setOperatorAltitudeGeo(@NonNull Double setterArg) {
+        this.operatorAltitudeGeo = setterArg;
+        return this;
+      }
+      public @NonNull SystemDataMessage build() {
+        SystemDataMessage pigeonReturn = new SystemDataMessage();
+        pigeonReturn.setReceivedTimestamp(receivedTimestamp);
+        pigeonReturn.setMacAddress(macAddress);
+        pigeonReturn.setSource(source);
+        pigeonReturn.setRssi(rssi);
+        pigeonReturn.setOperatorLocationType(operatorLocationType);
+        pigeonReturn.setClassificationType(classificationType);
+        pigeonReturn.setOperatorLatitude(operatorLatitude);
+        pigeonReturn.setOperatorLongitude(operatorLongitude);
+        pigeonReturn.setAreaCount(areaCount);
+        pigeonReturn.setAreaRadius(areaRadius);
+        pigeonReturn.setAreaCeiling(areaCeiling);
+        pigeonReturn.setAreaFloor(areaFloor);
+        pigeonReturn.setCategory(category);
+        pigeonReturn.setClassValue(classValue);
+        pigeonReturn.setOperatorAltitudeGeo(operatorAltitudeGeo);
+        return pigeonReturn;
+      }
+    }
+    @NonNull Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("receivedTimestamp", receivedTimestamp);
+      toMapResult.put("macAddress", macAddress);
+      toMapResult.put("source", source == null ? null : source.index);
+      toMapResult.put("rssi", rssi);
+      toMapResult.put("operatorLocationType", operatorLocationType == null ? null : operatorLocationType.index);
+      toMapResult.put("classificationType", classificationType == null ? null : classificationType.index);
+      toMapResult.put("operatorLatitude", operatorLatitude);
+      toMapResult.put("operatorLongitude", operatorLongitude);
+      toMapResult.put("areaCount", areaCount);
+      toMapResult.put("areaRadius", areaRadius);
+      toMapResult.put("areaCeiling", areaCeiling);
+      toMapResult.put("areaFloor", areaFloor);
+      toMapResult.put("category", category == null ? null : category.index);
+      toMapResult.put("classValue", classValue == null ? null : classValue.index);
+      toMapResult.put("operatorAltitudeGeo", operatorAltitudeGeo);
+      return toMapResult;
+    }
+    static @NonNull SystemDataMessage fromMap(@NonNull Map<String, Object> map) {
+      SystemDataMessage pigeonResult = new SystemDataMessage();
+      Object receivedTimestamp = map.get("receivedTimestamp");
+      pigeonResult.setReceivedTimestamp((receivedTimestamp == null) ? null : ((receivedTimestamp instanceof Integer) ? (Integer)receivedTimestamp : (Long)receivedTimestamp));
+      Object macAddress = map.get("macAddress");
+      pigeonResult.setMacAddress((String)macAddress);
+      Object source = map.get("source");
+      pigeonResult.setSource(source == null ? null : MessageSource.values()[(int)source]);
+      Object rssi = map.get("rssi");
+      pigeonResult.setRssi((rssi == null) ? null : ((rssi instanceof Integer) ? (Integer)rssi : (Long)rssi));
+      Object operatorLocationType = map.get("operatorLocationType");
+      pigeonResult.setOperatorLocationType(operatorLocationType == null ? null : OperatorLocationType.values()[(int)operatorLocationType]);
+      Object classificationType = map.get("classificationType");
+      pigeonResult.setClassificationType(classificationType == null ? null : ClassificationType.values()[(int)classificationType]);
+      Object operatorLatitude = map.get("operatorLatitude");
+      pigeonResult.setOperatorLatitude((Double)operatorLatitude);
+      Object operatorLongitude = map.get("operatorLongitude");
+      pigeonResult.setOperatorLongitude((Double)operatorLongitude);
+      Object areaCount = map.get("areaCount");
+      pigeonResult.setAreaCount((areaCount == null) ? null : ((areaCount instanceof Integer) ? (Integer)areaCount : (Long)areaCount));
+      Object areaRadius = map.get("areaRadius");
+      pigeonResult.setAreaRadius((areaRadius == null) ? null : ((areaRadius instanceof Integer) ? (Integer)areaRadius : (Long)areaRadius));
+      Object areaCeiling = map.get("areaCeiling");
+      pigeonResult.setAreaCeiling((Double)areaCeiling);
+      Object areaFloor = map.get("areaFloor");
+      pigeonResult.setAreaFloor((Double)areaFloor);
+      Object category = map.get("category");
+      pigeonResult.setCategory(category == null ? null : AircraftCategory.values()[(int)category]);
+      Object classValue = map.get("classValue");
+      pigeonResult.setClassValue(classValue == null ? null : AircraftClass.values()[(int)classValue]);
+      Object operatorAltitudeGeo = map.get("operatorAltitudeGeo");
+      pigeonResult.setOperatorAltitudeGeo((Double)operatorAltitudeGeo);
+      return pigeonResult;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static class ConnectionMessage {
+    private @NonNull Long receivedTimestamp;
+    public @NonNull Long getReceivedTimestamp() { return receivedTimestamp; }
+    public void setReceivedTimestamp(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"receivedTimestamp\" is null.");
+      }
+      this.receivedTimestamp = setterArg;
+    }
+
+    private @NonNull String macAddress;
+    public @NonNull String getMacAddress() { return macAddress; }
+    public void setMacAddress(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"macAddress\" is null.");
+      }
+      this.macAddress = setterArg;
+    }
+
+    private @Nullable MessageSource source;
+    public @Nullable MessageSource getSource() { return source; }
+    public void setSource(@Nullable MessageSource setterArg) {
+      this.source = setterArg;
+    }
+
+    private @Nullable Long rssi;
+    public @Nullable Long getRssi() { return rssi; }
+    public void setRssi(@Nullable Long setterArg) {
+      this.rssi = setterArg;
+    }
+
+    private @NonNull String transportType;
+    public @NonNull String getTransportType() { return transportType; }
+    public void setTransportType(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"transportType\" is null.");
+      }
+      this.transportType = setterArg;
+    }
+
+    private @NonNull Long lastSeen;
+    public @NonNull Long getLastSeen() { return lastSeen; }
+    public void setLastSeen(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"lastSeen\" is null.");
+      }
+      this.lastSeen = setterArg;
+    }
+
+    private @NonNull Long firstSeen;
+    public @NonNull Long getFirstSeen() { return firstSeen; }
+    public void setFirstSeen(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"firstSeen\" is null.");
+      }
+      this.firstSeen = setterArg;
+    }
+
+    private @NonNull Long msgDelta;
+    public @NonNull Long getMsgDelta() { return msgDelta; }
+    public void setMsgDelta(@NonNull Long setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"msgDelta\" is null.");
+      }
+      this.msgDelta = setterArg;
+    }
+
+    /** Constructor is private to enforce null safety; use Builder. */
+    private ConnectionMessage() {}
+    public static class Builder {
+      private @Nullable Long receivedTimestamp;
+      public @NonNull Builder setReceivedTimestamp(@NonNull Long setterArg) {
+        this.receivedTimestamp = setterArg;
+        return this;
+      }
+      private @Nullable String macAddress;
+      public @NonNull Builder setMacAddress(@NonNull String setterArg) {
+        this.macAddress = setterArg;
+        return this;
+      }
+      private @Nullable MessageSource source;
+      public @NonNull Builder setSource(@Nullable MessageSource setterArg) {
+        this.source = setterArg;
+        return this;
+      }
+      private @Nullable Long rssi;
+      public @NonNull Builder setRssi(@Nullable Long setterArg) {
+        this.rssi = setterArg;
+        return this;
+      }
+      private @Nullable String transportType;
+      public @NonNull Builder setTransportType(@NonNull String setterArg) {
+        this.transportType = setterArg;
+        return this;
+      }
+      private @Nullable Long lastSeen;
+      public @NonNull Builder setLastSeen(@NonNull Long setterArg) {
+        this.lastSeen = setterArg;
+        return this;
+      }
+      private @Nullable Long firstSeen;
+      public @NonNull Builder setFirstSeen(@NonNull Long setterArg) {
+        this.firstSeen = setterArg;
+        return this;
+      }
+      private @Nullable Long msgDelta;
+      public @NonNull Builder setMsgDelta(@NonNull Long setterArg) {
+        this.msgDelta = setterArg;
+        return this;
+      }
+      public @NonNull ConnectionMessage build() {
+        ConnectionMessage pigeonReturn = new ConnectionMessage();
+        pigeonReturn.setReceivedTimestamp(receivedTimestamp);
+        pigeonReturn.setMacAddress(macAddress);
+        pigeonReturn.setSource(source);
+        pigeonReturn.setRssi(rssi);
+        pigeonReturn.setTransportType(transportType);
+        pigeonReturn.setLastSeen(lastSeen);
+        pigeonReturn.setFirstSeen(firstSeen);
+        pigeonReturn.setMsgDelta(msgDelta);
+        return pigeonReturn;
+      }
+    }
+    @NonNull Map<String, Object> toMap() {
+      Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("receivedTimestamp", receivedTimestamp);
+      toMapResult.put("macAddress", macAddress);
+      toMapResult.put("source", source == null ? null : source.index);
+      toMapResult.put("rssi", rssi);
+      toMapResult.put("transportType", transportType);
+      toMapResult.put("lastSeen", lastSeen);
+      toMapResult.put("firstSeen", firstSeen);
+      toMapResult.put("msgDelta", msgDelta);
+      return toMapResult;
+    }
+    static @NonNull ConnectionMessage fromMap(@NonNull Map<String, Object> map) {
+      ConnectionMessage pigeonResult = new ConnectionMessage();
+      Object receivedTimestamp = map.get("receivedTimestamp");
+      pigeonResult.setReceivedTimestamp((receivedTimestamp == null) ? null : ((receivedTimestamp instanceof Integer) ? (Integer)receivedTimestamp : (Long)receivedTimestamp));
+      Object macAddress = map.get("macAddress");
+      pigeonResult.setMacAddress((String)macAddress);
+      Object source = map.get("source");
+      pigeonResult.setSource(source == null ? null : MessageSource.values()[(int)source]);
+      Object rssi = map.get("rssi");
+      pigeonResult.setRssi((rssi == null) ? null : ((rssi instanceof Integer) ? (Integer)rssi : (Long)rssi));
+      Object transportType = map.get("transportType");
+      pigeonResult.setTransportType((String)transportType);
+      Object lastSeen = map.get("lastSeen");
+      pigeonResult.setLastSeen((lastSeen == null) ? null : ((lastSeen instanceof Integer) ? (Integer)lastSeen : (Long)lastSeen));
+      Object firstSeen = map.get("firstSeen");
+      pigeonResult.setFirstSeen((firstSeen == null) ? null : ((firstSeen instanceof Integer) ? (Integer)firstSeen : (Long)firstSeen));
+      Object msgDelta = map.get("msgDelta");
+      pigeonResult.setMsgDelta((msgDelta == null) ? null : ((msgDelta instanceof Integer) ? (Integer)msgDelta : (Long)msgDelta));
+      return pigeonResult;
+    }
+  }
+
   public interface Result<T> {
     void success(T result);
     void error(Throwable error);
@@ -1077,13 +1820,25 @@ public class Pigeon {
     protected Object readValueOfType(byte type, ByteBuffer buffer) {
       switch (type) {
         case (byte)128:         
-          return BasicIdMessage.fromMap((Map<String, Object>) readValue(buffer));
+          return AuthenticationMessage.fromMap((Map<String, Object>) readValue(buffer));
         
         case (byte)129:         
-          return LocationMessage.fromMap((Map<String, Object>) readValue(buffer));
+          return BasicIdMessage.fromMap((Map<String, Object>) readValue(buffer));
         
         case (byte)130:         
+          return ConnectionMessage.fromMap((Map<String, Object>) readValue(buffer));
+        
+        case (byte)131:         
+          return LocationMessage.fromMap((Map<String, Object>) readValue(buffer));
+        
+        case (byte)132:         
           return OperatorIdMessage.fromMap((Map<String, Object>) readValue(buffer));
+        
+        case (byte)133:         
+          return SelfIdMessage.fromMap((Map<String, Object>) readValue(buffer));
+        
+        case (byte)134:         
+          return SystemDataMessage.fromMap((Map<String, Object>) readValue(buffer));
         
         default:        
           return super.readValueOfType(type, buffer);
@@ -1092,17 +1847,33 @@ public class Pigeon {
     }
     @Override
     protected void writeValue(ByteArrayOutputStream stream, Object value)     {
-      if (value instanceof BasicIdMessage) {
+      if (value instanceof AuthenticationMessage) {
         stream.write(128);
+        writeValue(stream, ((AuthenticationMessage) value).toMap());
+      } else 
+      if (value instanceof BasicIdMessage) {
+        stream.write(129);
         writeValue(stream, ((BasicIdMessage) value).toMap());
       } else 
+      if (value instanceof ConnectionMessage) {
+        stream.write(130);
+        writeValue(stream, ((ConnectionMessage) value).toMap());
+      } else 
       if (value instanceof LocationMessage) {
-        stream.write(129);
+        stream.write(131);
         writeValue(stream, ((LocationMessage) value).toMap());
       } else 
       if (value instanceof OperatorIdMessage) {
-        stream.write(130);
+        stream.write(132);
         writeValue(stream, ((OperatorIdMessage) value).toMap());
+      } else 
+      if (value instanceof SelfIdMessage) {
+        stream.write(133);
+        writeValue(stream, ((SelfIdMessage) value).toMap());
+      } else 
+      if (value instanceof SystemDataMessage) {
+        stream.write(134);
+        writeValue(stream, ((SystemDataMessage) value).toMap());
       } else 
 {
         super.writeValue(stream, value);
@@ -1116,6 +1887,10 @@ public class Pigeon {
     BasicIdMessage fromBufferBasic(byte[] payload, Long offset, String macAddress);
     LocationMessage fromBufferLocation(byte[] payload, Long offset, String macAddress);
     OperatorIdMessage fromBufferOperatorId(byte[] payload, Long offset, String macAddress);
+    SelfIdMessage fromBufferSelfId(byte[] payload, Long offset, String macAddress);
+    AuthenticationMessage fromBufferAuthentication(byte[] payload, Long offset, String macAddress);
+    SystemDataMessage fromBufferSystemData(byte[] payload, Long offset, String macAddress);
+    ConnectionMessage fromBufferConnection(byte[] payload, Long offset, String macAddress);
 
     /** The codec used by MessageApi. */
     static MessageCodec<Object> getCodec() {
@@ -1237,6 +2012,134 @@ public class Pigeon {
                 throw new NullPointerException("macAddressArg unexpectedly null.");
               }
               OperatorIdMessage output = api.fromBufferOperatorId(payloadArg, offsetArg.longValue(), macAddressArg);
+              wrapped.put("result", output);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.MessageApi.fromBufferSelfId", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              byte[] payloadArg = (byte[])args.get(0);
+              if (payloadArg == null) {
+                throw new NullPointerException("payloadArg unexpectedly null.");
+              }
+              Number offsetArg = (Number)args.get(1);
+              if (offsetArg == null) {
+                throw new NullPointerException("offsetArg unexpectedly null.");
+              }
+              String macAddressArg = (String)args.get(2);
+              if (macAddressArg == null) {
+                throw new NullPointerException("macAddressArg unexpectedly null.");
+              }
+              SelfIdMessage output = api.fromBufferSelfId(payloadArg, offsetArg.longValue(), macAddressArg);
+              wrapped.put("result", output);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.MessageApi.fromBufferAuthentication", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              byte[] payloadArg = (byte[])args.get(0);
+              if (payloadArg == null) {
+                throw new NullPointerException("payloadArg unexpectedly null.");
+              }
+              Number offsetArg = (Number)args.get(1);
+              if (offsetArg == null) {
+                throw new NullPointerException("offsetArg unexpectedly null.");
+              }
+              String macAddressArg = (String)args.get(2);
+              if (macAddressArg == null) {
+                throw new NullPointerException("macAddressArg unexpectedly null.");
+              }
+              AuthenticationMessage output = api.fromBufferAuthentication(payloadArg, offsetArg.longValue(), macAddressArg);
+              wrapped.put("result", output);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.MessageApi.fromBufferSystemData", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              byte[] payloadArg = (byte[])args.get(0);
+              if (payloadArg == null) {
+                throw new NullPointerException("payloadArg unexpectedly null.");
+              }
+              Number offsetArg = (Number)args.get(1);
+              if (offsetArg == null) {
+                throw new NullPointerException("offsetArg unexpectedly null.");
+              }
+              String macAddressArg = (String)args.get(2);
+              if (macAddressArg == null) {
+                throw new NullPointerException("macAddressArg unexpectedly null.");
+              }
+              SystemDataMessage output = api.fromBufferSystemData(payloadArg, offsetArg.longValue(), macAddressArg);
+              wrapped.put("result", output);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.MessageApi.fromBufferConnection", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              byte[] payloadArg = (byte[])args.get(0);
+              if (payloadArg == null) {
+                throw new NullPointerException("payloadArg unexpectedly null.");
+              }
+              Number offsetArg = (Number)args.get(1);
+              if (offsetArg == null) {
+                throw new NullPointerException("offsetArg unexpectedly null.");
+              }
+              String macAddressArg = (String)args.get(2);
+              if (macAddressArg == null) {
+                throw new NullPointerException("macAddressArg unexpectedly null.");
+              }
+              ConnectionMessage output = api.fromBufferConnection(payloadArg, offsetArg.longValue(), macAddressArg);
               wrapped.put("result", output);
             }
             catch (Error | RuntimeException exception) {

@@ -39,6 +39,22 @@ static id GetNullableObject(NSDictionary* dict, id key) {
 + (DTGOperatorIdMessage *)fromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
+@interface DTGAuthenticationMessage ()
++ (DTGAuthenticationMessage *)fromMap:(NSDictionary *)dict;
+- (NSDictionary *)toMap;
+@end
+@interface DTGSelfIdMessage ()
++ (DTGSelfIdMessage *)fromMap:(NSDictionary *)dict;
+- (NSDictionary *)toMap;
+@end
+@interface DTGSystemDataMessage ()
++ (DTGSystemDataMessage *)fromMap:(NSDictionary *)dict;
+- (NSDictionary *)toMap;
+@end
+@interface DTGConnectionMessage ()
++ (DTGConnectionMessage *)fromMap:(NSDictionary *)dict;
+- (NSDictionary *)toMap;
+@end
 
 @implementation DTGBasicIdMessage
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
@@ -180,6 +196,201 @@ static id GetNullableObject(NSDictionary* dict, id key) {
 }
 - (NSDictionary *)toMap {
   return [NSDictionary dictionaryWithObjectsAndKeys:(self.receivedTimestamp ? self.receivedTimestamp : [NSNull null]), @"receivedTimestamp", (self.macAddress ? self.macAddress : [NSNull null]), @"macAddress", @(self.source), @"source", (self.rssi ? self.rssi : [NSNull null]), @"rssi", (self.operatorId ? self.operatorId : [NSNull null]), @"operatorId", nil];
+}
+@end
+
+@implementation DTGAuthenticationMessage
++ (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
+    macAddress:(NSString *)macAddress
+    source:(DTGMessageSource)source
+    rssi:(nullable NSNumber *)rssi
+    authType:(DTGAuthType)authType
+    authDataPage:(NSNumber *)authDataPage
+    authLastPageIndex:(NSNumber *)authLastPageIndex
+    authLength:(NSNumber *)authLength
+    authTimestamp:(NSNumber *)authTimestamp
+    authData:(NSString *)authData {
+  DTGAuthenticationMessage* pigeonResult = [[DTGAuthenticationMessage alloc] init];
+  pigeonResult.receivedTimestamp = receivedTimestamp;
+  pigeonResult.macAddress = macAddress;
+  pigeonResult.source = source;
+  pigeonResult.rssi = rssi;
+  pigeonResult.authType = authType;
+  pigeonResult.authDataPage = authDataPage;
+  pigeonResult.authLastPageIndex = authLastPageIndex;
+  pigeonResult.authLength = authLength;
+  pigeonResult.authTimestamp = authTimestamp;
+  pigeonResult.authData = authData;
+  return pigeonResult;
+}
++ (DTGAuthenticationMessage *)fromMap:(NSDictionary *)dict {
+  DTGAuthenticationMessage *pigeonResult = [[DTGAuthenticationMessage alloc] init];
+  pigeonResult.receivedTimestamp = GetNullableObject(dict, @"receivedTimestamp");
+  NSAssert(pigeonResult.receivedTimestamp != nil, @"");
+  pigeonResult.macAddress = GetNullableObject(dict, @"macAddress");
+  NSAssert(pigeonResult.macAddress != nil, @"");
+  pigeonResult.source = [GetNullableObject(dict, @"source") integerValue];
+  pigeonResult.rssi = GetNullableObject(dict, @"rssi");
+  pigeonResult.authType = [GetNullableObject(dict, @"authType") integerValue];
+  pigeonResult.authDataPage = GetNullableObject(dict, @"authDataPage");
+  NSAssert(pigeonResult.authDataPage != nil, @"");
+  pigeonResult.authLastPageIndex = GetNullableObject(dict, @"authLastPageIndex");
+  NSAssert(pigeonResult.authLastPageIndex != nil, @"");
+  pigeonResult.authLength = GetNullableObject(dict, @"authLength");
+  NSAssert(pigeonResult.authLength != nil, @"");
+  pigeonResult.authTimestamp = GetNullableObject(dict, @"authTimestamp");
+  NSAssert(pigeonResult.authTimestamp != nil, @"");
+  pigeonResult.authData = GetNullableObject(dict, @"authData");
+  NSAssert(pigeonResult.authData != nil, @"");
+  return pigeonResult;
+}
+- (NSDictionary *)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.receivedTimestamp ? self.receivedTimestamp : [NSNull null]), @"receivedTimestamp", (self.macAddress ? self.macAddress : [NSNull null]), @"macAddress", @(self.source), @"source", (self.rssi ? self.rssi : [NSNull null]), @"rssi", @(self.authType), @"authType", (self.authDataPage ? self.authDataPage : [NSNull null]), @"authDataPage", (self.authLastPageIndex ? self.authLastPageIndex : [NSNull null]), @"authLastPageIndex", (self.authLength ? self.authLength : [NSNull null]), @"authLength", (self.authTimestamp ? self.authTimestamp : [NSNull null]), @"authTimestamp", (self.authData ? self.authData : [NSNull null]), @"authData", nil];
+}
+@end
+
+@implementation DTGSelfIdMessage
++ (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
+    macAddress:(NSString *)macAddress
+    source:(DTGMessageSource)source
+    rssi:(nullable NSNumber *)rssi
+    descriptionType:(NSNumber *)descriptionType
+    operationDescription:(NSString *)operationDescription {
+  DTGSelfIdMessage* pigeonResult = [[DTGSelfIdMessage alloc] init];
+  pigeonResult.receivedTimestamp = receivedTimestamp;
+  pigeonResult.macAddress = macAddress;
+  pigeonResult.source = source;
+  pigeonResult.rssi = rssi;
+  pigeonResult.descriptionType = descriptionType;
+  pigeonResult.operationDescription = operationDescription;
+  return pigeonResult;
+}
++ (DTGSelfIdMessage *)fromMap:(NSDictionary *)dict {
+  DTGSelfIdMessage *pigeonResult = [[DTGSelfIdMessage alloc] init];
+  pigeonResult.receivedTimestamp = GetNullableObject(dict, @"receivedTimestamp");
+  NSAssert(pigeonResult.receivedTimestamp != nil, @"");
+  pigeonResult.macAddress = GetNullableObject(dict, @"macAddress");
+  NSAssert(pigeonResult.macAddress != nil, @"");
+  pigeonResult.source = [GetNullableObject(dict, @"source") integerValue];
+  pigeonResult.rssi = GetNullableObject(dict, @"rssi");
+  pigeonResult.descriptionType = GetNullableObject(dict, @"descriptionType");
+  NSAssert(pigeonResult.descriptionType != nil, @"");
+  pigeonResult.operationDescription = GetNullableObject(dict, @"operationDescription");
+  NSAssert(pigeonResult.operationDescription != nil, @"");
+  return pigeonResult;
+}
+- (NSDictionary *)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.receivedTimestamp ? self.receivedTimestamp : [NSNull null]), @"receivedTimestamp", (self.macAddress ? self.macAddress : [NSNull null]), @"macAddress", @(self.source), @"source", (self.rssi ? self.rssi : [NSNull null]), @"rssi", (self.descriptionType ? self.descriptionType : [NSNull null]), @"descriptionType", (self.operationDescription ? self.operationDescription : [NSNull null]), @"operationDescription", nil];
+}
+@end
+
+@implementation DTGSystemDataMessage
++ (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
+    macAddress:(NSString *)macAddress
+    source:(DTGMessageSource)source
+    rssi:(nullable NSNumber *)rssi
+    operatorLocationType:(DTGOperatorLocationType)operatorLocationType
+    classificationType:(DTGClassificationType)classificationType
+    operatorLatitude:(NSNumber *)operatorLatitude
+    operatorLongitude:(NSNumber *)operatorLongitude
+    areaCount:(NSNumber *)areaCount
+    areaRadius:(NSNumber *)areaRadius
+    areaCeiling:(NSNumber *)areaCeiling
+    areaFloor:(NSNumber *)areaFloor
+    category:(DTGAircraftCategory)category
+    classValue:(DTGAircraftClass)classValue
+    operatorAltitudeGeo:(NSNumber *)operatorAltitudeGeo {
+  DTGSystemDataMessage* pigeonResult = [[DTGSystemDataMessage alloc] init];
+  pigeonResult.receivedTimestamp = receivedTimestamp;
+  pigeonResult.macAddress = macAddress;
+  pigeonResult.source = source;
+  pigeonResult.rssi = rssi;
+  pigeonResult.operatorLocationType = operatorLocationType;
+  pigeonResult.classificationType = classificationType;
+  pigeonResult.operatorLatitude = operatorLatitude;
+  pigeonResult.operatorLongitude = operatorLongitude;
+  pigeonResult.areaCount = areaCount;
+  pigeonResult.areaRadius = areaRadius;
+  pigeonResult.areaCeiling = areaCeiling;
+  pigeonResult.areaFloor = areaFloor;
+  pigeonResult.category = category;
+  pigeonResult.classValue = classValue;
+  pigeonResult.operatorAltitudeGeo = operatorAltitudeGeo;
+  return pigeonResult;
+}
++ (DTGSystemDataMessage *)fromMap:(NSDictionary *)dict {
+  DTGSystemDataMessage *pigeonResult = [[DTGSystemDataMessage alloc] init];
+  pigeonResult.receivedTimestamp = GetNullableObject(dict, @"receivedTimestamp");
+  NSAssert(pigeonResult.receivedTimestamp != nil, @"");
+  pigeonResult.macAddress = GetNullableObject(dict, @"macAddress");
+  NSAssert(pigeonResult.macAddress != nil, @"");
+  pigeonResult.source = [GetNullableObject(dict, @"source") integerValue];
+  pigeonResult.rssi = GetNullableObject(dict, @"rssi");
+  pigeonResult.operatorLocationType = [GetNullableObject(dict, @"operatorLocationType") integerValue];
+  pigeonResult.classificationType = [GetNullableObject(dict, @"classificationType") integerValue];
+  pigeonResult.operatorLatitude = GetNullableObject(dict, @"operatorLatitude");
+  NSAssert(pigeonResult.operatorLatitude != nil, @"");
+  pigeonResult.operatorLongitude = GetNullableObject(dict, @"operatorLongitude");
+  NSAssert(pigeonResult.operatorLongitude != nil, @"");
+  pigeonResult.areaCount = GetNullableObject(dict, @"areaCount");
+  NSAssert(pigeonResult.areaCount != nil, @"");
+  pigeonResult.areaRadius = GetNullableObject(dict, @"areaRadius");
+  NSAssert(pigeonResult.areaRadius != nil, @"");
+  pigeonResult.areaCeiling = GetNullableObject(dict, @"areaCeiling");
+  NSAssert(pigeonResult.areaCeiling != nil, @"");
+  pigeonResult.areaFloor = GetNullableObject(dict, @"areaFloor");
+  NSAssert(pigeonResult.areaFloor != nil, @"");
+  pigeonResult.category = [GetNullableObject(dict, @"category") integerValue];
+  pigeonResult.classValue = [GetNullableObject(dict, @"classValue") integerValue];
+  pigeonResult.operatorAltitudeGeo = GetNullableObject(dict, @"operatorAltitudeGeo");
+  NSAssert(pigeonResult.operatorAltitudeGeo != nil, @"");
+  return pigeonResult;
+}
+- (NSDictionary *)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.receivedTimestamp ? self.receivedTimestamp : [NSNull null]), @"receivedTimestamp", (self.macAddress ? self.macAddress : [NSNull null]), @"macAddress", @(self.source), @"source", (self.rssi ? self.rssi : [NSNull null]), @"rssi", @(self.operatorLocationType), @"operatorLocationType", @(self.classificationType), @"classificationType", (self.operatorLatitude ? self.operatorLatitude : [NSNull null]), @"operatorLatitude", (self.operatorLongitude ? self.operatorLongitude : [NSNull null]), @"operatorLongitude", (self.areaCount ? self.areaCount : [NSNull null]), @"areaCount", (self.areaRadius ? self.areaRadius : [NSNull null]), @"areaRadius", (self.areaCeiling ? self.areaCeiling : [NSNull null]), @"areaCeiling", (self.areaFloor ? self.areaFloor : [NSNull null]), @"areaFloor", @(self.category), @"category", @(self.classValue), @"classValue", (self.operatorAltitudeGeo ? self.operatorAltitudeGeo : [NSNull null]), @"operatorAltitudeGeo", nil];
+}
+@end
+
+@implementation DTGConnectionMessage
++ (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
+    macAddress:(NSString *)macAddress
+    source:(DTGMessageSource)source
+    rssi:(nullable NSNumber *)rssi
+    transportType:(NSString *)transportType
+    lastSeen:(NSNumber *)lastSeen
+    firstSeen:(NSNumber *)firstSeen
+    msgDelta:(NSNumber *)msgDelta {
+  DTGConnectionMessage* pigeonResult = [[DTGConnectionMessage alloc] init];
+  pigeonResult.receivedTimestamp = receivedTimestamp;
+  pigeonResult.macAddress = macAddress;
+  pigeonResult.source = source;
+  pigeonResult.rssi = rssi;
+  pigeonResult.transportType = transportType;
+  pigeonResult.lastSeen = lastSeen;
+  pigeonResult.firstSeen = firstSeen;
+  pigeonResult.msgDelta = msgDelta;
+  return pigeonResult;
+}
++ (DTGConnectionMessage *)fromMap:(NSDictionary *)dict {
+  DTGConnectionMessage *pigeonResult = [[DTGConnectionMessage alloc] init];
+  pigeonResult.receivedTimestamp = GetNullableObject(dict, @"receivedTimestamp");
+  NSAssert(pigeonResult.receivedTimestamp != nil, @"");
+  pigeonResult.macAddress = GetNullableObject(dict, @"macAddress");
+  NSAssert(pigeonResult.macAddress != nil, @"");
+  pigeonResult.source = [GetNullableObject(dict, @"source") integerValue];
+  pigeonResult.rssi = GetNullableObject(dict, @"rssi");
+  pigeonResult.transportType = GetNullableObject(dict, @"transportType");
+  NSAssert(pigeonResult.transportType != nil, @"");
+  pigeonResult.lastSeen = GetNullableObject(dict, @"lastSeen");
+  NSAssert(pigeonResult.lastSeen != nil, @"");
+  pigeonResult.firstSeen = GetNullableObject(dict, @"firstSeen");
+  NSAssert(pigeonResult.firstSeen != nil, @"");
+  pigeonResult.msgDelta = GetNullableObject(dict, @"msgDelta");
+  NSAssert(pigeonResult.msgDelta != nil, @"");
+  return pigeonResult;
+}
+- (NSDictionary *)toMap {
+  return [NSDictionary dictionaryWithObjectsAndKeys:(self.receivedTimestamp ? self.receivedTimestamp : [NSNull null]), @"receivedTimestamp", (self.macAddress ? self.macAddress : [NSNull null]), @"macAddress", @(self.source), @"source", (self.rssi ? self.rssi : [NSNull null]), @"rssi", (self.transportType ? self.transportType : [NSNull null]), @"transportType", (self.lastSeen ? self.lastSeen : [NSNull null]), @"lastSeen", (self.firstSeen ? self.firstSeen : [NSNull null]), @"firstSeen", (self.msgDelta ? self.msgDelta : [NSNull null]), @"msgDelta", nil];
 }
 @end
 
@@ -370,13 +581,25 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
 {
   switch (type) {
     case 128:     
-      return [DTGBasicIdMessage fromMap:[self readValue]];
+      return [DTGAuthenticationMessage fromMap:[self readValue]];
     
     case 129:     
-      return [DTGLocationMessage fromMap:[self readValue]];
+      return [DTGBasicIdMessage fromMap:[self readValue]];
     
     case 130:     
+      return [DTGConnectionMessage fromMap:[self readValue]];
+    
+    case 131:     
+      return [DTGLocationMessage fromMap:[self readValue]];
+    
+    case 132:     
       return [DTGOperatorIdMessage fromMap:[self readValue]];
+    
+    case 133:     
+      return [DTGSelfIdMessage fromMap:[self readValue]];
+    
+    case 134:     
+      return [DTGSystemDataMessage fromMap:[self readValue]];
     
     default:    
       return [super readValueOfType:type];
@@ -390,16 +613,32 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
 @implementation DTGMessageApiCodecWriter
 - (void)writeValue:(id)value 
 {
-  if ([value isKindOfClass:[DTGBasicIdMessage class]]) {
+  if ([value isKindOfClass:[DTGAuthenticationMessage class]]) {
     [self writeByte:128];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[DTGLocationMessage class]]) {
+  if ([value isKindOfClass:[DTGBasicIdMessage class]]) {
     [self writeByte:129];
     [self writeValue:[value toMap]];
   } else 
-  if ([value isKindOfClass:[DTGOperatorIdMessage class]]) {
+  if ([value isKindOfClass:[DTGConnectionMessage class]]) {
     [self writeByte:130];
+    [self writeValue:[value toMap]];
+  } else 
+  if ([value isKindOfClass:[DTGLocationMessage class]]) {
+    [self writeByte:131];
+    [self writeValue:[value toMap]];
+  } else 
+  if ([value isKindOfClass:[DTGOperatorIdMessage class]]) {
+    [self writeByte:132];
+    [self writeValue:[value toMap]];
+  } else 
+  if ([value isKindOfClass:[DTGSelfIdMessage class]]) {
+    [self writeByte:133];
+    [self writeValue:[value toMap]];
+  } else 
+  if ([value isKindOfClass:[DTGSystemDataMessage class]]) {
+    [self writeByte:134];
     [self writeValue:[value toMap]];
   } else 
 {
@@ -511,6 +750,94 @@ void DTGMessageApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTG
         NSString *arg_macAddress = args[2];
         FlutterError *error;
         DTGOperatorIdMessage *output = [api fromBufferOperatorIdPayload:arg_payload offset:arg_offset macAddress:arg_macAddress error:&error];
+        callback(wrapResult(output, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.MessageApi.fromBufferSelfId"
+        binaryMessenger:binaryMessenger
+        codec:DTGMessageApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(fromBufferSelfIdPayload:offset:macAddress:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(fromBufferSelfIdPayload:offset:macAddress:error:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        FlutterStandardTypedData *arg_payload = args[0];
+        NSNumber *arg_offset = args[1];
+        NSString *arg_macAddress = args[2];
+        FlutterError *error;
+        DTGSelfIdMessage *output = [api fromBufferSelfIdPayload:arg_payload offset:arg_offset macAddress:arg_macAddress error:&error];
+        callback(wrapResult(output, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.MessageApi.fromBufferAuthentication"
+        binaryMessenger:binaryMessenger
+        codec:DTGMessageApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(fromBufferAuthenticationPayload:offset:macAddress:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(fromBufferAuthenticationPayload:offset:macAddress:error:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        FlutterStandardTypedData *arg_payload = args[0];
+        NSNumber *arg_offset = args[1];
+        NSString *arg_macAddress = args[2];
+        FlutterError *error;
+        DTGAuthenticationMessage *output = [api fromBufferAuthenticationPayload:arg_payload offset:arg_offset macAddress:arg_macAddress error:&error];
+        callback(wrapResult(output, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.MessageApi.fromBufferSystemData"
+        binaryMessenger:binaryMessenger
+        codec:DTGMessageApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(fromBufferSystemDataPayload:offset:macAddress:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(fromBufferSystemDataPayload:offset:macAddress:error:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        FlutterStandardTypedData *arg_payload = args[0];
+        NSNumber *arg_offset = args[1];
+        NSString *arg_macAddress = args[2];
+        FlutterError *error;
+        DTGSystemDataMessage *output = [api fromBufferSystemDataPayload:arg_payload offset:arg_offset macAddress:arg_macAddress error:&error];
+        callback(wrapResult(output, error));
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.MessageApi.fromBufferConnection"
+        binaryMessenger:binaryMessenger
+        codec:DTGMessageApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(fromBufferConnectionPayload:offset:macAddress:error:)], @"DTGMessageApi api (%@) doesn't respond to @selector(fromBufferConnectionPayload:offset:macAddress:error:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        FlutterStandardTypedData *arg_payload = args[0];
+        NSNumber *arg_offset = args[1];
+        NSString *arg_macAddress = args[2];
+        FlutterError *error;
+        DTGConnectionMessage *output = [api fromBufferConnectionPayload:arg_payload offset:arg_offset macAddress:arg_macAddress error:&error];
         callback(wrapResult(output, error));
       }];
     }

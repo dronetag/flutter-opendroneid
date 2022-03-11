@@ -241,7 +241,7 @@ class AuthenticationMessage {
   late final MessageSource? source;
   late final int? rssi;
 
-  late final AuthType authType;
+  late final AuthType? authType;
   late final int authDataPage;
   late final int authLastPageIndex;
   late final int authLength;
@@ -267,16 +267,16 @@ class SystemDataMessage {
   late final MessageSource? source;
   late final int? rssi;
 
-  late final OperatorLocationType operatorLocationType;
-  late final ClassificationType classificationType;
+  late final OperatorLocationType? operatorLocationType;
+  late final ClassificationType? classificationType;
   late final double operatorLatitude;
   late final double operatorLongitude;
   late final int areaCount;
   late final int areaRadius;
   late final double areaCeiling;
   late final double areaFloor;
-  late final AircraftCategory category;
-  late final AircraftClass classValue;
+  late final AircraftCategory? category;
+  late final AircraftClass? classValue;
   late final double operatorAltitudeGeo;
 }
 
@@ -321,5 +321,13 @@ abstract class MessageApi {
   LocationMessage fromBufferLocation(
       Uint8List payload, int offset, String macAddress);
   OperatorIdMessage fromBufferOperatorId(
+      Uint8List payload, int offset, String macAddress);
+  SelfIdMessage fromBufferSelfId(
+      Uint8List payload, int offset, String macAddress);
+  AuthenticationMessage fromBufferAuthentication(
+      Uint8List payload, int offset, String macAddress);
+  SystemDataMessage fromBufferSystemData(
+      Uint8List payload, int offset, String macAddress);
+  ConnectionMessage fromBufferConnection(
       Uint8List payload, int offset, String macAddress);
 }

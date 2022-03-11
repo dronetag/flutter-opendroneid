@@ -52,6 +52,38 @@ class OdidMessageHandler: Pigeon.MessageApi {
         return parseOperatorIdMessage(byteBuffer, macAddress)
     }
 
+    override fun fromBufferSelfId(payload: ByteArray, offset: Long, macAddress: String): Pigeon.SelfIdMessage? {
+        if (payload.size < offset + MAX_MESSAGE_SIZE) return null
+        val byteBuffer = ByteBuffer.wrap(payload, offset.toInt(), MAX_MESSAGE_SIZE)
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
+        val b: Int = (byteBuffer.get() and 0xFF.toByte()).toInt()
+        return parseSelfIdMessage(byteBuffer, macAddress)
+    }
+
+    override fun fromBufferConnection(payload: ByteArray, offset: Long, macAddress: String): Pigeon.ConnectionMessage? {
+        if (payload.size < offset + MAX_MESSAGE_SIZE) return null
+        val byteBuffer = ByteBuffer.wrap(payload, offset.toInt(), MAX_MESSAGE_SIZE)
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
+        val b: Int = (byteBuffer.get() and 0xFF.toByte()).toInt()
+        return parseConnectionMessage(byteBuffer, macAddress)
+    }
+
+    override fun fromBufferAuthentication(payload: ByteArray, offset: Long, macAddress: String): Pigeon.AuthenticationMessage? {
+        if (payload.size < offset + MAX_MESSAGE_SIZE) return null
+        val byteBuffer = ByteBuffer.wrap(payload, offset.toInt(), MAX_MESSAGE_SIZE)
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
+        val b: Int = (byteBuffer.get() and 0xFF.toByte()).toInt()
+        return parseAuthenticationMessage(byteBuffer, macAddress)
+    }
+
+    override fun fromBufferSystemData(payload: ByteArray, offset: Long, macAddress: String): Pigeon.SystemDataMessage? {
+        if (payload.size < offset + MAX_MESSAGE_SIZE) return null
+        val byteBuffer = ByteBuffer.wrap(payload, offset.toInt(), MAX_MESSAGE_SIZE)
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
+        val b: Int = (byteBuffer.get() and 0xFF.toByte()).toInt()
+        return parseSystemDataMessage(byteBuffer, macAddress)
+    }
+
     override fun determineMessageType(payload: ByteArray, offset: Long): Long? {
         if (payload.size < offset + MAX_MESSAGE_SIZE) return null
 
@@ -132,6 +164,26 @@ class OdidMessageHandler: Pigeon.MessageApi {
         }
         builder.setOperatorId(operatorIdStr)
 
+        return builder.build()
+    }
+
+    private fun parseSelfIdMessage(byteBuffer: ByteBuffer, macAddress: String): Pigeon.SelfIdMessage {
+        val builder = Pigeon.SelfIdMessage.Builder();
+        return builder.build()
+    }
+
+    private fun parseAuthenticationMessage(byteBuffer: ByteBuffer, macAddress: String): Pigeon.AuthenticationMessage {
+        val builder = Pigeon.AuthenticationMessage.Builder();
+        return builder.build()
+    }
+
+    private fun parseConnectionMessage(byteBuffer: ByteBuffer, macAddress: String): Pigeon.ConnectionMessage {
+        val builder = Pigeon.ConnectionMessage.Builder();
+        return builder.build()
+    }
+
+    private fun parseSystemDataMessage(byteBuffer: ByteBuffer, macAddress: String): Pigeon.SystemDataMessage {
+        val builder = Pigeon.SystemDataMessage.Builder();
         return builder.build()
     }
 

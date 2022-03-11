@@ -352,6 +352,248 @@ class OperatorIdMessage {
   }
 }
 
+class AuthenticationMessage {
+  AuthenticationMessage({
+    required this.receivedTimestamp,
+    required this.macAddress,
+    this.source,
+    this.rssi,
+    this.authType,
+    required this.authDataPage,
+    required this.authLastPageIndex,
+    required this.authLength,
+    required this.authTimestamp,
+    required this.authData,
+  });
+
+  int receivedTimestamp;
+  String macAddress;
+  MessageSource? source;
+  int? rssi;
+  AuthType? authType;
+  int authDataPage;
+  int authLastPageIndex;
+  int authLength;
+  int authTimestamp;
+  String authData;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['receivedTimestamp'] = receivedTimestamp;
+    pigeonMap['macAddress'] = macAddress;
+    pigeonMap['source'] = source == null ? null : source!.index;
+    pigeonMap['rssi'] = rssi;
+    pigeonMap['authType'] = authType == null ? null : authType!.index;
+    pigeonMap['authDataPage'] = authDataPage;
+    pigeonMap['authLastPageIndex'] = authLastPageIndex;
+    pigeonMap['authLength'] = authLength;
+    pigeonMap['authTimestamp'] = authTimestamp;
+    pigeonMap['authData'] = authData;
+    return pigeonMap;
+  }
+
+  static AuthenticationMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return AuthenticationMessage(
+      receivedTimestamp: pigeonMap['receivedTimestamp']! as int,
+      macAddress: pigeonMap['macAddress']! as String,
+      source: pigeonMap['source'] != null
+          ? MessageSource.values[pigeonMap['source']! as int]
+          : null,
+      rssi: pigeonMap['rssi'] as int?,
+      authType: pigeonMap['authType'] != null
+          ? AuthType.values[pigeonMap['authType']! as int]
+          : null,
+      authDataPage: pigeonMap['authDataPage']! as int,
+      authLastPageIndex: pigeonMap['authLastPageIndex']! as int,
+      authLength: pigeonMap['authLength']! as int,
+      authTimestamp: pigeonMap['authTimestamp']! as int,
+      authData: pigeonMap['authData']! as String,
+    );
+  }
+}
+
+class SelfIdMessage {
+  SelfIdMessage({
+    required this.receivedTimestamp,
+    required this.macAddress,
+    this.source,
+    this.rssi,
+    required this.descriptionType,
+    required this.operationDescription,
+  });
+
+  int receivedTimestamp;
+  String macAddress;
+  MessageSource? source;
+  int? rssi;
+  int descriptionType;
+  String operationDescription;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['receivedTimestamp'] = receivedTimestamp;
+    pigeonMap['macAddress'] = macAddress;
+    pigeonMap['source'] = source == null ? null : source!.index;
+    pigeonMap['rssi'] = rssi;
+    pigeonMap['descriptionType'] = descriptionType;
+    pigeonMap['operationDescription'] = operationDescription;
+    return pigeonMap;
+  }
+
+  static SelfIdMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return SelfIdMessage(
+      receivedTimestamp: pigeonMap['receivedTimestamp']! as int,
+      macAddress: pigeonMap['macAddress']! as String,
+      source: pigeonMap['source'] != null
+          ? MessageSource.values[pigeonMap['source']! as int]
+          : null,
+      rssi: pigeonMap['rssi'] as int?,
+      descriptionType: pigeonMap['descriptionType']! as int,
+      operationDescription: pigeonMap['operationDescription']! as String,
+    );
+  }
+}
+
+class SystemDataMessage {
+  SystemDataMessage({
+    required this.receivedTimestamp,
+    required this.macAddress,
+    this.source,
+    this.rssi,
+    this.operatorLocationType,
+    this.classificationType,
+    required this.operatorLatitude,
+    required this.operatorLongitude,
+    required this.areaCount,
+    required this.areaRadius,
+    required this.areaCeiling,
+    required this.areaFloor,
+    this.category,
+    this.classValue,
+    required this.operatorAltitudeGeo,
+  });
+
+  int receivedTimestamp;
+  String macAddress;
+  MessageSource? source;
+  int? rssi;
+  OperatorLocationType? operatorLocationType;
+  ClassificationType? classificationType;
+  double operatorLatitude;
+  double operatorLongitude;
+  int areaCount;
+  int areaRadius;
+  double areaCeiling;
+  double areaFloor;
+  AircraftCategory? category;
+  AircraftClass? classValue;
+  double operatorAltitudeGeo;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['receivedTimestamp'] = receivedTimestamp;
+    pigeonMap['macAddress'] = macAddress;
+    pigeonMap['source'] = source == null ? null : source!.index;
+    pigeonMap['rssi'] = rssi;
+    pigeonMap['operatorLocationType'] = operatorLocationType == null ? null : operatorLocationType!.index;
+    pigeonMap['classificationType'] = classificationType == null ? null : classificationType!.index;
+    pigeonMap['operatorLatitude'] = operatorLatitude;
+    pigeonMap['operatorLongitude'] = operatorLongitude;
+    pigeonMap['areaCount'] = areaCount;
+    pigeonMap['areaRadius'] = areaRadius;
+    pigeonMap['areaCeiling'] = areaCeiling;
+    pigeonMap['areaFloor'] = areaFloor;
+    pigeonMap['category'] = category == null ? null : category!.index;
+    pigeonMap['classValue'] = classValue == null ? null : classValue!.index;
+    pigeonMap['operatorAltitudeGeo'] = operatorAltitudeGeo;
+    return pigeonMap;
+  }
+
+  static SystemDataMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return SystemDataMessage(
+      receivedTimestamp: pigeonMap['receivedTimestamp']! as int,
+      macAddress: pigeonMap['macAddress']! as String,
+      source: pigeonMap['source'] != null
+          ? MessageSource.values[pigeonMap['source']! as int]
+          : null,
+      rssi: pigeonMap['rssi'] as int?,
+      operatorLocationType: pigeonMap['operatorLocationType'] != null
+          ? OperatorLocationType.values[pigeonMap['operatorLocationType']! as int]
+          : null,
+      classificationType: pigeonMap['classificationType'] != null
+          ? ClassificationType.values[pigeonMap['classificationType']! as int]
+          : null,
+      operatorLatitude: pigeonMap['operatorLatitude']! as double,
+      operatorLongitude: pigeonMap['operatorLongitude']! as double,
+      areaCount: pigeonMap['areaCount']! as int,
+      areaRadius: pigeonMap['areaRadius']! as int,
+      areaCeiling: pigeonMap['areaCeiling']! as double,
+      areaFloor: pigeonMap['areaFloor']! as double,
+      category: pigeonMap['category'] != null
+          ? AircraftCategory.values[pigeonMap['category']! as int]
+          : null,
+      classValue: pigeonMap['classValue'] != null
+          ? AircraftClass.values[pigeonMap['classValue']! as int]
+          : null,
+      operatorAltitudeGeo: pigeonMap['operatorAltitudeGeo']! as double,
+    );
+  }
+}
+
+class ConnectionMessage {
+  ConnectionMessage({
+    required this.receivedTimestamp,
+    required this.macAddress,
+    this.source,
+    this.rssi,
+    required this.transportType,
+    required this.lastSeen,
+    required this.firstSeen,
+    required this.msgDelta,
+  });
+
+  int receivedTimestamp;
+  String macAddress;
+  MessageSource? source;
+  int? rssi;
+  String transportType;
+  int lastSeen;
+  int firstSeen;
+  int msgDelta;
+
+  Object encode() {
+    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['receivedTimestamp'] = receivedTimestamp;
+    pigeonMap['macAddress'] = macAddress;
+    pigeonMap['source'] = source == null ? null : source!.index;
+    pigeonMap['rssi'] = rssi;
+    pigeonMap['transportType'] = transportType;
+    pigeonMap['lastSeen'] = lastSeen;
+    pigeonMap['firstSeen'] = firstSeen;
+    pigeonMap['msgDelta'] = msgDelta;
+    return pigeonMap;
+  }
+
+  static ConnectionMessage decode(Object message) {
+    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
+    return ConnectionMessage(
+      receivedTimestamp: pigeonMap['receivedTimestamp']! as int,
+      macAddress: pigeonMap['macAddress']! as String,
+      source: pigeonMap['source'] != null
+          ? MessageSource.values[pigeonMap['source']! as int]
+          : null,
+      rssi: pigeonMap['rssi'] as int?,
+      transportType: pigeonMap['transportType']! as String,
+      lastSeen: pigeonMap['lastSeen']! as int,
+      firstSeen: pigeonMap['firstSeen']! as int,
+      msgDelta: pigeonMap['msgDelta']! as int,
+    );
+  }
+}
+
 class _ApiCodec extends StandardMessageCodec {
   const _ApiCodec();
 }
@@ -555,16 +797,32 @@ class _MessageApiCodec extends StandardMessageCodec {
   const _MessageApiCodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is BasicIdMessage) {
+    if (value is AuthenticationMessage) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
     } else 
-    if (value is LocationMessage) {
+    if (value is BasicIdMessage) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
     } else 
-    if (value is OperatorIdMessage) {
+    if (value is ConnectionMessage) {
       buffer.putUint8(130);
+      writeValue(buffer, value.encode());
+    } else 
+    if (value is LocationMessage) {
+      buffer.putUint8(131);
+      writeValue(buffer, value.encode());
+    } else 
+    if (value is OperatorIdMessage) {
+      buffer.putUint8(132);
+      writeValue(buffer, value.encode());
+    } else 
+    if (value is SelfIdMessage) {
+      buffer.putUint8(133);
+      writeValue(buffer, value.encode());
+    } else 
+    if (value is SystemDataMessage) {
+      buffer.putUint8(134);
       writeValue(buffer, value.encode());
     } else 
 {
@@ -575,13 +833,25 @@ class _MessageApiCodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128:       
-        return BasicIdMessage.decode(readValue(buffer)!);
+        return AuthenticationMessage.decode(readValue(buffer)!);
       
       case 129:       
-        return LocationMessage.decode(readValue(buffer)!);
+        return BasicIdMessage.decode(readValue(buffer)!);
       
       case 130:       
+        return ConnectionMessage.decode(readValue(buffer)!);
+      
+      case 131:       
+        return LocationMessage.decode(readValue(buffer)!);
+      
+      case 132:       
         return OperatorIdMessage.decode(readValue(buffer)!);
+      
+      case 133:       
+        return SelfIdMessage.decode(readValue(buffer)!);
+      
+      case 134:       
+        return SystemDataMessage.decode(readValue(buffer)!);
       
       default:      
         return super.readValueOfType(type, buffer);
@@ -689,6 +959,98 @@ class MessageApi {
       );
     } else {
       return (replyMap['result'] as OperatorIdMessage?)!;
+    }
+  }
+
+  Future<SelfIdMessage> fromBufferSelfId(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.MessageApi.fromBufferSelfId', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return (replyMap['result'] as SelfIdMessage?)!;
+    }
+  }
+
+  Future<AuthenticationMessage> fromBufferAuthentication(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.MessageApi.fromBufferAuthentication', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return (replyMap['result'] as AuthenticationMessage?)!;
+    }
+  }
+
+  Future<SystemDataMessage> fromBufferSystemData(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.MessageApi.fromBufferSystemData', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return (replyMap['result'] as SystemDataMessage?)!;
+    }
+  }
+
+  Future<ConnectionMessage> fromBufferConnection(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.MessageApi.fromBufferConnection', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return (replyMap['result'] as ConnectionMessage?)!;
     }
   }
 }
