@@ -14,6 +14,12 @@ class FlutterOpenDroneId {
       const EventChannel('flutter_operatorid_messages');
   static const _basicMessagesEventChannel =
       const EventChannel('flutter_basic_messages');
+  static const _systemDataMessagesEventChannel =
+      const EventChannel('flutter_system_messages');
+  static const _authMessagesEventChannel =
+      const EventChannel('flutter_auth_messages');
+  static const _selfIdMessagesEventChannel =
+      const EventChannel('flutter_selfid_messages');
   static const _btStateEventChannel =
       const EventChannel('flutter_odid_bt_state');
   static const _scanStateEventChannel =
@@ -24,6 +30,9 @@ class FlutterOpenDroneId {
   static StreamSubscription? _locationMessagesSubscription;
   static StreamSubscription? _basicMessagesSubscription;
   static StreamSubscription? _operatorIDMessagesSubscription;
+  static StreamSubscription? _authMessagesSubscription;
+  static StreamSubscription? _systemDataMessagesSubscription;
+  static StreamSubscription? _selfIDMessagesSubscription;
 
   static Stream<pigeon.BluetoothState> get bluetoothState async* {
     yield pigeon.BluetoothState.values[await _api.bluetoothState()];
@@ -60,6 +69,24 @@ class FlutterOpenDroneId {
       final message = pigeon.OperatorIdMessage.decode(data);
       if (message == null) return;
       _updatePacksWithOperatorId(message);
+    });
+    _authMessagesSubscription =
+        _authMessagesEventChannel.receiveBroadcastStream().listen((data) {
+      final message = pigeon.AuthenticationMessage.decode(data);
+      if (message == null) return;
+      _updatePacksWithAuthentication(message);
+    });
+    _systemDataMessagesSubscription =
+        _systemDataMessagesEventChannel.receiveBroadcastStream().listen((data) {
+      final message = pigeon.SystemDataMessage.decode(data);
+      if (message == null) return;
+      _updatePacksWithSystemData(message);
+    });
+    _selfIDMessagesSubscription =
+        _selfIdMessagesEventChannel.receiveBroadcastStream().listen((data) {
+      final message = pigeon.SelfIdMessage.decode(data);
+      if (message == null) return;
+      _updatePacksWithSelfId(message);
     });
     await _api.startScanBluetooth();
     await _api.startScanWifi();
@@ -107,6 +134,34 @@ class FlutterOpenDroneId {
     final storedPack =
         _storedPacks[message.macAddress] ?? MessagePack(macAddress: mac);
     _storedPacks[mac] = storedPack.updateWithOperatorId(message);
+    _packController.add(_storedPacks[message.macAddress]!);
+  }
+
+  static void _updatePacksWithSystemData(pigeon.SystemDataMessage message) {
+    if (message.macAddress == null) return;
+    final mac = message.macAddress as String;
+    final storedPack =
+        _storedPacks[message.macAddress] ?? MessagePack(macAddress: mac);
+    _storedPacks[mac] = storedPack.updateWithSystemData(message);
+    _packController.add(_storedPacks[message.macAddress]!);
+  }
+
+  static void _updatePacksWithAuthentication(
+      pigeon.AuthenticationMessage message) {
+    if (message.macAddress == null) return;
+    final mac = message.macAddress as String;
+    final storedPack =
+        _storedPacks[message.macAddress] ?? MessagePack(macAddress: mac);
+    _storedPacks[mac] = storedPack.updateWithAuthentication(message);
+    _packController.add(_storedPacks[message.macAddress]!);
+  }
+
+  static void _updatePacksWithSelfId(pigeon.SelfIdMessage message) {
+    if (message.macAddress == null) return;
+    final mac = message.macAddress as String;
+    final storedPack =
+        _storedPacks[message.macAddress] ?? MessagePack(macAddress: mac);
+    _storedPacks[mac] = storedPack.updateWithSelfId(message);
     _packController.add(_storedPacks[message.macAddress]!);
   }
 }

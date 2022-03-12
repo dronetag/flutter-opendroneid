@@ -16,6 +16,9 @@ class BluetoothScanner(
         private val basicMessagesHandler: StreamHandler,
         private val locationMessagesHandler: StreamHandler,
         private val operatorIdMessagesHandler: StreamHandler,
+        private val selfIdMessagesHandler: StreamHandler,
+        private val authentificationMessagesHandler: StreamHandler,
+        private val systemDataMessagesHandler: StreamHandler,
         private val bluetoothStateHandler: StreamHandler,
         private val scanStateHandler: StreamHandler,
 ) {
@@ -107,6 +110,7 @@ class BluetoothScanner(
             val typeOrdinal = messageHandler.determineMessageType(bytes, 6);
             if(typeOrdinal == null)
                 return;
+            Log.d("scanner", "Message type: " + typeOrdinal.toString())
             val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
             if(type == Pigeon.MessageType.BasicId)
             {
@@ -128,6 +132,27 @@ class BluetoothScanner(
                 message?.source = Pigeon.MessageSource.BluetoothLegacy;
                 message?.rssi = result.rssi.toLong();
                 operatorIdMessagesHandler.send(message?.toMap() as Any)
+            }
+            else if(type == Pigeon.MessageType.SelfId)
+            {
+                val message: Pigeon.SelfIdMessage? = messageHandler.fromBufferSelfId(bytes, 6, result.device.address)
+                message?.source = Pigeon.MessageSource.BluetoothLegacy;
+                message?.rssi = result.rssi.toLong();
+                selfIdMessagesHandler.send(message?.toMap() as Any)
+            }
+            else if(type == Pigeon.MessageType.Auth)
+            {
+                val message =  messageHandler.fromBufferAuthentication(bytes, 6, result.device.address)
+                message?.source = Pigeon.MessageSource.BluetoothLegacy;
+                message?.rssi = result.rssi.toLong();
+                authentificationMessagesHandler.send(message?.toMap() as Any)
+            }
+            else if(type == Pigeon.MessageType.System)
+            {
+                val message = messageHandler.fromBufferSystemData(bytes, 6, result.device.address)
+                message?.source = Pigeon.MessageSource.BluetoothLegacy;
+                message?.rssi = result.rssi.toLong();
+                systemDataMessagesHandler.send(message?.toMap() as Any)
             }
         }
 

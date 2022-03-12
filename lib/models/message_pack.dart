@@ -10,6 +10,9 @@ class MessagePack {
   final pigeon.BasicIdMessage? basicIdMessage;
   final pigeon.LocationMessage? locationMessage;
   final pigeon.OperatorIdMessage? operatorIdMessage;
+  final pigeon.SelfIdMessage? selfIdMessage;
+  final pigeon.AuthenticationMessage? authenticationMessage;
+  final pigeon.SystemDataMessage? systemDataMessage;
 
   MessagePack({
     required this.macAddress,
@@ -18,6 +21,9 @@ class MessagePack {
     this.basicIdMessage,
     this.locationMessage,
     this.operatorIdMessage,
+    this.selfIdMessage,
+    this.authenticationMessage,
+    this.systemDataMessage,
   });
 
   static const colorMax = 120;
@@ -30,6 +36,9 @@ class MessagePack {
     pigeon.BasicIdMessage? basicIdMessage,
     pigeon.LocationMessage? locationMessage,
     pigeon.OperatorIdMessage? operatorIdMessage,
+    pigeon.SelfIdMessage? selfIdMessage,
+    pigeon.AuthenticationMessage? authenticationMessage,
+    pigeon.SystemDataMessage? systemDataMessage,
   }) =>
       MessagePack(
         macAddress: macAddress ?? this.macAddress,
@@ -38,6 +47,10 @@ class MessagePack {
         basicIdMessage: basicIdMessage ?? this.basicIdMessage,
         locationMessage: locationMessage ?? this.locationMessage,
         operatorIdMessage: operatorIdMessage ?? this.operatorIdMessage,
+        selfIdMessage: selfIdMessage ?? this.selfIdMessage,
+        authenticationMessage:
+            authenticationMessage ?? this.authenticationMessage,
+        systemDataMessage: systemDataMessage ?? this.systemDataMessage,
       );
 
   MessagePack updateWithBasic(pigeon.BasicIdMessage message) {
@@ -50,6 +63,19 @@ class MessagePack {
 
   MessagePack updateWithOperatorId(pigeon.OperatorIdMessage message) {
     return copyWith(operatorIdMessage: message, lastMessageRssi: message.rssi);
+  }
+
+  MessagePack updateWithAuthentication(pigeon.AuthenticationMessage message) {
+    return copyWith(
+        authenticationMessage: message, lastMessageRssi: message.rssi);
+  }
+
+  MessagePack updateWithSystemData(pigeon.SystemDataMessage message) {
+    return copyWith(systemDataMessage: message, lastMessageRssi: message.rssi);
+  }
+
+  MessagePack updateWithSelfId(pigeon.SelfIdMessage message) {
+    return copyWith(selfIdMessage: message, lastMessageRssi: message.rssi);
   }
 
   /// Calculates a color from mac address, that uniquely identifies the device

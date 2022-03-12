@@ -27,10 +27,14 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
     private val operatorIdStreamHandler = StreamHandler()
     private val bluetoothStateStreamHandler = StreamHandler()
     private val scanStateStreamHandler = StreamHandler()
+    private val selfIdMessagesHandler = StreamHandler()
+    private val authentificationMessagesHandler = StreamHandler()
+    private val systemDataMessagesHandler = StreamHandler()
 
     private var scanner: BluetoothScanner =
             BluetoothScanner(
                     basicStreamHandler, locationStreamHandler, operatorIdStreamHandler,
+                    selfIdMessagesHandler, authentificationMessagesHandler, systemDataMessagesHandler,
                     bluetoothStateStreamHandler,
                     scanStateStreamHandler,
             )
@@ -48,6 +52,9 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
                         "flutter_basic_messages" to basicStreamHandler,
                         "flutter_location_messages" to locationStreamHandler,
                         "flutter_operatorid_messages" to operatorIdStreamHandler,
+                        "flutter_selfid_messages" to basicStreamHandler,
+                        "flutter_auth_messages" to locationStreamHandler,
+                        "flutter_system_messages" to operatorIdStreamHandler,
                         "flutter_odid_bt_state" to bluetoothStateStreamHandler,
                         "flutter_odid_scan_state" to scanStateStreamHandler
                 )
