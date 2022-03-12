@@ -182,10 +182,11 @@ class OdidMessageHandler: Pigeon.MessageApi {
         builder.setMacAddress(macAddress)
         builder.setReceivedTimestamp(System.currentTimeMillis())
         builder.setDescriptionType((byteBuffer.get() and 0xFF.toByte()).toLong())
-        while(it < MAX_STRING_BYTE_SIZE) {
+        while(it++ < MAX_STRING_BYTE_SIZE) {
          opDesc += byteBuffer.get()
         }
         builder.setOperationDescription(opDesc)
+        io.flutter.Log.d("parser", "parseSelfIdMessage " + opDesc.toString())
         return builder.build()
     }
 
@@ -235,7 +236,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
         builder.setAuthTimestamp(authTimestamp)
         builder.setAuthType(Pigeon.AuthType.values()[authType])
         builder.setAuthDataPage(authDataPage)
-
+        io.flutter.Log.d("parser", "parseAuthenticationMessage " + authData.toString())
         return builder.build()
     }
 

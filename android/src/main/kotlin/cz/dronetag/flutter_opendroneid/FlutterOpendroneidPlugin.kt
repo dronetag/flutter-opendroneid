@@ -6,7 +6,9 @@ import android.content.Context
 import android.content.IntentFilter
 import android.net.wifi.WifiManager
 import android.net.wifi.aware.WifiAwareManager
+import android.os.Build
 import androidx.annotation.NonNull
+import androidx.annotation.RequiresApi
 import io.flutter.Log
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -41,6 +43,7 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
     private lateinit var wifiScanner: WifiScanner
     private lateinit var wifiNaNScanner: WifiNaNScanner
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onAttachedToEngine(
             @NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
     ) {
@@ -52,9 +55,9 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
                         "flutter_basic_messages" to basicStreamHandler,
                         "flutter_location_messages" to locationStreamHandler,
                         "flutter_operatorid_messages" to operatorIdStreamHandler,
-                        "flutter_selfid_messages" to basicStreamHandler,
-                        "flutter_auth_messages" to locationStreamHandler,
-                        "flutter_system_messages" to operatorIdStreamHandler,
+                        "flutter_selfid_messages" to selfIdMessagesHandler,
+                        "flutter_auth_messages" to authentificationMessagesHandler,
+                        "flutter_system_messages" to systemDataMessagesHandler,
                         "flutter_odid_bt_state" to bluetoothStateStreamHandler,
                         "flutter_odid_scan_state" to scanStateStreamHandler
                 )
@@ -71,6 +74,7 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         wifiScanner =
                 WifiScanner(
                         basicStreamHandler, locationStreamHandler, operatorIdStreamHandler,
+                        selfIdMessagesHandler, authentificationMessagesHandler, systemDataMessagesHandler,
                         bluetoothStateStreamHandler,
                         wifiManager,
                         context
@@ -78,6 +82,7 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         wifiNaNScanner =
                 WifiNaNScanner(
                         basicStreamHandler, locationStreamHandler, operatorIdStreamHandler,
+                        selfIdMessagesHandler, authentificationMessagesHandler, systemDataMessagesHandler,
                         bluetoothStateStreamHandler,
                         wifiAwareManager,
                         context
@@ -135,6 +140,7 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         result.success(null)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun stopScanWifi(result: Pigeon.Result<Void>) {
         wifiScanner.cancel()
         wifiNaNScanner.cancel()

@@ -29,6 +29,9 @@ class WifiNaNScanner (
     private val locationMessagesHandler: StreamHandler,
     private val operatorIdMessagesHandler: StreamHandler,
     private val bluetoothStateHandler: StreamHandler,
+    private val selfIdMessagesHandler: StreamHandler,
+    private val authenticationMessagesHandler: StreamHandler,
+    private val systemDataMessagesHandler: StreamHandler,
     private val wifiAwareManager: WifiAwareManager?,
     private val context: Context
 ) {

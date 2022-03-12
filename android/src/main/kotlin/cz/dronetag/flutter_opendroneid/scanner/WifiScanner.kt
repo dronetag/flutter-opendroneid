@@ -15,6 +15,9 @@ class WifiScanner (
     private val basicMessagesHandler: StreamHandler,
     private val locationMessagesHandler: StreamHandler,
     private val operatorIdMessagesHandler: StreamHandler,
+    private val selfIdMessagesHandler: StreamHandler,
+    private val authenticationMessagesHandler: StreamHandler,
+    private val systemDataMessagesHandler: StreamHandler,
     private val bluetoothStateHandler: StreamHandler,
     private val wifiManager: WifiManager?,
     private val context: Context
