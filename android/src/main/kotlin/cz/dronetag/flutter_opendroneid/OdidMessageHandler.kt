@@ -208,7 +208,6 @@ class OdidMessageHandler: Pigeon.MessageApi {
             authLastPageIndex = (byteBuffer.get() and 0xFF.toByte()).toLong()
             authLength = (byteBuffer.get() and 0xFF.toByte()).toLong()
             authTimestamp = (byteBuffer.int and 0xFFFFFFFFL.toInt()).toLong()
-
             // For an explanation, please see the description for struct ODID_Auth_data in:
             // https://github.com/opendroneid/opendroneid-core-c/blob/master/libopendroneid/opendroneid.h
             val len: Long =
@@ -236,7 +235,6 @@ class OdidMessageHandler: Pigeon.MessageApi {
         builder.setAuthTimestamp(authTimestamp)
         builder.setAuthType(Pigeon.AuthType.values()[authType])
         builder.setAuthDataPage(authDataPage)
-        io.flutter.Log.d("parser", "parseAuthenticationMessage " + authData.toString())
         return builder.build()
     }
 
