@@ -5,6 +5,9 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     private let operatoridMessageHandler: StreamHandler
     private let basicMessageHandler: StreamHandler
     private let locationMessageHandler: StreamHandler
+    private let selfidMessageHandler: StreamHandler
+    private let authMessageHandler: StreamHandler
+    private let systemMessageHandler: StreamHandler
     private let stateHandler: StreamHandler
     private let scanStateHandler: StreamHandler
     private let dataParser: OdidParser
@@ -15,10 +18,13 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     
     static let serviceUUID = CBUUID(string: "0000fffa-0000-1000-8000-00805f9b34fb")
     
-    init(basicMessageHandler: StreamHandler, locationMessageHandler: StreamHandler, operatoridMessageHandler: StreamHandler,  stateHandler: StreamHandler, scanStateHandler: StreamHandler) {
+    init(basicMessageHandler: StreamHandler, locationMessageHandler: StreamHandler, operatoridMessageHandler: StreamHandler, authMessageHandler: StreamHandler, systemMessageHandler: StreamHandler, selfidMessageHandler: StreamHandler,  stateHandler: StreamHandler, scanStateHandler: StreamHandler) {
         self.basicMessageHandler = basicMessageHandler
         self.operatoridMessageHandler = operatoridMessageHandler
         self.locationMessageHandler = locationMessageHandler
+        self.authMessageHandler = authMessageHandler
+        self.selfidMessageHandler = selfidMessageHandler
+        self.systemMessageHandler = systemMessageHandler
         self.stateHandler = stateHandler
         self.scanStateHandler = scanStateHandler
         self.centralManager = CBCentralManager(delegate: nil, queue: dispatchQueue)
@@ -76,6 +82,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
             var err: FlutterError?
             let typeOrdinal = UInt(exactly: dataParser.determineMessageTypePayload(data, offset: 6, error: &err)!)
             let type = DTGMessageType(rawValue: typeOrdinal!)
+            NSLog("New message \(typeOrdinal)")
             if(type == DTGMessageType.basicId)
             {
                 let message : DTGBasicIdMessage? = dataParser.fromBufferBasicPayload(data, offset: 6, macAddress: peripheral.identifier.uuidString, error: &err)
@@ -93,6 +100,24 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
                 let message : DTGOperatorIdMessage? = dataParser.fromBufferOperatorIdPayload(data, offset: 6, macAddress: peripheral.identifier.uuidString, error: &err)
                 message!.rssi = RSSI.intValue as NSNumber
                 operatoridMessageHandler.send(message!.toMap() as Any)
+            }
+            else if(type == DTGMessageType.selfId)
+            {
+                let message : DTGSelfIdMessage? = dataParser.fromBufferSelfIdPayload(data, offset: 6, macAddress: peripheral.identifier.uuidString, error: &err)
+                message!.rssi = RSSI.intValue as NSNumber
+                selfidMessageHandler.send(message!.toMap() as Any)
+            }
+            else if(type == DTGMessageType.auth)
+            {
+                let message : DTGAuthenticationMessage? = dataParser.fromBufferAuthenticationPayload(data, offset: 6, macAddress: peripheral.identifier.uuidString, error: &err)
+                message!.rssi = RSSI.intValue as NSNumber
+                authMessageHandler.send(message!.toMap() as Any)
+            }
+            else if(type == DTGMessageType.system)
+            {
+                let message : DTGSystemDataMessage? = dataParser.fromBufferSystemDataPayload(data, offset: 6, macAddress: peripheral.identifier.uuidString, error: &err)
+                message!.rssi = RSSI.intValue as NSNumber
+                systemMessageHandler.send(message!.toMap() as Any)
             }
         } catch {
             NSLog("scanner", "Failed to parse ODID message: \(error)")

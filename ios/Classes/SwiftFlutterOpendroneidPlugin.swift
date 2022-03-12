@@ -51,6 +51,9 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
     private let locationMessagesStreamHandler = StreamHandler()
     private let operatoridMessagesStreamHandler = StreamHandler()
     private let basicMessagesStreamHandler = StreamHandler()
+    private let authMessagesStreamHandler = StreamHandler()
+    private let selfidMessagesStreamHandler = StreamHandler()
+    private let systemMessagesStreamHandler = StreamHandler()
     private let bluetoothStateStreamHandler = StreamHandler()
     private let scanStateStreamHandler = StreamHandler()
     private let wifiStateStreamHandler = StreamHandler()
@@ -66,6 +69,9 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
         FlutterEventChannel(name: "flutter_location_messages", binaryMessenger: registrar.messenger()).setStreamHandler(instance.locationMessagesStreamHandler)
         FlutterEventChannel(name: "flutter_operatorid_messages", binaryMessenger: registrar.messenger()).setStreamHandler(instance.operatoridMessagesStreamHandler)
         FlutterEventChannel(name: "flutter_basic_messages", binaryMessenger: registrar.messenger()).setStreamHandler(instance.basicMessagesStreamHandler)
+        FlutterEventChannel(name: "flutter_system_messages", binaryMessenger: registrar.messenger()).setStreamHandler(instance.systemMessagesStreamHandler)
+        FlutterEventChannel(name: "flutter_selfid_messages", binaryMessenger: registrar.messenger()).setStreamHandler(instance.selfidMessagesStreamHandler)
+        FlutterEventChannel(name: "flutter_auth_messages", binaryMessenger: registrar.messenger()).setStreamHandler(instance.authMessagesStreamHandler)
         FlutterEventChannel(name: "flutter_odid_bt_state", binaryMessenger: registrar.messenger()).setStreamHandler(instance.bluetoothStateStreamHandler)
         FlutterEventChannel(name: "flutter_odid_scan_state", binaryMessenger: registrar.messenger()).setStreamHandler(instance.scanStateStreamHandler)
         
@@ -74,6 +80,9 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
             basicMessageHandler: instance.basicMessagesStreamHandler,
             locationMessageHandler: instance.locationMessagesStreamHandler,
             operatoridMessageHandler: instance.operatoridMessagesStreamHandler,
+            authMessageHandler: instance.authMessagesStreamHandler,
+            systemMessageHandler: instance.systemMessagesStreamHandler,
+            selfidMessageHandler: instance.selfidMessagesStreamHandler,
             stateHandler: instance.bluetoothStateStreamHandler,
             scanStateHandler: instance.scanStateStreamHandler
         )
