@@ -33,8 +33,11 @@ class _HomeScreenState extends State<HomeScreen> {
   bool autoRestartEnabled = false;
   bool beaconSupported = false;
   bool awareSupported = false;
+  bool awareSupportClaimed = false;
   bool btLeSupported = false;
   bool btExtendedSupported = false;
+  bool androidSystem = false;
+  int maxAdvDataLen = 0;
 
   @override
   void initState() {
@@ -45,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // always supported on android
     if (Platform.operatingSystem == "android") {
+      androidSystem = true;
       beaconSupported = true;
       btLeSupported = true;
     }
@@ -61,13 +65,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
     FlutterOpenDroneId.isWifiNanSupported.then((value) {
       setState(() {
-        awareSupported = value;
+        awareSupportClaimed = value;
+        if (awareSupportClaimed && maxAdvDataLen > 1000)
+          awareSupported = true;
+        else
+          awareSupported = false;
       });
     });
 
     FlutterOpenDroneId.isBluetoothExtendedSupported.then((value) {
       setState(() {
         btExtendedSupported = value;
+      });
+    });
+
+    FlutterOpenDroneId.btMaxAdvDataLen.then((value) {
+      setState(() {
+        maxAdvDataLen = value;
+        if (awareSupportClaimed && maxAdvDataLen > 1000)
+          awareSupported = true;
+        else
+          awareSupported = false;
       });
     });
   }
@@ -140,6 +158,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
+              if (androidSystem)
+                PopupMenuItem(
+                  child: Row(
+                    children: [
+                      Text(
+                        "Max Adv. Data Len.",
+                      ),
+                      Spacer(),
+                      Text(
+                        maxAdvDataLen.toString(),
+                      ),
+                    ],
+                  ),
+                ),
               PopupMenuItem(
                 child: Row(
                   children: [
