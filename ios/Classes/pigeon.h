@@ -322,6 +322,7 @@ typedef NS_ENUM(NSUInteger, DTGClassificationType) {
 @end
 
 @interface DTGConnectionMessage : NSObject
+- (NSDictionary *)toMap;
 /// `init` unavailable to enforce nonnull fields, see the `make` class method.
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithReceivedTimestamp:(NSNumber *)receivedTimestamp
@@ -354,6 +355,9 @@ NSObject<FlutterMessageCodec> *DTGApiGetCodec(void);
 - (void)isScanningBluetoothWithCompletion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 - (void)isScanningWifiWithCompletion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 - (void)bluetoothStateWithCompletion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
+- (void)btExtendedSupportedWithCompletion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
+- (void)btMaxAdvDataLenWithCompletion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
+- (void)wifiNaNSupportedWithCompletion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 @end
 
 extern void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *_Nullable api);

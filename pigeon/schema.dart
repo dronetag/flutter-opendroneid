@@ -311,6 +311,12 @@ abstract class Api {
   bool isScanningWifi();
   @async
   int bluetoothState();
+  @async
+  bool btExtendedSupported();
+  @async
+  int btMaxAdvDataLen();
+  @async
+  bool wifiNaNSupported();
 }
 
 @HostApi()

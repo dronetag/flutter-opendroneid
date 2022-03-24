@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_opendroneid/flutter_opendroneid.dart';
@@ -31,9 +31,24 @@ class _HomeScreenState extends State<HomeScreen> {
   pigeon.BluetoothState bluetoothState = pigeon.BluetoothState.Unknown;
   bool isScanning = false;
   bool autoRestartEnabled = false;
+  bool beaconSupported = false;
+  bool awareSupported = false;
+  bool btLeSupported = false;
+  bool btExtendedSupported = false;
 
   @override
   void initState() {
+    // Detect the OS
+    print(Platform.operatingSystem);
+    // The OS version
+    print(Platform.operatingSystemVersion);
+
+    // always supported on android
+    if (Platform.operatingSystem == "android") {
+      beaconSupported = true;
+      btLeSupported = true;
+    }
+
     _bluetoothStateSubscription =
         FlutterOpenDroneId.bluetoothState.listen((state) {
       if (!mounted) return;
@@ -43,6 +58,18 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     _scanStateSubscription = FlutterOpenDroneId.isScanningStream
         .listen((s) => setState(() => isScanning = s));
+
+    FlutterOpenDroneId.isWifiNanSupported.then((value) {
+      setState(() {
+        awareSupported = value;
+      });
+    });
+
+    FlutterOpenDroneId.isBluetoothExtendedSupported.then((value) {
+      setState(() {
+        btExtendedSupported = value;
+      });
+    });
   }
 
   @override
@@ -84,6 +111,60 @@ class _HomeScreenState extends State<HomeScreen> {
                 value: 'autorestart',
                 checked: autoRestartEnabled,
                 child: Text('Auto-restart'),
+              ),
+              PopupMenuItem(
+                child: Row(
+                  children: [
+                    Text(
+                      "Bluetooth 4:",
+                    ),
+                    Spacer(),
+                    Text(
+                      btLeSupported.toString(),
+                    )
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Bluetooth 5:",
+                    ),
+                    Spacer(),
+                    Text(
+                      btExtendedSupported.toString(),
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                child: Row(
+                  children: [
+                    Text(
+                      "Wifi Beacon:",
+                    ),
+                    Spacer(),
+                    Text(
+                      beaconSupported.toString(),
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                child: Row(
+                  children: [
+                    Text(
+                      "Wifi NaN:   ",
+                    ),
+                    Spacer(),
+                    Text(
+                      awareSupported.toString(),
+                    ),
+                  ],
+                ),
               ),
             ],
             onSelected: (item) {

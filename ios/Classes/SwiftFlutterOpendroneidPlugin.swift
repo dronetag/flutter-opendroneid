@@ -3,6 +3,18 @@ import UIKit
 
 @available(iOS 15.0.0, *)
 public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
+    
+    public func btMaxAdvDataLen() async -> (NSNumber?, FlutterError?) {
+        return ((false) as NSNumber?, nil)
+    }
+    
+    public func btExtendedSupported() async -> (NSNumber?, FlutterError?) {
+        return ((false) as NSNumber?, nil)
+    }
+    
+    public func wifiNaNSupported() async -> (NSNumber?, FlutterError?) {
+        return ((false) as NSNumber?, nil)
+    }
 
     public func startScanBluetooth(completion: @escaping (FlutterError?) -> Void) {
         NSLog("Start Scan BT")

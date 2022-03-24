@@ -573,6 +573,60 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
       [channel setMessageHandler:nil];
     }
   }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.Api.btExtendedSupported"
+        binaryMessenger:binaryMessenger
+        codec:DTGApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(btExtendedSupportedWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(btExtendedSupportedWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api btExtendedSupportedWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.Api.btMaxAdvDataLen"
+        binaryMessenger:binaryMessenger
+        codec:DTGApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(btMaxAdvDataLenWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(btMaxAdvDataLenWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api btMaxAdvDataLenWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [FlutterBasicMessageChannel
+        messageChannelWithName:@"dev.flutter.pigeon.Api.wifiNaNSupported"
+        binaryMessenger:binaryMessenger
+        codec:DTGApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(wifiNaNSupportedWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(wifiNaNSupportedWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api wifiNaNSupportedWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
 }
 @interface DTGMessageApiCodecReader : FlutterStandardReader
 @end

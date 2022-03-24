@@ -108,6 +108,12 @@ class FlutterOpenDroneId {
   static Future<bool> get isScanningBluetooth async =>
       await _api.isScanningBluetooth();
 
+  static Future<bool> get isBluetoothExtendedSupported async =>
+      await _api.btExtendedSupported();
+
+  static Future<bool> get isWifiNanSupported async =>
+      await _api.wifiNaNSupported();
+
   static Future<bool> get isScanningWifi async => await _api.isScanningWifi();
 
   static void _updatePacksWithBasic(pigeon.BasicIdMessage message) {

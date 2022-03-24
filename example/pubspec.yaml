@@ -25,6 +25,20 @@ dependencies:
   flutter_map: ^0.13.1
   permission_handler: ^8.1.4+1
 
+  #flutter_google_places_hoc081098: ^1.0.0-nullsafety.5
+  #google_api_headers: ^1.1.1
+  #google_maps_webservice: ^0.0.20-nullsafety.5
+  #google_maps_flutter: ^2.1.1
+  #sliding_up_panel: ^2.0.0+1
+  #location: ^4.2.0
+  #latlong: any
+  #flutter_map_marker_cluster: any
+  #syncfusion_flutter_maps: ^19.4.56-beta
+  #provider: ^6.0.1
+  #http: any
+
+  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

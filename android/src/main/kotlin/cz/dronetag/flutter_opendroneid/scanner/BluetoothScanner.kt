@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.ParcelUuid
+import androidx.annotation.RequiresApi
 import io.flutter.Log
 import java.util.*
 import java.nio.ByteBuffer
@@ -43,6 +44,7 @@ class BluetoothScanner(
 
     private val messageHandler: OdidMessageHandler = OdidMessageHandler()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun scan() {
         if (!bluetoothAdapter.isEnabled) return
         val bluetoothLeScanner: BluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
@@ -50,6 +52,11 @@ class BluetoothScanner(
         builder.setServiceData(serviceParcelUuid, odidAdCode)
         val scanFilters: MutableList<ScanFilter> = ArrayList()
         scanFilters.add(builder.build())
+
+        Log.d("bluetooth LE extended supported:", bluetoothAdapter.isLeExtendedAdvertisingSupported.toString());
+        Log.d("bluetooth LE coded phy supported:", bluetoothAdapter.isLeCodedPhySupported.toString());
+        Log.d("bluetooth multiple advertisment supported:", bluetoothAdapter.isMultipleAdvertisementSupported.toString());
+        Log.d("bluetooth max adv data len:", bluetoothAdapter.leMaximumAdvertisingDataLength.toString());
 
         var scanSettings = ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
@@ -68,6 +75,18 @@ class BluetoothScanner(
         bluetoothLeScanner.startScan(scanFilters, scanSettings, scanCallback)
         Log.d("scanner", "Started OpenDroneID messages scan")
         isScanning = true
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun isBtExtendedSupported(): Boolean
+    {
+        return bluetoothAdapter.isLeExtendedAdvertisingSupported;
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun maxAdvDataLen() : Int
+    {
+        return bluetoothAdapter.leMaximumAdvertisingDataLength;
     }
 
     fun cancel() {

@@ -121,6 +121,7 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun startScanBluetooth(result: Pigeon.Result<Void>) {
         scanner.scan()
         Log.d("plugin", "Started scanning Bt")
@@ -158,6 +159,20 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
 
     override fun bluetoothState(result: Pigeon.Result<Long>){
         result.success(scanner.getAdapterState().toLong())
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun btExtendedSupported(result: Pigeon.Result<Boolean>) {
+        result.success(scanner.isBtExtendedSupported());
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun btMaxAdvDataLen(result: Pigeon.Result<Long>) {
+        result.success(scanner.maxAdvDataLen().toLong());
+    }
+
+    override fun wifiNaNSupported(result: Pigeon.Result<Boolean>) {
+        result.success(wifiNaNScanner.isWifiAwareSupported());
     }
 
     override fun setAutorestartBluetooth(enable: Boolean?, result: Pigeon.Result<Void>) {

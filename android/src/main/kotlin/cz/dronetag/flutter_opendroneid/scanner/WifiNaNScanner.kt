@@ -113,6 +113,11 @@ class WifiNaNScanner (
         )
     }
 
+    fun isWifiAwareSupported(): Boolean
+    {
+        return wifiAwareSupported;
+    }
+
     @TargetApi(Build.VERSION_CODES.O)
     fun stopScan() {
         if (!wifiAwareSupported) return
