@@ -49,9 +49,10 @@ class FlutterOpenDroneId {
 
   /// Starts scanning for nearby traffic
   ///
-  /// To further receive data, listen to [basicIdMessages] or [locationMessages]
+  /// To further receive data, listen to
   /// streams.
   static Future<void> startScan() async {
+    print('lib start');
     _locationMessagesSubscription =
         _locationMessagesEventChannel.receiveBroadcastStream().listen((data) {
       final message = pigeon.LocationMessage.decode(data);

@@ -10,6 +10,7 @@ import io.flutter.Log
 import kotlin.experimental.and
 import android.os.CountDownTimer
 import java.nio.ByteOrder
+import java.util.*
 
 class WifiScanner (
     private val basicMessagesHandler: StreamHandler,
@@ -84,7 +85,7 @@ class WifiScanner (
             for (element in scanResult.informationElements) {
                 if (element != null && element.id == 221) {
                     val buf: ByteBuffer = element.bytes
-                    Log.d("wifi scanner", "bytes: "+ element.bytes.toString())
+                    Log.d("wifi beacon scanner", "bytes: "+ element.bytes.toString())
                     processRemoteIdVendorIE(scanResult, buf)
                 }
             }
@@ -97,6 +98,10 @@ class WifiScanner (
         }
         val dri_CID = ByteArray(CIDLen)
         val arr = ByteArray(buf.remaining())
+        Log.i(
+            TAG,
+            "receive data beacon: "  + Arrays.toString(arr)
+        )
         buf[dri_CID, 0, CIDLen]
         val vendorType = ByteArray(vendorTypeLen)
         buf[vendorType]
@@ -105,6 +110,10 @@ class WifiScanner (
             && ((dri_CID[2] and 0xFF.toByte()) == DRICID.get(2).toByte())
             && vendorType[0] == vendorTypeValue.toByte()
         ) {
+            Log.i(
+                TAG,
+                "receive data beacon: 2"
+            )
             buf.position(driStartByteOffset)
             buf[arr, 0, buf.remaining()]
             val typeOrdinal = messageHandler.determineMessageType(arr, 1);
@@ -134,6 +143,27 @@ class WifiScanner (
                 message?.rssi = scanResult.level.toLong();
                 operatorIdMessagesHandler.send(message?.toMap() as Any)
             }
+            else if(type == Pigeon.MessageType.SelfId)
+            {
+                val message: Pigeon.SelfIdMessage? = messageHandler.fromBufferSelfId(arr, 1, scanResult.BSSID)
+                message?.source = Pigeon.MessageSource.WifiBeacon
+                message?.rssi = scanResult.level.toLong();
+                selfIdMessagesHandler.send(message?.toMap() as Any)
+            }
+            else if(type == Pigeon.MessageType.Auth)
+            {
+                val message =  messageHandler.fromBufferAuthentication(arr, 1, scanResult.BSSID)
+                message?.source = Pigeon.MessageSource.WifiBeacon
+                message?.rssi = scanResult.level.toLong();
+                authenticationMessagesHandler.send(message?.toMap() as Any)
+            }
+            else if(type == Pigeon.MessageType.System)
+            {
+                val message = messageHandler.fromBufferSystemData(arr, 1, scanResult.BSSID)
+                message?.source = Pigeon.MessageSource.WifiBeacon
+                message?.rssi = scanResult.level.toLong();
+                systemDataMessagesHandler.send(message?.toMap() as Any)
+            }
         }
     }
 
@@ -160,7 +190,7 @@ class WifiScanner (
         } else {
             scanFailed++
         }
-        Log.d(TAG, "start_scan:$ret")
+        Log.d(TAG, "start_scan beacon:$ret")
     }
     // There are 2 ways to control WiFi scan:
     // Continuous scan: Calls startSCan() from scan completion callback

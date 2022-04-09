@@ -20,6 +20,8 @@ import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import android.content.pm.PackageManager;
 import java.lang.StringBuilder
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,7 +40,7 @@ class WifiNaNScanner (
     private val messageHandler = OdidMessageHandler()
     private var wifiAwareSession: WifiAwareSession? = null
     private val wifiScanEnabled = true
-    private var wifiAwareSupported = false
+    private var wifiAwareSupported = true
     var isScanning = false
     private val TAG: String = WifiNaNScanner::class.java.getSimpleName()
 
@@ -70,21 +72,81 @@ class WifiNaNScanner (
                     serviceSpecificInfo: ByteArray?,
                     matchFilter: MutableList<ByteArray>?
                 ) {
+                    val transportType = "NAN"
+
+                    val timeNano: Long = SystemClock.elapsedRealtimeNanos()
                     Log.i(
                         TAG,
-                        "onServiceDiscovered: " + serviceSpecificInfo!!.size + ": " + Arrays.toString(
+                        "received data nan: "  + Arrays.toString(
                             serviceSpecificInfo
                         )
                     )
-                    val transportType = "NAN"
-                    val timeNano: Long = SystemClock.elapsedRealtimeNanos()
-
+                    receiveDataNaN(
+                        serviceSpecificInfo,
+                        peerHandle.hashCode(),
+                        timeNano,
+                        transportType
+                    )
                 }
             }, null)
         }
 
         override fun onAttachFailed() {
             Log.d(TAG, "attach failed")
+        }
+    }
+
+    fun receiveDataNaN(
+        data: ByteArray?, peerHash: Int, timeNano: Long,
+        transportType: String?
+    ) {
+        val typeOrdinal = messageHandler.determineMessageType(data as ByteArray, 4);
+        val byteBuffer = ByteBuffer.wrap(data, 4, 25)
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
+        if(typeOrdinal == null)
+            return;
+        val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
+        if(type == Pigeon.MessageType.BasicId)
+        {
+            val message: Pigeon.BasicIdMessage? = messageHandler.fromBufferBasic(data  as ByteArray, 4,peerHash.hashCode().toString())
+            message?.source = Pigeon.MessageSource.WifiNaN
+            message?.rssi = 0
+            basicMessagesHandler.send(message?.toMap() as Any)
+        }
+        else if(type == Pigeon.MessageType.Location)
+        {
+            val message =  messageHandler.fromBufferLocation(data, 4,peerHash.hashCode().toString())
+            message?.source = Pigeon.MessageSource.WifiNaN;
+            message?.rssi = 0
+            locationMessagesHandler.send(message?.toMap() as Any)
+        }
+        else if(type == Pigeon.MessageType.OperatorId)
+        {
+            val message = messageHandler.fromBufferOperatorId(data, 4,peerHash.hashCode().toString())
+            message?.source = Pigeon.MessageSource.WifiNaN
+            message?.rssi = 0
+            operatorIdMessagesHandler.send(message?.toMap() as Any)
+        }
+        else if(type == Pigeon.MessageType.SelfId)
+        {
+            val message: Pigeon.SelfIdMessage? = messageHandler.fromBufferSelfId(data, 4,peerHash.hashCode().toString())
+            message?.source = Pigeon.MessageSource.WifiNaN;
+            message?.rssi = 0
+            selfIdMessagesHandler.send(message?.toMap() as Any)
+        }
+        else if(type == Pigeon.MessageType.Auth)
+        {
+            val message =  messageHandler.fromBufferAuthentication(data, 4,peerHash.hashCode().toString())
+            message?.source = Pigeon.MessageSource.WifiNaN;
+            message?.rssi = 0
+            authenticationMessagesHandler.send(message?.toMap() as Any)
+        }
+        else if(type == Pigeon.MessageType.System)
+        {
+            val message = messageHandler.fromBufferSystemData(data, 4,peerHash.hashCode().toString())
+            message?.source = Pigeon.MessageSource.WifiNaN;
+            message?.rssi = 0
+            systemDataMessagesHandler.send(message?.toMap() as Any)
         }
     }
 
@@ -137,7 +199,8 @@ class WifiNaNScanner (
         wifiAwareSupported = true;
         isScanning = true
         context.registerReceiver(myReceiver, IntentFilter(WifiAwareManager.ACTION_WIFI_AWARE_STATE_CHANGED))
-        Log.d(TAG, "start_scan:")
+        Log.d(TAG, "start_scan NaN:")
+        startScan();
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

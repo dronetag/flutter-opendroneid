@@ -5,7 +5,7 @@ import UIKit
 public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
     
     public func btMaxAdvDataLen() async -> (NSNumber?, FlutterError?) {
-        return ((false) as NSNumber?, nil)
+        return ((0 as NSNumber?, nil)
     }
     
     public func btExtendedSupported() async -> (NSNumber?, FlutterError?) {

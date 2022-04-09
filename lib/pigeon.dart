@@ -263,10 +263,14 @@ class LocationMessage {
     pigeonMap['altitudePressure'] = altitudePressure;
     pigeonMap['altitudeGeodetic'] = altitudeGeodetic;
     pigeonMap['height'] = height;
-    pigeonMap['horizontalAccuracy'] = horizontalAccuracy == null ? null : horizontalAccuracy!.index;
-    pigeonMap['verticalAccuracy'] = verticalAccuracy == null ? null : verticalAccuracy!.index;
-    pigeonMap['baroAccuracy'] = baroAccuracy == null ? null : baroAccuracy!.index;
-    pigeonMap['speedAccuracy'] = speedAccuracy == null ? null : speedAccuracy!.index;
+    pigeonMap['horizontalAccuracy'] =
+        horizontalAccuracy == null ? null : horizontalAccuracy!.index;
+    pigeonMap['verticalAccuracy'] =
+        verticalAccuracy == null ? null : verticalAccuracy!.index;
+    pigeonMap['baroAccuracy'] =
+        baroAccuracy == null ? null : baroAccuracy!.index;
+    pigeonMap['speedAccuracy'] =
+        speedAccuracy == null ? null : speedAccuracy!.index;
     pigeonMap['time'] = time;
     pigeonMap['timeAccuracy'] = timeAccuracy;
     return pigeonMap;
@@ -497,8 +501,10 @@ class SystemDataMessage {
     pigeonMap['macAddress'] = macAddress;
     pigeonMap['source'] = source == null ? null : source!.index;
     pigeonMap['rssi'] = rssi;
-    pigeonMap['operatorLocationType'] = operatorLocationType == null ? null : operatorLocationType!.index;
-    pigeonMap['classificationType'] = classificationType == null ? null : classificationType!.index;
+    pigeonMap['operatorLocationType'] =
+        operatorLocationType == null ? null : operatorLocationType!.index;
+    pigeonMap['classificationType'] =
+        classificationType == null ? null : classificationType!.index;
     pigeonMap['operatorLatitude'] = operatorLatitude;
     pigeonMap['operatorLongitude'] = operatorLongitude;
     pigeonMap['areaCount'] = areaCount;
@@ -521,7 +527,8 @@ class SystemDataMessage {
           : null,
       rssi: pigeonMap['rssi'] as int?,
       operatorLocationType: pigeonMap['operatorLocationType'] != null
-          ? OperatorLocationType.values[pigeonMap['operatorLocationType']! as int]
+          ? OperatorLocationType
+              .values[pigeonMap['operatorLocationType']! as int]
           : null,
       classificationType: pigeonMap['classificationType'] != null
           ? ClassificationType.values[pigeonMap['classificationType']! as int]
@@ -610,7 +617,8 @@ class Api {
 
   Future<void> startScanBluetooth() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.Api.startScanBluetooth', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.Api.startScanBluetooth', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(null) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -620,7 +628,8 @@ class Api {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -633,7 +642,8 @@ class Api {
 
   Future<void> startScanWifi() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.Api.startScanWifi', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.Api.startScanWifi', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(null) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -643,7 +653,8 @@ class Api {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -656,7 +667,8 @@ class Api {
 
   Future<void> stopScanBluetooth() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.Api.stopScanBluetooth', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.Api.stopScanBluetooth', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(null) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -666,7 +678,8 @@ class Api {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -679,7 +692,8 @@ class Api {
 
   Future<void> stopScanWifi() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.Api.stopScanWifi', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.Api.stopScanWifi', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(null) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -689,7 +703,8 @@ class Api {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -702,7 +717,8 @@ class Api {
 
   Future<void> setAutorestartBluetooth(bool arg_enable) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.Api.setAutorestartBluetooth', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.Api.setAutorestartBluetooth', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_enable]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -712,7 +728,8 @@ class Api {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -725,7 +742,8 @@ class Api {
 
   Future<bool> isScanningBluetooth() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.Api.isScanningBluetooth', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.Api.isScanningBluetooth', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(null) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -735,7 +753,8 @@ class Api {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -748,7 +767,8 @@ class Api {
 
   Future<bool> isScanningWifi() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.Api.isScanningWifi', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.Api.isScanningWifi', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(null) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -758,7 +778,8 @@ class Api {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -771,7 +792,8 @@ class Api {
 
   Future<int> bluetoothState() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.Api.bluetoothState', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.Api.bluetoothState', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(null) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -781,7 +803,8 @@ class Api {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -794,7 +817,8 @@ class Api {
 
   Future<bool> btExtendedSupported() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.Api.btExtendedSupported', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.Api.btExtendedSupported', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(null) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -804,7 +828,8 @@ class Api {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -817,7 +842,8 @@ class Api {
 
   Future<int> btMaxAdvDataLen() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.Api.btMaxAdvDataLen', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.Api.btMaxAdvDataLen', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(null) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -827,7 +853,8 @@ class Api {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -840,7 +867,8 @@ class Api {
 
   Future<bool> wifiNaNSupported() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.Api.wifiNaNSupported', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.Api.wifiNaNSupported', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(null) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -850,7 +878,8 @@ class Api {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -869,62 +898,55 @@ class _MessageApiCodec extends StandardMessageCodec {
     if (value is AuthenticationMessage) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is BasicIdMessage) {
+    } else if (value is BasicIdMessage) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is ConnectionMessage) {
+    } else if (value is ConnectionMessage) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is LocationMessage) {
+    } else if (value is LocationMessage) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is OperatorIdMessage) {
+    } else if (value is OperatorIdMessage) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is SelfIdMessage) {
+    } else if (value is SelfIdMessage) {
       buffer.putUint8(133);
       writeValue(buffer, value.encode());
-    } else 
-    if (value is SystemDataMessage) {
+    } else if (value is SystemDataMessage) {
       buffer.putUint8(134);
       writeValue(buffer, value.encode());
-    } else 
-{
+    } else {
       super.writeValue(buffer, value);
     }
   }
+
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 128:       
+      case 128:
         return AuthenticationMessage.decode(readValue(buffer)!);
-      
-      case 129:       
+
+      case 129:
         return BasicIdMessage.decode(readValue(buffer)!);
-      
-      case 130:       
+
+      case 130:
         return ConnectionMessage.decode(readValue(buffer)!);
-      
-      case 131:       
+
+      case 131:
         return LocationMessage.decode(readValue(buffer)!);
-      
-      case 132:       
+
+      case 132:
         return OperatorIdMessage.decode(readValue(buffer)!);
-      
-      case 133:       
+
+      case 133:
         return SelfIdMessage.decode(readValue(buffer)!);
-      
-      case 134:       
+
+      case 134:
         return SystemDataMessage.decode(readValue(buffer)!);
-      
-      default:      
+
+      default:
         return super.readValueOfType(type, buffer);
-      
     }
   }
 }
@@ -933,17 +955,20 @@ class MessageApi {
   /// Constructor for [MessageApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  MessageApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  MessageApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
   static const MessageCodec<Object?> codec = _MessageApiCodec();
 
-  Future<int> determineMessageType(Uint8List arg_payload, int arg_offset) async {
+  Future<int> determineMessageType(
+      Uint8List arg_payload, int arg_offset) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.MessageApi.determineMessageType', codec, binaryMessenger: _binaryMessenger);
-    final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object>[arg_payload, arg_offset]) as Map<Object?, Object?>?;
+        'dev.flutter.pigeon.MessageApi.determineMessageType', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+        .send(<Object>[arg_payload, arg_offset]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -951,7 +976,8 @@ class MessageApi {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -962,11 +988,14 @@ class MessageApi {
     }
   }
 
-  Future<BasicIdMessage> fromBufferBasic(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
+  Future<BasicIdMessage> fromBufferBasic(
+      Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.MessageApi.fromBufferBasic', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.MessageApi.fromBufferBasic', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -974,7 +1003,8 @@ class MessageApi {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -985,11 +1015,14 @@ class MessageApi {
     }
   }
 
-  Future<LocationMessage> fromBufferLocation(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
+  Future<LocationMessage> fromBufferLocation(
+      Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.MessageApi.fromBufferLocation', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.MessageApi.fromBufferLocation', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -997,7 +1030,8 @@ class MessageApi {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1008,11 +1042,14 @@ class MessageApi {
     }
   }
 
-  Future<OperatorIdMessage> fromBufferOperatorId(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
+  Future<OperatorIdMessage> fromBufferOperatorId(
+      Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.MessageApi.fromBufferOperatorId', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.MessageApi.fromBufferOperatorId', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1020,7 +1057,8 @@ class MessageApi {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1031,11 +1069,14 @@ class MessageApi {
     }
   }
 
-  Future<SelfIdMessage> fromBufferSelfId(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
+  Future<SelfIdMessage> fromBufferSelfId(
+      Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.MessageApi.fromBufferSelfId', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.MessageApi.fromBufferSelfId', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1043,7 +1084,8 @@ class MessageApi {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1054,11 +1096,14 @@ class MessageApi {
     }
   }
 
-  Future<AuthenticationMessage> fromBufferAuthentication(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
+  Future<AuthenticationMessage> fromBufferAuthentication(
+      Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.MessageApi.fromBufferAuthentication', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.MessageApi.fromBufferAuthentication', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1066,7 +1111,8 @@ class MessageApi {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1077,11 +1123,14 @@ class MessageApi {
     }
   }
 
-  Future<SystemDataMessage> fromBufferSystemData(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
+  Future<SystemDataMessage> fromBufferSystemData(
+      Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.MessageApi.fromBufferSystemData', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.MessageApi.fromBufferSystemData', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1089,7 +1138,8 @@ class MessageApi {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,
@@ -1100,11 +1150,14 @@ class MessageApi {
     }
   }
 
-  Future<ConnectionMessage> fromBufferConnection(Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
+  Future<ConnectionMessage> fromBufferConnection(
+      Uint8List arg_payload, int arg_offset, String arg_macAddress) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.MessageApi.fromBufferConnection', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.MessageApi.fromBufferConnection', codec,
+        binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress]) as Map<Object?, Object?>?;
+        await channel.send(<Object>[arg_payload, arg_offset, arg_macAddress])
+            as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -1112,7 +1165,8 @@ class MessageApi {
         details: null,
       );
     } else if (replyMap['error'] != null) {
-      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
       throw PlatformException(
         code: (error['code'] as String?)!,
         message: error['message'] as String?,

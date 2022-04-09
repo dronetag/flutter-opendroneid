@@ -53,10 +53,10 @@ class BluetoothScanner(
         val scanFilters: MutableList<ScanFilter> = ArrayList()
         scanFilters.add(builder.build())
 
-        Log.d("bluetooth LE extended supported:", bluetoothAdapter.isLeExtendedAdvertisingSupported.toString());
-        Log.d("bluetooth LE coded phy supported:", bluetoothAdapter.isLeCodedPhySupported.toString());
-        Log.d("bluetooth multiple advertisment supported:", bluetoothAdapter.isMultipleAdvertisementSupported.toString());
-        Log.d("bluetooth max adv data len:", bluetoothAdapter.leMaximumAdvertisingDataLength.toString());
+        Log.d("bluetooth LE extended supported:", bluetoothAdapter.isLeExtendedAdvertisingSupported.toString())
+        Log.d("bluetooth LE coded phy supported:", bluetoothAdapter.isLeCodedPhySupported.toString())
+        Log.d("bluetooth multiple advertisement supported:", bluetoothAdapter.isMultipleAdvertisementSupported.toString())
+        Log.d("bluetooth max adv data len:", bluetoothAdapter.leMaximumAdvertisingDataLength.toString())
 
         var scanSettings = ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
@@ -106,6 +106,7 @@ class BluetoothScanner(
     }
 
     val adapterStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
             val rawState = bluetoothAdapter.state
             val commonState = getAdapterState()
@@ -126,9 +127,8 @@ class BluetoothScanner(
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             val scanRecord: ScanRecord = result.scanRecord ?: return
             val bytes = scanRecord.bytes ?: return
-            val typeOrdinal = messageHandler.determineMessageType(bytes, 6);
-            if(typeOrdinal == null)
-                return;
+
+            val typeOrdinal = messageHandler.determineMessageType(bytes, 6) ?: return;
             val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
             if(type == Pigeon.MessageType.BasicId)
             {

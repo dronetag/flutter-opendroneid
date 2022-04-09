@@ -110,7 +110,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
         val type: Int = byteBuffer.get().toInt()
         val uasId = ByteArray(OdidMessageHandler.MAX_ID_BYTE_SIZE)
         var uasIdStr = String(uasId)
-
+        io.flutter.Log.d("parse basic", "parse basic")
         builder.setReceivedTimestamp(System.currentTimeMillis())
         builder.setIdType(Pigeon.IdType.values()[type and 0xF0 shr 4])
         builder.setUaType(Pigeon.UaType.values()[type and 0x0F])
@@ -119,6 +119,7 @@ class OdidMessageHandler: Pigeon.MessageApi {
         if (uasIdStr.contains('\u0000')) {
             uasIdStr = uasIdStr.split('\u0000').first()
         }
+        io.flutter.Log.d("parse basic", uasIdStr)
         builder.setUasId(uasIdStr)
         return builder.build()
     }
@@ -183,10 +184,9 @@ class OdidMessageHandler: Pigeon.MessageApi {
         builder.setReceivedTimestamp(System.currentTimeMillis())
         builder.setDescriptionType((byteBuffer.get() and 0xFF.toByte()).toLong())
         while(it++ < MAX_STRING_BYTE_SIZE) {
-         opDesc += byteBuffer.get()
+         opDesc += byteBuffer.get().toChar()
         }
         builder.setOperationDescription(opDesc)
-        io.flutter.Log.d("parser", "parseSelfIdMessage " + opDesc.toString())
         return builder.build()
     }
 
