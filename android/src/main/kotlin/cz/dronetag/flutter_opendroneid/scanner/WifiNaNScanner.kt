@@ -75,12 +75,6 @@ class WifiNaNScanner (
                     val transportType = "NAN"
 
                     val timeNano: Long = SystemClock.elapsedRealtimeNanos()
-                    Log.i(
-                        TAG,
-                        "received data nan: "  + Arrays.toString(
-                            serviceSpecificInfo
-                        )
-                    )
                     receiveDataNaN(
                         serviceSpecificInfo,
                         peerHandle.hashCode(),
