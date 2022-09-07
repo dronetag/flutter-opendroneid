@@ -1,0 +1,22 @@
+name: flutter_opendroneid
+description: A flutter plugin for reading Wi-Fi and Bluetooth Remote ID advertisements using native Android and iOS platform-specific implementation.
+version: 0.9.0
+repository: https://github.com/dronetag/flutter-opendroneid
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+  flutter: '>=3.0.5'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  pigeon: ^1.0.14
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: cz.dronetag.flutter_opendroneid
+        pluginClass: FlutterOpendroneidPlugin
+      ios:
+        pluginClass: FlutterOpendroneidPlugin
