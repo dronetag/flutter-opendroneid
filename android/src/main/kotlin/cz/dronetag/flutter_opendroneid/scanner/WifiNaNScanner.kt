@@ -184,6 +184,7 @@ class WifiNaNScanner (
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
             !context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_AWARE)) {
             Log.i(TAG, "WiFi Aware is not supported.");
+            wifiAwareSupported = false
             return;
         }
         wifiAwareSupported = true
