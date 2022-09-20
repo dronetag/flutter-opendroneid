@@ -44,6 +44,18 @@ class WifiNaNScanner (
     var isScanning = false
     private val TAG: String = WifiNaNScanner::class.java.getSimpleName()
 
+    init{
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
+            !context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_AWARE)) {
+            Log.i(TAG, "WiFi Aware is not supported.");
+            wifiAwareSupported = false
+        }
+        else
+        {
+            wifiAwareSupported = true
+        }
+    }
+    
     private val myReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
