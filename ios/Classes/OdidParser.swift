@@ -151,7 +151,7 @@ class OdidParser: NSObject, DTGMessageApi {
         b = dataSlice[19]
         let airCat = (b & 0xF0) >> 4
         let airClass = b & 0x0F
-        let altGeo : Double = Double(UInt16(littleEndian: dataSlice[20...21].withUnsafeBytes { $0.pointee}) & 0xFFFF)
+        let altGeo : Double = OdidParser.decodeAltitude(value: Int(littleEndian: dataSlice[20...21].withUnsafeBytes { $0.pointee} & 0xFFFF))
         
         return DTGSystemDataMessage.make(withReceivedTimestamp: systimestamp as NSNumber, macAddress: macAddress, source: DTGMessageSource.bluetoothLegacy, rssi: 0, operatorLocationType: DTGOperatorLocationType(rawValue: UInt(opLocType))!, classificationType: DTGClassificationType(rawValue: UInt(classType))!, operatorLatitude: opLat as NSNumber, operatorLongitude: opLong as NSNumber, areaCount: areaCnt as NSNumber, areaRadius: areaRad as NSNumber, areaCeiling: areaCeil as NSNumber, areaFloor: areaFloor as NSNumber, category: DTGAircraftCategory(rawValue: UInt(airCat))!, classValue: DTGAircraftClass(rawValue: UInt(airClass))!, operatorAltitudeGeo: altGeo as NSNumber)
     }

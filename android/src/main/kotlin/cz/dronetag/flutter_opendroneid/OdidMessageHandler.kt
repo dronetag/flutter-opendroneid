@@ -293,7 +293,7 @@ class OdidMessageHandler : Pigeon.MessageApi {
         b = byteBuffer.get().toInt()
         builder.setCategory(Pigeon.AircraftCategory.values()[b and 0xF0 shr 4])
         builder.setClassValue(Pigeon.AircraftClass.values()[b and 0x0F])
-        builder.setOperatorAltitudeGeo((byteBuffer.short and 0xFFFF.toShort()).toDouble())
+        builder.setOperatorAltitudeGeo(calcAltitude((byteBuffer.short and 0xFFFF.toShort()).toInt()))
 
         return builder.build()
     }
