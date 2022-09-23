@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter_opendroneid/models/constants.dart';
 import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
 
 class MessagePack {
@@ -147,9 +148,23 @@ class MessagePack {
     return systemDataMessage != null &&
         systemDataMessage?.operatorLatitude != null &&
         systemDataMessage?.operatorLongitude != null &&
-        systemDataMessage?.operatorLatitude as double < 90.0 &&
-        systemDataMessage?.operatorLatitude as double > -90.0 &&
-        systemDataMessage?.operatorLongitude as double < 180.0000000 &&
-        systemDataMessage?.operatorLongitude as double > -180.0000000;
+        systemDataMessage?.operatorLongitude != INV_LON &&
+        systemDataMessage!.operatorLatitude != INV_LAT &&
+        systemDataMessage!.operatorLatitude <= MAX_LAT &&
+        systemDataMessage!.operatorLatitude >= MIN_LAT &&
+        systemDataMessage!.operatorLongitude <= MAX_LON &&
+        systemDataMessage!.operatorLongitude >= MIN_LON;
+  }
+
+  bool locationValid() {
+    return locationMessage != null &&
+        locationMessage?.latitude != null &&
+        locationMessage?.longitude != null &&
+        locationMessage!.latitude != INV_LAT &&
+        locationMessage!.longitude != INV_LON &&
+        locationMessage!.latitude! <= MAX_LAT &&
+        locationMessage!.longitude! <= MAX_LON &&
+        locationMessage!.latitude! >= MIN_LAT &&
+        locationMessage!.longitude! >= MIN_LON;
   }
 }
