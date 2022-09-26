@@ -146,8 +146,8 @@ class OdidParser: NSObject, DTGMessageApi {
         let opLong: Double = OdidParser.LAT_LONG_MULTIPLIER * Double(Int32(littleEndian: dataSlice[8...11].withUnsafeBytes { $0.pointee}))
         let areaCnt = UInt16(littleEndian: dataSlice[12...13].withUnsafeBytes { $0.pointee}) & 0xFFFF
         let areaRad = (dataSlice[14] & 0xFF) * 10
-        let areaCeil: Double = Double(UInt16(littleEndian: dataSlice[15...16].withUnsafeBytes { $0.pointee}) & 0xFFFF)
-        let areaFloor: Double = Double(UInt16(littleEndian: dataSlice[17...18].withUnsafeBytes { $0.pointee}) & 0xFFFF)
+        let areaCeil: Double =  OdidParser.decodeAltitude(value: Int(littleEndian: dataSlice[15...16].withUnsafeBytes { $0.pointee}) & 0xFFFF)
+        let areaFloor: Double = OdidParser.decodeAltitude(value: Int(littleEndian: dataSlice[17...18].withUnsafeBytes { $0.pointee}) & 0xFFFF)
         b = dataSlice[19]
         let airCat = (b & 0xF0) >> 4
         let airClass = b & 0x0F

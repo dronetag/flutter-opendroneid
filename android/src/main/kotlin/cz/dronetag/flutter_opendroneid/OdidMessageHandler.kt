@@ -3,6 +3,7 @@ package cz.dronetag.flutter_opendroneid
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.experimental.and
+import io.flutter.Log
 
 class OdidMessageHandler : Pigeon.MessageApi {
     companion object {
@@ -151,10 +152,10 @@ class OdidMessageHandler : Pigeon.MessageApi {
         builder.setReceivedTimestamp(System.currentTimeMillis())
 
         builder.setDirection(
-                calcDirection((byteBuffer.get() and 0xFF.toByte()).toInt(), ewDirection)
+                calcDirection((byteBuffer.get().toInt() and 0xFF.toInt()), ewDirection)
         )
         builder.setSpeedHorizontal(
-                calcSpeed((byteBuffer.get() and 0xFF.toByte()).toInt(), speedMult)
+                calcSpeed((byteBuffer.get().toInt() and 0xFF.toInt()), speedMult)
         )
         builder.setSpeedVertical(SPEED_VERTICAL_MULTIPLIER * byteBuffer.get().toInt())
         val lat = LAT_LONG_MULTIPLIER * byteBuffer.int
@@ -290,8 +291,8 @@ class OdidMessageHandler : Pigeon.MessageApi {
         builder.setOperatorLongitude(LAT_LONG_MULTIPLIER * byteBuffer.int.toDouble())
         builder.setAreaCount((byteBuffer.short and 0xFFFF.toShort()).toLong())
         builder.setAreaRadius((byteBuffer.get() and 0xFF.toByte()).toLong() * 10)
-        builder.setAreaCeiling((byteBuffer.short and 0xFFFF.toShort()).toDouble())
-        builder.setAreaFloor((byteBuffer.short and 0xFFFF.toShort()).toDouble())
+        builder.setAreaCeiling(calcAltitude((byteBuffer.short and 0xFFFF.toShort()).toInt()))
+        builder.setAreaFloor(calcAltitude((byteBuffer.short and 0xFFFF.toShort()).toInt()))
         b = byteBuffer.get().toInt()
         builder.setCategory(Pigeon.AircraftCategory.values()[b and 0xF0 shr 4])
         builder.setClassValue(Pigeon.AircraftClass.values()[b and 0x0F])
@@ -301,7 +302,7 @@ class OdidMessageHandler : Pigeon.MessageApi {
     }
 
     private fun calcSpeed(value: Int, mult: Int): Double {
-        return if (mult == 0) value * 0.25 else (value * 0.75) + (255 * 0.25)
+        return if (mult == 0) value.toDouble() * 0.25 else (value.toDouble() * 0.75) + (255 * 0.25)
     }
 
     private fun speedAccToEnum(acc: Int): Pigeon.SpeedAccuracy {
