@@ -17,6 +17,7 @@ class OdidMessageHandler : Pigeon.MessageApi {
         const val MAX_MESSAGES_IN_PACK = 9
         val MAX_MESSAGE_PACK_SIZE: Int = MAX_MESSAGE_SIZE * MAX_MESSAGES_IN_PACK
         const val LAT_LONG_MULTIPLIER = 1e-7
+        const val SPEED_VERTICAL_MULTIPLIER = 0.5;
     }
 
     override fun fromBufferBasic(
@@ -148,13 +149,14 @@ class OdidMessageHandler : Pigeon.MessageApi {
 
         builder.setMacAddress(macAddress)
         builder.setReceivedTimestamp(System.currentTimeMillis())
+
         builder.setDirection(
                 calcDirection((byteBuffer.get() and 0xFF.toByte()).toInt(), ewDirection)
         )
         builder.setSpeedHorizontal(
                 calcSpeed((byteBuffer.get() and 0xFF.toByte()).toInt(), speedMult)
         )
-        builder.setSpeedVertical(calcSpeed(byteBuffer.get().toInt(), speedMult))
+        builder.setSpeedVertical(SPEED_VERTICAL_MULTIPLIER * byteBuffer.get().toInt())
         val lat = LAT_LONG_MULTIPLIER * byteBuffer.int
         builder.setLatitude(lat)
         builder.setLongitude(LAT_LONG_MULTIPLIER * byteBuffer.int)
@@ -299,7 +301,7 @@ class OdidMessageHandler : Pigeon.MessageApi {
     }
 
     private fun calcSpeed(value: Int, mult: Int): Double {
-        return if (mult == 0) value * 0.25 else value * 0.75 + 255 * 0.25
+        return if (mult == 0) value * 0.25 else (value * 0.75) + (255 * 0.25)
     }
 
     private fun speedAccToEnum(acc: Int): Pigeon.SpeedAccuracy {

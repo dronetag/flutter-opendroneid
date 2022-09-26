@@ -37,7 +37,7 @@ class OdidParser: NSObject, DTGMessageApi {
         let speedMult = Int((meta & 0x01))
         let direction = OdidParser.decodeDirection(value: Int(dataSlice[4] & 0xFF), ew: ewDirection)
         let speedHori = OdidParser.decodeSpeed(value: Int(dataSlice[5] & 0xFF), multiplier: speedMult)
-        let speedVert = OdidParser.decodeSpeed(value: Int(dataSlice[6]), multiplier: speedMult)
+        let speedVert = OdidParser.SPEED_VERTICAL_MULTIPLIER * Double(dataSlice[6])
         var latRaw = Int32(littleEndian: dataSlice[7...10].withUnsafeBytes { $0.pointee })
         var longRaw = Int32(littleEndian: dataSlice[11...14].withUnsafeBytes { $0.pointee })
         let latitude = OdidParser.LAT_LONG_MULTIPLIER * Double(latRaw)
@@ -158,6 +158,7 @@ class OdidParser: NSObject, DTGMessageApi {
 
     static let odidAdCode: [UInt8] = [ 0x0D ]
     static let LAT_LONG_MULTIPLIER = 1e-7
+    static let SPEED_VERTICAL_MULTIPLIER = 0.5
     static let MAX_MESSAGE_SIZE = 25
     static let MAX_ID_BYTE_SIZE = 20
     static let MAX_STRING_BYTE_SIZE = 23
