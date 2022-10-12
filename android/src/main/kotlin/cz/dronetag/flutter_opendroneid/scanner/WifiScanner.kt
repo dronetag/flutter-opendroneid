@@ -203,6 +203,9 @@ class WifiScanner (
     }
 
     fun getAdapterState(): Int {
+        if (wifiManager == null) {
+            return 1
+        }
         return when (wifiManager.getWifiState()) {
             WifiManager.WIFI_STATE_ENABLED -> 3
             else -> 1

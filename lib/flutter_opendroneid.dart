@@ -58,6 +58,11 @@ class FlutterOpenDroneId {
         pigeon.BluetoothState.values.indexOf(pigeon.BluetoothState.PoweredOn);
   }
 
+  static Future<bool> get wifiTurnedOn async {
+    return await _api.wifiState() ==
+        pigeon.WifiState.values.indexOf(pigeon.WifiState.Enabled);
+  }
+
   /// Starts scanning for nearby traffic
   ///
   /// To further receive data, listen to

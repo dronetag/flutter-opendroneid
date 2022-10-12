@@ -158,6 +158,10 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         result.success(scanner.getAdapterState().toLong())
     }
 
+    override fun wifiState(result: Pigeon.Result<Long>){
+        result.success(wifiScanner.getAdapterState().toLong())
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun btExtendedSupported(result: Pigeon.Result<Boolean>) {
         result.success(scanner.isBtExtendedSupported());
