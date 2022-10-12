@@ -176,8 +176,8 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         result.success(wifiNaNScanner.isWifiAwareSupported());
     }
 
-    override fun setAutorestartBluetooth(enable: Boolean?, result: Pigeon.Result<Void>) {
-        scanner.shouldAutoRestart = enable ?: false
+    override fun setAutorestartBluetooth(enable: Boolean, result: Pigeon.Result<Void>) {
+        scanner.shouldAutoRestart = enable
         result.success(null)
     }
 }
