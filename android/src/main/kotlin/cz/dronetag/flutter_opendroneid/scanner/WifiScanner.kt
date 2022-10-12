@@ -201,4 +201,11 @@ class WifiScanner (
             override fun onFinish() {}
         }.start()
     }
+
+    fun getAdapterState(): Int {
+        return when (wifiManager.getWifiState()) {
+            WifiManager.WIFI_STATE_ENABLED -> 3
+            else -> 1
+        }
+    }
 }
