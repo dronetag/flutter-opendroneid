@@ -96,7 +96,7 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         binding.activity.registerReceiver(
             wifiScanner.adapterStateReceiver,
             IntentFilter(WifiManager.ACTION_WIFI_SCAN_AVAILABILITY_CHANGED)
-    )
+        )
         boundActivity = binding.activity
     }
 
