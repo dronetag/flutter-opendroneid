@@ -202,6 +202,18 @@ class WifiScanner (
         }.start()
     }
 
+    val adapterStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (wifiManager == null) {
+                return
+            }
+            val rawState = wifiManager.getWifiState()
+            if (rawState == WifiManager.WIFI_STATE_DISABLED || rawState == WifiManager.WIFI_STATE_DISABLING) {
+                cancel()
+            }
+        }
+    }
+
     fun getAdapterState(): Int {
         if (wifiManager == null) {
             return 1
