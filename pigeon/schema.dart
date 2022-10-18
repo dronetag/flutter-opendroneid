@@ -110,6 +110,14 @@ enum BluetoothState {
   PoweredOn,
 }
 
+/// State of the Wifi adapter
+enum WifiState {
+  Disabling,
+  Disabled,
+  Enabling,
+  Enabled,
+}
+
 enum AuthType {
   None,
   UAS_ID_Signature,
@@ -313,6 +321,8 @@ abstract class Api {
   bool isScanningWifi();
   @async
   int bluetoothState();
+  @async
+  int wifiState();
   @async
   bool btExtendedSupported();
   @async

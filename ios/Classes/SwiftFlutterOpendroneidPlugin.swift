@@ -92,4 +92,8 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
     public func bluetoothState() async -> (NSNumber?, FlutterError?) {
         return ((bluetoothScanner?.managerState()) as NSNumber?, nil)
     }
+
+    public func wifiState() async -> (NSNumber?, FlutterError?) {
+        return ((DTGWifiState.disabled.rawValue) as NSNumber?, nil)
+    }
 }

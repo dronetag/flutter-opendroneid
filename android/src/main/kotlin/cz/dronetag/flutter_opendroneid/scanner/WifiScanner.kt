@@ -201,4 +201,32 @@ class WifiScanner (
             override fun onFinish() {}
         }.start()
     }
+
+    val adapterStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (wifiManager == null) {
+                return
+            }
+            // wifi can be available even if it is turned of
+            if(wifiManager.isScanAlwaysAvailable())
+                return
+            val rawState = wifiManager.getWifiState()
+            if (rawState == WifiManager.WIFI_STATE_DISABLED || rawState == WifiManager.WIFI_STATE_DISABLING) {
+                cancel()
+            }
+        }
+    }
+
+    fun getAdapterState(): Int {
+        if (wifiManager == null) {
+            return 1
+        }
+         // wifi can be available even if it is turned of
+        if(wifiManager.isScanAlwaysAvailable())
+            return 3
+        return when (wifiManager.getWifiState()) {
+            WifiManager.WIFI_STATE_ENABLED -> 3
+            else -> 1
+        }
+    }
 }

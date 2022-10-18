@@ -37,15 +37,9 @@ class FlutterOpenDroneId {
   static StreamSubscription? _systemDataMessagesSubscription;
   static StreamSubscription? _selfIDMessagesSubscription;
 
-  static Stream<pigeon.BluetoothState> get bluetoothState async* {
-    yield pigeon.BluetoothState.values[await _api.bluetoothState()];
-    yield* _btStateEventChannel.receiveBroadcastStream().asyncMap((event) {
-      if (event)
-        return pigeon.BluetoothState.PoweredOn;
-      else
-        return pigeon.BluetoothState.PoweredOff;
-    });
-  }
+  static Stream<bool> get bluetoothState => _btStateEventChannel
+      .receiveBroadcastStream()
+      .map((event) => event as bool);
 
   static Stream<MessagePack> get allMessages => _packController.stream;
 
@@ -56,6 +50,11 @@ class FlutterOpenDroneId {
   static Future<bool> get btTurnedOn async {
     return await _api.bluetoothState() ==
         pigeon.BluetoothState.values.indexOf(pigeon.BluetoothState.PoweredOn);
+  }
+
+  static Future<bool> get wifiTurnedOn async {
+    return await _api.wifiState() ==
+        pigeon.WifiState.values.indexOf(pigeon.WifiState.Enabled);
   }
 
   /// Starts scanning for nearby traffic
