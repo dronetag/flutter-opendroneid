@@ -1,3 +1,7 @@
+## 0.9.4
+
+Add methods to detect bluetooth and wifi adapter states
+
 ## 0.9.3
 
 Updated `pigeon` library to v3
