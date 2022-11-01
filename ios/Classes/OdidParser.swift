@@ -20,7 +20,7 @@ class OdidParser: NSObject, DTGMessageApi {
         let typeByte = bytes[3]
         let idType = Int((typeByte & 0xF0) >> 4)
         let uaType = Int(typeByte & 0x0F)
-        let uasId = String(bytes: bytes[4...], encoding: .ascii) ?? ""
+        let uasId = String(bytes: bytes[4...(4+OdidParser.MAX_ID_BYTE_SIZE-1)], encoding: .ascii) ?? ""
         let systimestamp = Int(Date().timeIntervalSince1970 * 1000)
         
         return DTGBasicIdMessage.make(withReceivedTimestamp: systimestamp as NSNumber, macAddress: macAddress, source: DTGMessageSource.bluetoothLegacy, rssi: 0, uasId: uasId, idType: DTGIdType(rawValue: UInt(idType))!, uaType: DTGUaType(rawValue: UInt(uaType))!)
