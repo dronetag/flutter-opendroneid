@@ -14,6 +14,7 @@ enum MessageType {
   SelfId,
   System,
   OperatorId,
+  MessagePack,
 }
 
 enum MessageSource {

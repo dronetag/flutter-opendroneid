@@ -15,6 +15,7 @@ typedef NS_ENUM(NSUInteger, DTGMessageType) {
   DTGMessageTypeSelfId = 3,
   DTGMessageTypeSystem = 4,
   DTGMessageTypeOperatorId = 5,
+  DTGMessageTypeMessagePack = 6,
 };
 
 typedef NS_ENUM(NSUInteger, DTGMessageSource) {

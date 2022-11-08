@@ -95,66 +95,98 @@ class WifiScanner (
             return
         }
         val dri_CID = ByteArray(CIDLen)
-        val arr = ByteArray(buf.remaining())
-        buf[dri_CID, 0, CIDLen]
+        var arr = ByteArray(buf.remaining())
+        buf.get(dri_CID, 0, CIDLen)
+
         val vendorType = ByteArray(vendorTypeLen)
-        buf[vendorType]
+        buf.get(vendorType, 0, vendorTypeLen)
+        
         if ((dri_CID[0] and 0xFF.toByte()) == DRICID.get(0).toByte()
             && ((dri_CID[1] and 0xFF.toByte()) == DRICID.get(1).toByte())
             && ((dri_CID[2] and 0xFF.toByte()) == DRICID.get(2).toByte())
             && vendorType[0] == vendorTypeValue.toByte()
-        ) {
+        ) 
+        {
             buf.position(driStartByteOffset)
-            buf[arr, 0, buf.remaining()]
+            buf.get(arr, 0, buf.remaining())
             val typeOrdinal = messageHandler.determineMessageType(arr, 1);
-            val byteBuffer = ByteBuffer.wrap(arr, 1, 25)
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
             if(typeOrdinal == null)
+            {
                 return;
+            }
+            processODIDMessage(arr, scanResult, 0, typeOrdinal)
+        }
+    }
+
+    fun processODIDMessage(arr: ByteArray, scanResult: ScanResult, offset: Long, typeOrdinal: Long)
+    {
             val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
             if(type == Pigeon.MessageType.BasicId)
             {
-                val message: Pigeon.BasicIdMessage? = messageHandler.fromBufferBasic(arr, 6, scanResult.BSSID)
+                var message: Pigeon.BasicIdMessage?
+                if(offset.toInt() == 0)
+                {
+                    message = messageHandler.fromBufferBasic(arr, 6, scanResult.BSSID)
+                }
+                else
+                {
+                    message = messageHandler.fromBufferBasic(arr, offset + 1, scanResult.BSSID)
+                }
                 message?.source = Pigeon.MessageSource.WifiBeacon;
                 message?.rssi = scanResult.level.toLong();
                 basicMessagesHandler.send(message?.toMap() as Any)
             }
             else if(type == Pigeon.MessageType.Location)
             {
-                val message =  messageHandler.fromBufferLocation(arr, 1,scanResult.BSSID)
+                val message =  messageHandler.fromBufferLocation(arr, offset + 1,scanResult.BSSID)
                 message?.source = Pigeon.MessageSource.WifiBeacon;
                 message?.rssi = scanResult.level.toLong();
                 locationMessagesHandler.send(message?.toMap() as Any)
             }
             else if(type == Pigeon.MessageType.OperatorId)
             {
-                val message = messageHandler.fromBufferOperatorId(arr, 1, scanResult.BSSID)
+                val message = messageHandler.fromBufferOperatorId(arr, offset + 1, scanResult.BSSID)
                 message?.source = Pigeon.MessageSource.WifiBeacon;
                 message?.rssi = scanResult.level.toLong();
                 operatorIdMessagesHandler.send(message?.toMap() as Any)
             }
             else if(type == Pigeon.MessageType.SelfId)
             {
-                val message: Pigeon.SelfIdMessage? = messageHandler.fromBufferSelfId(arr, 1, scanResult.BSSID)
+                val message: Pigeon.SelfIdMessage? = messageHandler.fromBufferSelfId(arr, offset + 1, scanResult.BSSID)
                 message?.source = Pigeon.MessageSource.WifiBeacon
                 message?.rssi = scanResult.level.toLong();
                 selfIdMessagesHandler.send(message?.toMap() as Any)
             }
             else if(type == Pigeon.MessageType.Auth)
             {
-                val message =  messageHandler.fromBufferAuthentication(arr, 1, scanResult.BSSID)
+                val message =  messageHandler.fromBufferAuthentication(arr,offset + 1, scanResult.BSSID)
                 message?.source = Pigeon.MessageSource.WifiBeacon
                 message?.rssi = scanResult.level.toLong();
                 authenticationMessagesHandler.send(message?.toMap() as Any)
             }
             else if(type == Pigeon.MessageType.System)
             {
-                val message = messageHandler.fromBufferSystemData(arr, 1, scanResult.BSSID)
+                val message = messageHandler.fromBufferSystemData(arr, offset + 1, scanResult.BSSID)
                 message?.source = Pigeon.MessageSource.WifiBeacon
                 message?.rssi = scanResult.level.toLong();
                 systemDataMessagesHandler.send(message?.toMap() as Any)
             }
-        }
+            else if(type == Pigeon.MessageType.MessagePack)
+            {
+                val messageSize = arr[2];
+                val messages = arr[3];
+                var packOffset = 3;
+                for (i in 0..messages - 1) {
+                    val mtypeOrdinal = messageHandler.determineMessageType(arr, (packOffset + 1).toLong());
+                    if(mtypeOrdinal == null)
+                    {
+                        return;
+                    }
+                    // recursively call method to handle message
+                    processODIDMessage(arr, scanResult, packOffset.toLong(), mtypeOrdinal)
+                    packOffset += messageSize
+                }
+            }
     }
 
     fun cancel() {

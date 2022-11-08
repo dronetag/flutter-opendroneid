@@ -28,7 +28,8 @@ public class Pigeon {
     Auth(2),
     SelfId(3),
     System(4),
-    OperatorId(5);
+    OperatorId(5),
+    MessagePack(6);
 
     private int index;
     private MessageType(final int index) {
