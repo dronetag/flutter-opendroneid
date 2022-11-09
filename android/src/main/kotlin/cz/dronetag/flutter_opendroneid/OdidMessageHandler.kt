@@ -106,14 +106,23 @@ class OdidMessageHandler : Pigeon.MessageApi {
     }
 
     override fun determineMessageType(payload: ByteArray, offset: Long): Long? {
-        if (payload.size < offset + MAX_MESSAGE_SIZE) return null
+        if (payload.size < offset + MAX_MESSAGE_SIZE){   
+            return null
+        }
 
         val byteBuffer = ByteBuffer.wrap(payload, offset.toInt(), MAX_MESSAGE_SIZE)
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
 
         val b: Int = (byteBuffer.get() and 0xFF.toByte()).toInt()
-        val typeData = b and 0xF0 shr 4
-        if (typeData > 5) return null
+        val typeData = (b and 0xF0) shr 4
+        // message pack
+        if (typeData.toInt() == 15)
+        {
+            return 6;
+        }
+        if (typeData > 5){
+            return null
+        }
         return typeData.toLong()
     }
 

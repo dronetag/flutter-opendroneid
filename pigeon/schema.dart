@@ -8,6 +8,7 @@ enum MessageType {
   SelfId,
   System,
   OperatorId,
+  MessagePack,
 }
 
 /// ODID Message Source
