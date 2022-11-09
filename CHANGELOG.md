@@ -1,3 +1,9 @@
+## 0.9.5
+
+- Add missing support for OpenDroneId MESSAGE_PACK message type
+- Fix wrong byterange when parsing UAS IDs
+- Fix parsing of Wi-Fi beacons
+
 ## 0.9.4
 
 Add methods to detect bluetooth and wifi adapter states
