@@ -114,11 +114,11 @@ class WifiScanner (
             {
                 return;
             }
-            processODIDMessage(arr, scanResult, 0, typeOrdinal)
+            handleODIDMessage(arr, scanResult, 0, typeOrdinal)
         }
     }
 
-    fun processODIDMessage(arr: ByteArray, scanResult: ScanResult, offset: Long, typeOrdinal: Long)
+    fun handleODIDMessage(arr: ByteArray, scanResult: ScanResult, offset: Long, typeOrdinal: Long)
     {
             val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
             if(type == Pigeon.MessageType.BasicId)
@@ -183,7 +183,7 @@ class WifiScanner (
                         return;
                     }
                     // recursively call method to handle message
-                    processODIDMessage(arr, scanResult, packOffset.toLong(), mtypeOrdinal)
+                    handleODIDMessage(arr, scanResult, packOffset.toLong(), mtypeOrdinal)
                     packOffset += messageSize
                 }
             }
