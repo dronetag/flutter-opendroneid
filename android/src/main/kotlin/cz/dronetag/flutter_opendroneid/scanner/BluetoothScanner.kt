@@ -106,6 +106,70 @@ class BluetoothScanner(
         }
     }
 
+    fun handleOdidMessage(result: ScanResult, offset: Long) {
+        val scanRecord: ScanRecord = result.scanRecord ?: return
+        val bytes = scanRecord.bytes ?: return
+        var source = Pigeon.MessageSource.BluetoothLegacy;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bluetoothAdapter.isLeCodedPhySupported()) {
+            if (result.getPrimaryPhy() == BluetoothDevice.PHY_LE_CODED)
+                source = Pigeon.MessageSource.BluetoothLongRange;
+        }
+        val typeOrdinal = messageHandler.determineMessageType(bytes, offset) ?: return;
+        val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
+        if(type == Pigeon.MessageType.BasicId)
+        {
+            val message: Pigeon.BasicIdMessage? = messageHandler.fromBufferBasic(bytes, offset, result.device.address)
+            message?.source = source;
+            message?.rssi = result.rssi.toLong();
+            basicMessagesHandler.send(message?.toMap() as Any)
+        }
+        else if(type == Pigeon.MessageType.Location)
+        {
+            val message =  messageHandler.fromBufferLocation(bytes, offset, result.device.address)
+            message?.source = source;
+            message?.rssi = result.rssi.toLong();
+            locationMessagesHandler.send(message?.toMap() as Any)
+        }
+        else if(type == Pigeon.MessageType.OperatorId)
+        {
+            val message = messageHandler.fromBufferOperatorId(bytes, offset, result.device.address)
+            message?.source = source;
+            message?.rssi = result.rssi.toLong();
+            operatorIdMessagesHandler.send(message?.toMap() as Any)
+        }
+        else if(type == Pigeon.MessageType.SelfId)
+        {
+            val message: Pigeon.SelfIdMessage? = messageHandler.fromBufferSelfId(bytes, offset, result.device.address)
+            message?.source = source;
+            message?.rssi = result.rssi.toLong();
+            selfIdMessagesHandler.send(message?.toMap() as Any)
+        }
+        else if(type == Pigeon.MessageType.Auth)
+        {
+            val message =  messageHandler.fromBufferAuthentication(bytes, offset, result.device.address)
+            message?.source = source;
+            message?.rssi = result.rssi.toLong();
+            authenticationMessagesHandler.send(message?.toMap() as Any)
+        }
+        else if(type == Pigeon.MessageType.System)
+        {
+            val message = messageHandler.fromBufferSystemData(bytes, offset, result.device.address)
+            message?.source = source;
+            message?.rssi = result.rssi.toLong();
+            systemDataMessagesHandler.send(message?.toMap() as Any)
+        }
+        else if(type == Pigeon.MessageType.MessagePack)
+        {
+            var packOffset = offset.toInt() + 1
+            val messageSize = bytes[packOffset++];
+            val messages = bytes[packOffset++];
+            for (i in 0..(messages - 1)) {
+                handleOdidMessage(result, packOffset.toLong())
+                packOffset += messageSize
+            }
+        }
+    }
+
     val adapterStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -124,58 +188,7 @@ class BluetoothScanner(
 
     private val scanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
-            val scanRecord: ScanRecord = result.scanRecord ?: return
-            val bytes = scanRecord.bytes ?: return
-            var source = Pigeon.MessageSource.BluetoothLegacy;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bluetoothAdapter.isLeCodedPhySupported()) {
-                if (result.getPrimaryPhy() == BluetoothDevice.PHY_LE_CODED)
-                    source = Pigeon.MessageSource.BluetoothLongRange;
-            }
-
-            val typeOrdinal = messageHandler.determineMessageType(bytes, 6) ?: return;
-            val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
-            if(type == Pigeon.MessageType.BasicId)
-            {
-                val message: Pigeon.BasicIdMessage? = messageHandler.fromBufferBasic(bytes, 6, result.device.address)
-                message?.source = source;
-                message?.rssi = result.rssi.toLong();
-                basicMessagesHandler.send(message?.toMap() as Any)
-            }
-            else if(type == Pigeon.MessageType.Location)
-            {
-                val message =  messageHandler.fromBufferLocation(bytes, 6, result.device.address)
-                message?.source = source;
-                message?.rssi = result.rssi.toLong();
-                locationMessagesHandler.send(message?.toMap() as Any)
-            }
-            else if(type == Pigeon.MessageType.OperatorId)
-            {
-                val message = messageHandler.fromBufferOperatorId(bytes, 6, result.device.address)
-                message?.source = source;
-                message?.rssi = result.rssi.toLong();
-                operatorIdMessagesHandler.send(message?.toMap() as Any)
-            }
-            else if(type == Pigeon.MessageType.SelfId)
-            {
-                val message: Pigeon.SelfIdMessage? = messageHandler.fromBufferSelfId(bytes, 6, result.device.address)
-                message?.source = source;
-                message?.rssi = result.rssi.toLong();
-                selfIdMessagesHandler.send(message?.toMap() as Any)
-            }
-            else if(type == Pigeon.MessageType.Auth)
-            {
-                val message =  messageHandler.fromBufferAuthentication(bytes, 6, result.device.address)
-                message?.source = source;
-                message?.rssi = result.rssi.toLong();
-                authenticationMessagesHandler.send(message?.toMap() as Any)
-            }
-            else if(type == Pigeon.MessageType.System)
-            {
-                val message = messageHandler.fromBufferSystemData(bytes, 6, result.device.address)
-                message?.source = source;
-                message?.rssi = result.rssi.toLong();
-                systemDataMessagesHandler.send(message?.toMap() as Any)
-            }
+            handleOdidMessage(result, 6)
         }
 
         override fun onBatchScanResults(results: List<ScanResult?>?) {
