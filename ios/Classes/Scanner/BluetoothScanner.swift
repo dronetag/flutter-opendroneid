@@ -32,7 +32,10 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     }
     
     func scan() {
-        if centralManager.isScanning == true { return }
+        if centralManager.isScanning == true { 
+            updateScanState()
+            return
+        }
         guard centralManager.state == .poweredOn else {
             updateScanState()
             return
@@ -65,7 +68,6 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     }
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        scanStateHandler.send(central.state.rawValue)
         updateScanState()
     }
     
