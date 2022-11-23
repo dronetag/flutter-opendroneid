@@ -1,3 +1,8 @@
+## 0.9.6
+
+- Added missing support for Bluetooth variant of MESSAGE_PACK messages
+- Fixed Bluetooth adapter state handling on iOS
+
 ## 0.9.5
 
 - Add missing support for OpenDroneId MESSAGE_PACK message type
