@@ -1,3 +1,7 @@
+## 0.9.7
+
+Added explicit checks for internal enum structures
+
 ## 0.9.6
 
 - Added missing support for Bluetooth variant of MESSAGE_PACK messages
