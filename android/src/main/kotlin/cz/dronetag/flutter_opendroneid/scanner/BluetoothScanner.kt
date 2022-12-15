@@ -29,7 +29,7 @@ class BluetoothScanner(
             field = value
             bluetoothStateHandler.send(value)
         }
-    var shouldAutoRestart = false
+    var scanMode = ScanSettings.SCAN_MODE_LOW_LATENCY
     val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     /* OpenDroneID Bluetooth beacons identify themselves by setting the GAP AD Type to
     * "Service Data - 16-bit UUID" and the value to 0xFFFA for ASTM International, ASTM Remote ID.
@@ -66,7 +66,7 @@ class BluetoothScanner(
                 bluetoothAdapter.isLeExtendedAdvertisingSupported
         ) {
             scanSettings = ScanSettings.Builder()
-                    .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                    .setScanMode(scanMode)
                     .setLegacy(false)
                     .setPhy(ScanSettings.PHY_LE_ALL_SUPPORTED)
                     .build()
@@ -75,6 +75,22 @@ class BluetoothScanner(
         bluetoothLeScanner.startScan(scanFilters, scanSettings, scanCallback)
         isScanning = true
         bluetoothStateHandler.send(true)
+    }
+
+    fun setScanPriority(priority: Pigeon.ScanPriority) {
+        if(priority == Pigeon.ScanPriority.High)
+        {
+            scanMode = ScanSettings.SCAN_MODE_LOW_LATENCY
+        }
+        else
+        {
+            scanMode =  ScanSettings.SCAN_MODE_LOW_POWER
+        }
+        if(isScanning){
+            bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
+            scan()
+        }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -179,7 +195,7 @@ class BluetoothScanner(
                 if (bluetoothAdapter.isEnabled) bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
                 isScanning = false
             } else if ((rawState == BluetoothAdapter.STATE_ON)
-                    && !isScanning && shouldAutoRestart) {
+                    && !isScanning) {
                 cancel()
                 scan()
             }
