@@ -116,8 +116,8 @@ class FlutterOpenDroneId {
     _systemDataMessagesSubscription?.cancel();
   }
 
-  static Future<void> enableAutoRestart({required bool enable}) async {
-    await _api.setAutorestartBluetooth(enable);
+  static Future<void> setBtScanPriority(pigeon.ScanPriority priority) async {
+    await _api.setBtScanPriority(priority);
   }
 
   static Future<bool> get isScanningBluetooth async {

@@ -37,6 +37,16 @@ public class Pigeon {
     }
   }
 
+  public enum ScanPriority {
+    High(0),
+    Low(1);
+
+    private int index;
+    private ScanPriority(final int index) {
+      this.index = index;
+    }
+  }
+
   public enum MessageSource {
     BluetoothLegacy(0),
     BluetoothLongRange(1),
@@ -1577,7 +1587,7 @@ public class Pigeon {
     void startScanWifi(Result<Void> result);
     void stopScanBluetooth(Result<Void> result);
     void stopScanWifi(Result<Void> result);
-    void setAutorestartBluetooth(@NonNull Boolean enable, Result<Void> result);
+    void setBtScanPriority(@NonNull ScanPriority priority, Result<Void> result);
     void isScanningBluetooth(Result<Boolean> result);
     void isScanningWifi(Result<Boolean> result);
     void bluetoothState(Result<Long> result);
@@ -1711,15 +1721,15 @@ public class Pigeon {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.setAutorestartBluetooth", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.Api.setBtScanPriority", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
             try {
               ArrayList<Object> args = (ArrayList<Object>)message;
-              Boolean enableArg = (Boolean)args.get(0);
-              if (enableArg == null) {
-                throw new NullPointerException("enableArg unexpectedly null.");
+              ScanPriority priorityArg = args.get(0) == null ? null : ScanPriority.values()[(int)args.get(0)];
+              if (priorityArg == null) {
+                throw new NullPointerException("priorityArg unexpectedly null.");
               }
               Result<Void> resultCallback = new Result<Void>() {
                 public void success(Void result) {
@@ -1732,7 +1742,7 @@ public class Pigeon {
                 }
               };
 
-              api.setAutorestartBluetooth(enableArg, resultCallback);
+              api.setBtScanPriority(priorityArg, resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));

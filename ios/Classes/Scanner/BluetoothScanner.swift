@@ -12,7 +12,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     private let dataParser: OdidParser
     
     private var centralManager: CBCentralManager!
-    var autoRestart: Bool = false
+    
     let dispatchQueue: DispatchQueue = DispatchQueue(label: "BluetoothScanner")
     
     static let serviceUUID = CBUUID(string: "0000fffa-0000-1000-8000-00805f9b34fb")

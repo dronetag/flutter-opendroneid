@@ -17,6 +17,11 @@ enum MessageType {
   MessagePack,
 }
 
+enum ScanPriority {
+  High,
+  Low,
+}
+
 enum MessageSource {
   BluetoothLegacy,
   BluetoothLongRange,
@@ -705,11 +710,11 @@ class Api {
     }
   }
 
-  Future<void> setAutorestartBluetooth(bool arg_enable) async {
+  Future<void> setBtScanPriority(ScanPriority arg_priority) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.Api.setAutorestartBluetooth', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.Api.setBtScanPriority', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_enable]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_priority.index]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
