@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'models/message_pack.dart';
 
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
 
 enum UsedTechnologies { Wifi, Bluetooth, Both, None }
@@ -96,7 +98,11 @@ class FlutterOpenDroneId {
     });
     if (usedTechnologies == UsedTechnologies.Bluetooth ||
         usedTechnologies == UsedTechnologies.Both) {
-      await _api.startScanBluetooth();
+      final permissionGranted =
+          await _ensureBluetoothPermissions() == PermissionStatus.granted;
+      if (permissionGranted) {
+        await _api.startScanBluetooth();
+      }
     }
     if (usedTechnologies == UsedTechnologies.Wifi ||
         usedTechnologies == UsedTechnologies.Both) {
@@ -118,6 +124,22 @@ class FlutterOpenDroneId {
 
   static Future<void> setBtScanPriority(pigeon.ScanPriority priority) async {
     await _api.setBtScanPriority(priority);
+  }
+
+  /// Makes sure that all necessary permissions are granted, used before
+  /// performing any Bluetooth activity
+  static Future<PermissionStatus> _ensureBluetoothPermissions() async {
+    final status = <PermissionStatus>[];
+    status[0] = await Permission.bluetooth.request();
+    status[1] = await Permission.bluetoothScan.request();
+    // Android < 12 requires location permission to scan BT devices
+    if (Platform.isAndroid) {
+      status[2] = await Permission.location.request();
+    }
+    return status.reduce((value, element) =>
+        value.isGranted && element.isGranted
+            ? PermissionStatus.granted
+            : PermissionStatus.denied);
   }
 
   static Future<bool> get isScanningBluetooth async {
