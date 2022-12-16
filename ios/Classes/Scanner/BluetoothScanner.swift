@@ -76,8 +76,8 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     func setScanPriority(priority: DTGScanPriority)
     {
         scanPriority = priority
-        // if scanning, restart and set timer if high
-        // otherwise cancel timer
+        // if scan is running when settting high prio, call scan to restart and set timer
+        // if scan is running when setting low prio, just cancel restart timer
         if centralManager.isScanning {
             if scanPriority == .low {
                 restartTimer?.invalidate()
@@ -88,6 +88,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
             }
         }
     }
+
     func updateScanState() {
         scanStateHandler.send(centralManager.isScanning)
     }

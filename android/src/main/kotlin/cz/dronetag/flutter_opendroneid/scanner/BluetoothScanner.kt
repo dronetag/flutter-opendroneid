@@ -86,6 +86,7 @@ class BluetoothScanner(
         {
             scanMode =  ScanSettings.SCAN_MODE_LOW_POWER
         }
+        // if scan is running, restart with updated scanMode
         if(isScanning){
             bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
             scan()
