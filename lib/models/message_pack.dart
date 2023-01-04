@@ -140,10 +140,8 @@ class MessagePack {
     );
   }
 
-  bool operatorIDValid() {
-    return operatorIdMessage != null &&
-        operatorIdMessage!.operatorId != "NULL" &&
-        operatorIdMessage!.operatorIdValid;
+  bool operatorIDSet() {
+    return operatorIdMessage != null && operatorIdMessage!.operatorId != "NULL";
   }
 
   bool systemDataValid() {
