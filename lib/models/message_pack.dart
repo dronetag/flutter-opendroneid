@@ -141,7 +141,8 @@ class MessagePack {
   }
 
   bool operatorIDSet() {
-    return operatorIdMessage != null && operatorIdMessage!.operatorId != "NULL";
+    return operatorIdMessage != null &&
+        operatorIdMessage!.operatorId != OPERATOR_ID_NOT_SET;
   }
 
   bool systemDataValid() {
