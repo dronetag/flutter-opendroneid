@@ -106,7 +106,9 @@ class FlutterOpenDroneId {
     }
     if (usedTechnologies == UsedTechnologies.Wifi ||
         usedTechnologies == UsedTechnologies.Both) {
-      await _api.startScanWifi();
+      final permissionGranted =
+          await _ensureWifiPermissions() == PermissionStatus.granted;
+      if (permissionGranted) await _api.startScanWifi();
     }
   }
 
@@ -130,16 +132,27 @@ class FlutterOpenDroneId {
   /// performing any Bluetooth activity
   static Future<PermissionStatus> _ensureBluetoothPermissions() async {
     final status = <PermissionStatus>[];
-    status[0] = await Permission.bluetooth.request();
-    status[1] = await Permission.bluetoothScan.request();
+    status.add(await Permission.bluetooth.request());
     // Android < 12 requires location permission to scan BT devices
     if (Platform.isAndroid) {
-      status[2] = await Permission.location.request();
+      status.add(await Permission.location.request());
+      status.add(await Permission.bluetoothScan.request());
     }
     return status.reduce((value, element) =>
         value.isGranted && element.isGranted
             ? PermissionStatus.granted
             : PermissionStatus.denied);
+  }
+
+  /// Makes sure that all necessary permissions are granted, used before
+  /// performing any scanning activity
+  static Future<PermissionStatus> _ensureWifiPermissions() async {
+    // Android requires location permission to scan Wi-Fi devices
+    if (Platform.isAndroid) {
+      final status = await Permission.location.request();
+      return status;
+    }
+    return PermissionStatus.granted;
   }
 
   static Future<bool> get isScanningBluetooth async {
