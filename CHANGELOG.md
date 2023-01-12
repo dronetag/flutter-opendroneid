@@ -1,3 +1,7 @@
+## 0.9.8
+
+Added methods for checking the validity of public part of UAS Operator ID
+
 ## 0.9.7
 
 Added explicit checks for internal enum structures
