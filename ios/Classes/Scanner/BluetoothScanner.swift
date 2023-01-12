@@ -59,7 +59,9 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     
     func cancel() {
         centralManager.stopScan()
-        restartTimer!.invalidate()
+        if let timer = restartTimer {
+            timer.invalidate()
+        }
         updateScanState()
     }
     
