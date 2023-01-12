@@ -43,21 +43,11 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
             return
         }
         
-        centralManager.scanForPeripherals(
-            withServices: nil,
-            options: [
-                CBCentralManagerScanOptionAllowDuplicatesKey: true,
-            ]
-        )
+        scanForPeripherals()
         if scanPriority == .high {
             restartTimer = Timer.scheduledTimer(withTimeInterval: restartIntervalSec, repeats: true) { timer in
                 self.centralManager.stopScan()
-                self.centralManager.scanForPeripherals(
-                    withServices: [BluetoothScanner.serviceUUID],
-                    options: [
-                        CBCentralManagerScanOptionAllowDuplicatesKey: false,
-                    ]
-                )
+                self.scanForPeripherals()
             }
         }
         updateScanState()
@@ -103,6 +93,15 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         handleOdidMessage(advertisementData: advertisementData, didDiscover: peripheral, rssi: RSSI, offset: 6)
+    }
+
+    private func scanForPeripherals(){
+        centralManager.scanForPeripherals(
+            withServices: [BluetoothScanner.serviceUUID],
+            options: [
+                CBCentralManagerScanOptionAllowDuplicatesKey: true,
+            ]
+        )    
     }
 
     private func handleOdidMessage(advertisementData: [String : Any], didDiscover peripheral: CBPeripheral, rssi RSSI: NSNumber, offset: NSNumber){
