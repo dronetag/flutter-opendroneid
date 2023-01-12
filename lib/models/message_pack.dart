@@ -140,8 +140,16 @@ class MessagePack {
     );
   }
 
+  bool operatorIDSet() {
+    return operatorIdMessage != null &&
+        operatorIdMessage!.operatorId != OPERATOR_ID_NOT_SET;
+  }
+
   bool operatorIDValid() {
-    return operatorIdMessage != null && operatorIdMessage?.operatorId != "NULL";
+    final validCharacters = RegExp(r'^[a-zA-Z0-9]+$');
+    return operatorIdMessage != null &&
+        operatorIdMessage!.operatorId.length == 16 &&
+        validCharacters.hasMatch(operatorIdMessage!.operatorId);
   }
 
   bool systemDataValid() {

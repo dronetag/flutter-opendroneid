@@ -30,3 +30,4 @@ const INV_ALT = MIN_ALT; // Invalid altitude
 const MAX_TIMESTAMP = (60 * 60);
 const INV_TIMESTAMP = 0xFFFF; // Invalid, No Value or Unknown Timestamp
 const MAX_AREA_RADIUS = 2550;
+const OPERATOR_ID_NOT_SET = 'NULL';
