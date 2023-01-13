@@ -1,3 +1,7 @@
+## 0.10.0
+
+Added new options to set Bluetooth scan priority
+
 ## 0.9.8
 
 Added methods for checking the validity of public part of UAS Operator ID
