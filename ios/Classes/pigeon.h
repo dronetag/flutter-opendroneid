@@ -18,6 +18,11 @@ typedef NS_ENUM(NSUInteger, DTGMessageType) {
   DTGMessageTypeMessagePack = 6,
 };
 
+typedef NS_ENUM(NSUInteger, DTGScanPriority) {
+  DTGScanPriorityHigh = 0,
+  DTGScanPriorityLow = 1,
+};
+
 typedef NS_ENUM(NSUInteger, DTGMessageSource) {
   DTGMessageSourceBluetoothLegacy = 0,
   DTGMessageSourceBluetoothLongRange = 1,
@@ -361,7 +366,7 @@ NSObject<FlutterMessageCodec> *DTGApiGetCodec(void);
 - (void)startScanWifiWithCompletion:(void(^)(FlutterError *_Nullable))completion;
 - (void)stopScanBluetoothWithCompletion:(void(^)(FlutterError *_Nullable))completion;
 - (void)stopScanWifiWithCompletion:(void(^)(FlutterError *_Nullable))completion;
-- (void)setAutorestartBluetoothEnable:(NSNumber *)enable completion:(void(^)(FlutterError *_Nullable))completion;
+- (void)setBtScanPriorityPriority:(DTGScanPriority)priority completion:(void(^)(FlutterError *_Nullable))completion;
 - (void)isScanningBluetoothWithCompletion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 - (void)isScanningWifiWithCompletion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 - (void)bluetoothStateWithCompletion:(void(^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;

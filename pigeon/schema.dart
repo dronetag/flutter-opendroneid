@@ -11,6 +11,11 @@ enum MessageType {
   MessagePack,
 }
 
+enum ScanPriority {
+  High,
+  Low,
+}
+
 /// ODID Message Source
 enum MessageSource {
   BluetoothLegacy,
@@ -315,7 +320,7 @@ abstract class Api {
   @async
   void stopScanWifi();
   @async
-  void setAutorestartBluetooth(bool enable);
+  void setBtScanPriority(ScanPriority priority);
   @async
   bool isScanningBluetooth();
   @async

@@ -598,15 +598,15 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
   {
     FlutterBasicMessageChannel *channel =
       [[FlutterBasicMessageChannel alloc]
-        initWithName:@"dev.flutter.pigeon.Api.setAutorestartBluetooth"
+        initWithName:@"dev.flutter.pigeon.Api.setBtScanPriority"
         binaryMessenger:binaryMessenger
         codec:DTGApiGetCodec()        ];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(setAutorestartBluetoothEnable:completion:)], @"DTGApi api (%@) doesn't respond to @selector(setAutorestartBluetoothEnable:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(setBtScanPriorityPriority:completion:)], @"DTGApi api (%@) doesn't respond to @selector(setBtScanPriorityPriority:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
-        NSNumber *arg_enable = GetNullableObjectAtIndex(args, 0);
-        [api setAutorestartBluetoothEnable:arg_enable completion:^(FlutterError *_Nullable error) {
+        DTGScanPriority arg_priority = [GetNullableObjectAtIndex(args, 0) integerValue];
+        [api setBtScanPriorityPriority:arg_priority completion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];

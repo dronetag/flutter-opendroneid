@@ -72,13 +72,9 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
         // wifi not used on ios so far
     }
     
-    public func setAutorestartBluetooth(_ enable: NSNumber?) async -> FlutterError? {
-        bluetoothScanner?.autoRestart = enable as! Bool
+    public func setBtScanPriorityPriority(_ priority: DTGScanPriority) async -> FlutterError? {
+        bluetoothScanner.setScanPriority(priority: priority)
         return nil
-    }
-    
-    public func setAutorestartBluetoothEnable(_ enable: NSNumber?, completion: @escaping (FlutterError?) -> Void) {
-        bluetoothScanner?.autoRestart = enable as! Bool
     }
     
     public func isScanningBluetooth() async -> (NSNumber?, FlutterError?) {

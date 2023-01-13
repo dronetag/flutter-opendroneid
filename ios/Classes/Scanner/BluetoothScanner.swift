@@ -12,7 +12,9 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     private let dataParser: OdidParser
     
     private var centralManager: CBCentralManager!
-    var autoRestart: Bool = false
+    private var scanPriority: DTGScanPriority = .high
+    private var restartTimer: Timer?;
+    private let restartIntervalSec: TimeInterval = 120.0
     let dispatchQueue: DispatchQueue = DispatchQueue(label: "BluetoothScanner")
     
     static let serviceUUID = CBUUID(string: "0000fffa-0000-1000-8000-00805f9b34fb")
@@ -41,12 +43,13 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
             return
         }
         
-        centralManager.scanForPeripherals(
-            withServices: nil,
-            options: [
-                CBCentralManagerScanOptionAllowDuplicatesKey: true,
-            ]
-        )
+        scanForPeripherals()
+        if scanPriority == .high {
+            restartTimer = Timer.scheduledTimer(withTimeInterval: restartIntervalSec, repeats: true) { timer in
+                self.centralManager.stopScan()
+                self.scanForPeripherals()
+            }
+        }
         updateScanState()
     }
     
@@ -56,9 +59,28 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     
     func cancel() {
         centralManager.stopScan()
+        if let timer = restartTimer {
+            timer.invalidate()
+        }
         updateScanState()
     }
     
+    func setScanPriority(priority: DTGScanPriority)
+    {
+        scanPriority = priority
+        // if scan is running when settting high prio, call scan to restart and set timer
+        // if scan is running when setting low prio, just cancel restart timer
+        if centralManager.isScanning {
+            if scanPriority == .low {
+                restartTimer?.invalidate()
+            }
+            else {
+                centralManager.stopScan()
+                scan()
+            }
+        }
+    }
+
     func updateScanState() {
         scanStateHandler.send(centralManager.isScanning)
     }
@@ -73,6 +95,15 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         handleOdidMessage(advertisementData: advertisementData, didDiscover: peripheral, rssi: RSSI, offset: 6)
+    }
+
+    private func scanForPeripherals(){
+        centralManager.scanForPeripherals(
+            withServices: [BluetoothScanner.serviceUUID],
+            options: [
+                CBCentralManagerScanOptionAllowDuplicatesKey: true,
+            ]
+        )    
     }
 
     private func handleOdidMessage(advertisementData: [String : Any], didDiscover peripheral: CBPeripheral, rssi RSSI: NSNumber, offset: NSNumber){
