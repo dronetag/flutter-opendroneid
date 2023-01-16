@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_opendroneid/models/permission_missing_exception.dart';
 import 'models/message_pack.dart';
 
 import 'package:permission_handler/permission_handler.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
 
 enum UsedTechnologies { Wifi, Bluetooth, Both, None }
@@ -60,6 +62,12 @@ class FlutterOpenDroneId {
   }
 
   /// Starts scanning for nearby traffic
+  /// For Bluetooth scanning, bluetooth permissions are required on both platforms,
+  /// Android requires Bluetooth scan permission location permission on ver.  < 12
+  ///
+  /// For Wi-Fi scanning, location permission is required on Android
+  ///
+  /// Throws PermissionMissingException if permissions were not granted
   ///
   /// To further receive data, listen to
   /// streams.
@@ -98,24 +106,20 @@ class FlutterOpenDroneId {
     });
     if (usedTechnologies == UsedTechnologies.Bluetooth ||
         usedTechnologies == UsedTechnologies.Both) {
-      final permissionGranted =
-          await _ensureBluetoothPermissions() == PermissionStatus.granted;
-      if (permissionGranted) {
-        await _api.startScanBluetooth();
-      }
+      await _ensureBluetoothPermissions();
+      await _api.startScanBluetooth();
     }
     if (usedTechnologies == UsedTechnologies.Wifi ||
         usedTechnologies == UsedTechnologies.Both) {
-      final permissionGranted =
-          await _ensureWifiPermissions() == PermissionStatus.granted;
-      if (permissionGranted) await _api.startScanWifi();
+      await _ensureWifiPermissions();
+      await _api.startScanWifi();
     }
   }
 
   /// Stops any currently running scan
   static Future<void> stopScan() async {
-    await _api.stopScanBluetooth();
-    await _api.stopScanWifi();
+    if (await _api.isScanningBluetooth()) await _api.stopScanBluetooth();
+    if (await _api.isScanningWifi()) await _api.stopScanWifi();
     _locationMessagesSubscription?.cancel();
     _basicMessagesSubscription?.cancel();
     _operatorIDMessagesSubscription?.cancel();
@@ -130,29 +134,38 @@ class FlutterOpenDroneId {
 
   /// Makes sure that all necessary permissions are granted, used before
   /// performing any Bluetooth activity
-  static Future<PermissionStatus> _ensureBluetoothPermissions() async {
-    final status = <PermissionStatus>[];
-    status.add(await Permission.bluetooth.request());
+  /// Throws PermissionMissingException if required permissions were not granted
+  static Future<void> _ensureBluetoothPermissions() async {
+    if (!await Permission.bluetooth.status.isGranted)
+      throw PermissionMissingException('Bluetooth permission was not granted');
     // Android < 12 requires location permission to scan BT devices
     if (Platform.isAndroid) {
-      status.add(await Permission.location.request());
-      status.add(await Permission.bluetoothScan.request());
+      if (!await Permission.bluetoothScan.status.isGranted)
+        throw PermissionMissingException(
+            'Bluetooth scan permission was not granted');
+      final deviceInfo = DeviceInfoPlugin();
+      final androidInfo = await deviceInfo.androidInfo;
+      final androidVersion = androidInfo.version.release;
+      final ver = int.parse(androidVersion!);
+      if (ver < 12) {
+        if (!await Permission.location.status.isGranted)
+          throw PermissionMissingException('Location permission is required '
+              'for Bluetooth scanning');
+      }
     }
-    return status.reduce((value, element) =>
-        value.isGranted && element.isGranted
-            ? PermissionStatus.granted
-            : PermissionStatus.denied);
   }
 
   /// Makes sure that all necessary permissions are granted, used before
-  /// performing any scanning activity
-  static Future<PermissionStatus> _ensureWifiPermissions() async {
+  /// performing any Wi-Fi activity
+  ///
+  /// Throws PermissionMissingException if required
+  /// permissions were not granted
+  static Future<void> _ensureWifiPermissions() async {
     // Android requires location permission to scan Wi-Fi devices
-    if (Platform.isAndroid) {
-      final status = await Permission.location.request();
-      return status;
+    if (Platform.isAndroid && !await Permission.location.status.isGranted) {
+      throw PermissionMissingException('Location permission is required '
+          'for Wi-Fi scanning');
     }
-    return PermissionStatus.granted;
   }
 
   static Future<bool> get isScanningBluetooth async {
