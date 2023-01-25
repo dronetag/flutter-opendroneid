@@ -1,3 +1,8 @@
+## 0.11.0
+
+- Added methods for checking required Bluetooth & Wi-Fi permissions and eventually reporting when some of them are missing.
+    - We've moved the responsibility to obtain necessary permissions to the target apps using this library, to avoid multiple permission requests in the target apps.
+
 ## 0.10.0
 
 Added new options to set Bluetooth scan priority
