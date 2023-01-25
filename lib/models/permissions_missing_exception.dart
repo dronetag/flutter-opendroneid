@@ -1,5 +1,6 @@
-class PermissionsMissingException implements Exception {
-  final String description;
+import 'package:permission_handler/permission_handler.dart';
 
-  PermissionsMissingException(this.description);
+class PermissionsMissingException implements Exception {
+  final List<Permission> missingPermissions;
+  PermissionsMissingException(this.missingPermissions);
 }

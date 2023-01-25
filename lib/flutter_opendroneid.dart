@@ -135,23 +135,30 @@ class FlutterOpenDroneId {
   /// Checks all required Bluetooth permissions and throws
   /// [PermissionsMissingException] if any of them are not granted.
   static Future<void> _assertBluetoothPermissions() async {
+    List<Permission> missingPermissions = [];
+
+    // Bluetooth permission is required on all platforms
     if (!await Permission.bluetooth.status.isGranted)
-      throw PermissionMissingException('Bluetooth permission was not granted');
-    // Android < 12 requires location permission to scan BT devices
+      missingPermissions.add(Permission.bluetooth);
+
     if (Platform.isAndroid) {
+      // Bluetooth Scan permission is required on all Android phones
       if (!await Permission.bluetoothScan.status.isGranted)
-        throw PermissionMissingException(
-            'Bluetooth scan permission was not granted');
+        missingPermissions.add(Permission.bluetoothScan);
+
       final deviceInfo = DeviceInfoPlugin();
-      final androidInfo = await deviceInfo.androidInfo;
-      final androidVersion = androidInfo.version.release;
-      final ver = int.parse(androidVersion!);
-      if (ver < 12) {
+      final androidVersion = (await deviceInfo.androidInfo).version.release;
+      final androidVersionNumber = int.tryParse(androidVersion ?? '');
+
+      // Android < 12 also requires location permission to scan BT devices
+      if (androidVersionNumber != null && androidVersionNumber < 12) {
         if (!await Permission.location.status.isGranted)
-          throw PermissionMissingException('Location permission is required '
-              'for Bluetooth scanning');
+          missingPermissions.add(Permission.location);
       }
     }
+
+    if (missingPermissions.isNotEmpty)
+      throw PermissionsMissingException(missingPermissions);
   }
 
   /// Checks all required Wi-Fi permissions and throws
@@ -159,8 +166,7 @@ class FlutterOpenDroneId {
   static Future<void> _assertWifiPermissions() async {
     // Android requires location permission to scan Wi-Fi devices
     if (Platform.isAndroid && !await Permission.location.status.isGranted) {
-      throw PermissionMissingException('Location permission is required '
-          'for Wi-Fi scanning');
+      throw PermissionsMissingException([Permission.location]);
     }
   }
 
