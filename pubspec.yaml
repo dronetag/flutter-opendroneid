@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   pigeon: ^3.2.7
-  permission_handler: ^9.2.0
+  permission_handler: ^10.2.0 
   device_info_plus: ^3.2.2
 
 flutter:
