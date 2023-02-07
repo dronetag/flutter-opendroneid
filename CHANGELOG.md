@@ -1,3 +1,7 @@
+## 0.11.1
+
+Bumped dependencies
+
 ## 0.11.0
 
 - Added methods for checking required Bluetooth & Wi-Fi permissions and eventually reporting when some of them are missing.
