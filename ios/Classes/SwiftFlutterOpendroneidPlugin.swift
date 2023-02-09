@@ -56,20 +56,23 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
     }
 
     public func startScanBluetooth(completion: @escaping (FlutterError?) -> Void) {
-
         bluetoothScanner?.scan()
+        completion(nil)
     }
     
     public func startScanWifi(completion: @escaping (FlutterError?) -> Void) {
         // wifi not used on ios so far
+        completion(FlutterError.init(code: "unimplemented", message: "Wi-Fi is not available on iOS", details: nil))
     }
     
     public func stopScanBluetooth(completion: @escaping (FlutterError?) -> Void) {
         bluetoothScanner?.cancel()
+        completion(nil)
     }
     
     public func stopScanWifi(completion: @escaping (FlutterError?) -> Void) {
         // wifi not used on ios so far
+        completion(FlutterError.init(code: "unimplemented", message: "Wi-Fi is not available on iOS", details: nil))
     }
     
     public func setBtScanPriorityPriority(_ priority: DTGScanPriority) async -> FlutterError? {
