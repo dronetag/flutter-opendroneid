@@ -1,3 +1,7 @@
+## 0.11.2
+
+Fixed failure preventing listener initialization which was meant to run after starting scan.
+
 ## 0.11.1
 
 Bumped dependencies
