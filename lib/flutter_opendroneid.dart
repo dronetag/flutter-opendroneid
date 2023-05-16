@@ -170,7 +170,7 @@ class FlutterOpenDroneId {
       if (androidVersionNumber == null) return;
       // Android < 12 also requires location permission
       // Android 13 has a new nearbyWifiDevicesPermission
-      if (androidVersionNumber! >= 13) {
+      if (androidVersionNumber >= 13) {
         if (!await Permission.nearbyWifiDevices.status.isGranted)
           missingPermissions.add(Permission.nearbyWifiDevices);
       } else {
