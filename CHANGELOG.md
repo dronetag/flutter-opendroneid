@@ -1,3 +1,7 @@
+## 0.11.3
+
+- Use the NEARBY_WIFI_DEVICES permission for Android >=13
+
 ## 0.11.2
 
 Fixed failure preventing listener initialization which was meant to run after starting scan.
