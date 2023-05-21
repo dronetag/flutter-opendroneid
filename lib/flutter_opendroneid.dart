@@ -146,9 +146,7 @@ class FlutterOpenDroneId {
       if (!await Permission.bluetoothScan.status.isGranted)
         missingPermissions.add(Permission.bluetoothScan);
 
-      final deviceInfo = DeviceInfoPlugin();
-      final androidVersion = (await deviceInfo.androidInfo).version.release;
-      final androidVersionNumber = int.tryParse(androidVersion ?? '');
+      final androidVersionNumber = await getAndroidVersionNumber();
 
       // Android < 12 also requires location permission to scan BT devices
       if (androidVersionNumber != null && androidVersionNumber < 12) {
@@ -165,9 +163,29 @@ class FlutterOpenDroneId {
   /// [PermissionsMissingException] if any of them are not granted.
   static Future<void> _assertWifiPermissions() async {
     // Android requires location permission to scan Wi-Fi devices
-    if (Platform.isAndroid && !await Permission.location.status.isGranted) {
-      throw PermissionsMissingException([Permission.location]);
+    if (Platform.isAndroid) {
+      List<Permission> missingPermissions = [];
+
+      final androidVersionNumber = await getAndroidVersionNumber();
+      if (androidVersionNumber == null) return;
+      // Android < 12 also requires location permission
+      // Android 13 has a new nearbyWifiDevicesPermission
+      if (androidVersionNumber >= 13) {
+        if (!await Permission.nearbyWifiDevices.status.isGranted)
+          missingPermissions.add(Permission.nearbyWifiDevices);
+      } else {
+        if (!await Permission.location.status.isGranted)
+          missingPermissions.add(Permission.location);
+      }
+      if (missingPermissions.isNotEmpty)
+        throw PermissionsMissingException(missingPermissions);
     }
+  }
+
+  static Future<int?> getAndroidVersionNumber() async {
+    final deviceInfo = DeviceInfoPlugin();
+    final androidVersion = (await deviceInfo.androidInfo).version.release;
+    return int.tryParse(androidVersion);
   }
 
   static Future<bool> get isScanningBluetooth async {
