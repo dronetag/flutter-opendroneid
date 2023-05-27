@@ -121,7 +121,7 @@ class WifiScanner (
     fun handleODIDMessage(arr: ByteArray, scanResult: ScanResult, offset: Long, typeOrdinal: Long)
     {
             val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
-            if(type == Pigeon.MessageType.BasicId)
+            if(type == Pigeon.MessageType.BASIC_ID)
             {
                 var message: Pigeon.BasicIdMessage?
                 if(offset.toInt() == 0)
@@ -132,46 +132,46 @@ class WifiScanner (
                 {
                     message = messageHandler.fromBufferBasic(arr, offset + 1, scanResult.BSSID)
                 }
-                message?.source = Pigeon.MessageSource.WifiBeacon;
+                message?.source = Pigeon.MessageSource.WIFI_BEACON;
                 message?.rssi = scanResult.level.toLong();
-                basicMessagesHandler.send(message?.toMap() as Any)
+                basicMessagesHandler.send(message?.toList() as Any)
             }
-            else if(type == Pigeon.MessageType.Location)
+            else if(type == Pigeon.MessageType.LOCATION)
             {
                 val message =  messageHandler.fromBufferLocation(arr, offset + 1,scanResult.BSSID)
-                message?.source = Pigeon.MessageSource.WifiBeacon;
+                message?.source = Pigeon.MessageSource.WIFI_BEACON;
                 message?.rssi = scanResult.level.toLong();
-                locationMessagesHandler.send(message?.toMap() as Any)
+                locationMessagesHandler.send(message?.toList() as Any)
             }
-            else if(type == Pigeon.MessageType.OperatorId)
+            else if(type == Pigeon.MessageType.OPERATOR_ID)
             {
                 val message = messageHandler.fromBufferOperatorId(arr, offset + 1, scanResult.BSSID)
-                message?.source = Pigeon.MessageSource.WifiBeacon;
+                message?.source = Pigeon.MessageSource.WIFI_BEACON;
                 message?.rssi = scanResult.level.toLong();
-                operatorIdMessagesHandler.send(message?.toMap() as Any)
+                operatorIdMessagesHandler.send(message?.toList() as Any)
             }
-            else if(type == Pigeon.MessageType.SelfId)
+            else if(type == Pigeon.MessageType.SELF_ID)
             {
                 val message: Pigeon.SelfIdMessage? = messageHandler.fromBufferSelfId(arr, offset + 1, scanResult.BSSID)
-                message?.source = Pigeon.MessageSource.WifiBeacon
+                message?.source = Pigeon.MessageSource.WIFI_BEACON
                 message?.rssi = scanResult.level.toLong();
-                selfIdMessagesHandler.send(message?.toMap() as Any)
+                selfIdMessagesHandler.send(message?.toList() as Any)
             }
-            else if(type == Pigeon.MessageType.Auth)
+            else if(type == Pigeon.MessageType.AUTH)
             {
                 val message =  messageHandler.fromBufferAuthentication(arr,offset + 1, scanResult.BSSID)
-                message?.source = Pigeon.MessageSource.WifiBeacon
+                message?.source = Pigeon.MessageSource.WIFI_BEACON
                 message?.rssi = scanResult.level.toLong();
-                authenticationMessagesHandler.send(message?.toMap() as Any)
+                authenticationMessagesHandler.send(message?.toList() as Any)
             }
-            else if(type == Pigeon.MessageType.System)
+            else if(type == Pigeon.MessageType.SYSTEM)
             {
                 val message = messageHandler.fromBufferSystemData(arr, offset + 1, scanResult.BSSID)
-                message?.source = Pigeon.MessageSource.WifiBeacon
+                message?.source = Pigeon.MessageSource.WIFI_BEACON
                 message?.rssi = scanResult.level.toLong();
-                systemDataMessagesHandler.send(message?.toMap() as Any)
+                systemDataMessagesHandler.send(message?.toList() as Any)
             }
-            else if(type == Pigeon.MessageType.MessagePack)
+            else if(type == Pigeon.MessageType.MESSAGE_PACK)
             {
                 val messageSize = arr[2];
                 val messages = arr[3];

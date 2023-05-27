@@ -134,8 +134,8 @@ class OdidMessageHandler : Pigeon.MessageApi {
         val type: Int = byteBuffer.get().toInt()
         val uasId = ByteArray(OdidMessageHandler.MAX_ID_BYTE_SIZE)
         builder.setReceivedTimestamp(System.currentTimeMillis())
-        builder.setIdType(Pigeon.IdType.values().getOrElse(type and 0xF0 shr 4) {Pigeon.IdType.None})
-        builder.setUaType(Pigeon.UaType.values().getOrElse(type and 0x0F) {Pigeon.UaType.None})
+        builder.setIdType(Pigeon.IdType.values().getOrElse(type and 0xF0 shr 4) {Pigeon.IdType.NONE})
+        builder.setUaType(Pigeon.UaType.values().getOrElse(type and 0x0F) {Pigeon.UaType.NONE})
         builder.setMacAddress(macAddress)
         byteBuffer.get(uasId, 0, OdidMessageHandler.MAX_ID_BYTE_SIZE)
         var uasIdStr = String(uasId)
@@ -174,17 +174,17 @@ class OdidMessageHandler : Pigeon.MessageApi {
         builder.setAltitudeGeodetic(calcAltitude(byteBuffer.short.toUShort().toInt()))
         builder.setHeight(calcAltitude(byteBuffer.short.toUShort().toInt()))
         val horiVertAccuracy = byteBuffer.get().toInt()
-        builder.setHorizontalAccuracy(Pigeon.HorizontalAccuracy.values().getOrElse(horiVertAccuracy and 0x0F) {Pigeon.HorizontalAccuracy.Unknown})
+        builder.setHorizontalAccuracy(Pigeon.HorizontalAccuracy.values().getOrElse(horiVertAccuracy and 0x0F) {Pigeon.HorizontalAccuracy.UNKNOWN})
         builder.setVerticalAccuracy(
-                Pigeon.VerticalAccuracy.values().getOrElse(horiVertAccuracy and 0xF0 shr 4) {Pigeon.VerticalAccuracy.Unknown}
+                Pigeon.VerticalAccuracy.values().getOrElse(horiVertAccuracy and 0xF0 shr 4) {Pigeon.VerticalAccuracy.UNKNOWN}
         )
         val speedBaroAccuracy = byteBuffer.get().toInt()
-        builder.setBaroAccuracy(Pigeon.VerticalAccuracy.values().getOrElse(speedBaroAccuracy and 0xF0 shr 4) {Pigeon.VerticalAccuracy.Unknown})
+        builder.setBaroAccuracy(Pigeon.VerticalAccuracy.values().getOrElse(speedBaroAccuracy and 0xF0 shr 4) {Pigeon.VerticalAccuracy.UNKNOWN})
         builder.setSpeedAccuracy(speedAccToEnum(speedBaroAccuracy and 0x0F))
         builder.setTime(byteBuffer.short.toUShort().toLong())
         builder.setTimeAccuracy((byteBuffer.get() and 0x0F).toInt() * 0.1)
-        builder.setStatus(Pigeon.AircraftStatus.values().getOrElse(status) {Pigeon.AircraftStatus.Undeclared})
-        builder.setHeightType(Pigeon.HeightType.values().getOrElse(heightType) {Pigeon.HeightType.Takeoff})
+        builder.setStatus(Pigeon.AircraftStatus.values().getOrElse(status) {Pigeon.AircraftStatus.UNDECLARED})
+        builder.setHeightType(Pigeon.HeightType.values().getOrElse(heightType) {Pigeon.HeightType.TAKEOFF})
         return builder.build()
     }
 
@@ -270,7 +270,7 @@ class OdidMessageHandler : Pigeon.MessageApi {
         builder.setAuthData(authData)
         builder.setAuthLastPageIndex(authLastPageIndex)
         builder.setAuthTimestamp(authTimestamp)
-        builder.setAuthType(Pigeon.AuthType.values().getOrElse(authType) {Pigeon.AuthType.None})
+        builder.setAuthType(Pigeon.AuthType.values().getOrElse(authType) {Pigeon.AuthType.NONE})
         builder.setAuthDataPage(authDataPage)
         return builder.build()
     }
@@ -294,8 +294,8 @@ class OdidMessageHandler : Pigeon.MessageApi {
         builder.setReceivedTimestamp(System.currentTimeMillis())
 
         var b = byteBuffer.get().toInt()
-        builder.setOperatorLocationType(Pigeon.OperatorLocationType.values().getOrElse(b and 0x03) {Pigeon.OperatorLocationType.Invalid})
-        builder.setClassificationType(Pigeon.ClassificationType.values().getOrElse(b and 0x1C shr 2) {Pigeon.ClassificationType.Undeclared})
+        builder.setOperatorLocationType(Pigeon.OperatorLocationType.values().getOrElse(b and 0x03) {Pigeon.OperatorLocationType.INVALID})
+        builder.setClassificationType(Pigeon.ClassificationType.values().getOrElse(b and 0x1C shr 2) {Pigeon.ClassificationType.UNDECLARED})
         builder.setOperatorLatitude(LAT_LONG_MULTIPLIER * byteBuffer.int.toDouble())
         builder.setOperatorLongitude(LAT_LONG_MULTIPLIER * byteBuffer.int.toDouble())
         builder.setAreaCount((byteBuffer.short and 0xFFFF.toShort()).toLong())
@@ -303,8 +303,8 @@ class OdidMessageHandler : Pigeon.MessageApi {
         builder.setAreaCeiling(calcAltitude((byteBuffer.short and 0xFFFF.toShort()).toInt()))
         builder.setAreaFloor(calcAltitude((byteBuffer.short and 0xFFFF.toShort()).toInt()))
         b = byteBuffer.get().toInt()
-        builder.setCategory(Pigeon.AircraftCategory.values().getOrElse(b and 0xF0 shr 4) {Pigeon.AircraftCategory.Undeclared})
-        builder.setClassValue(Pigeon.AircraftClass.values().getOrElse(b and 0x0F) {Pigeon.AircraftClass.Undeclared})
+        builder.setCategory(Pigeon.AircraftCategory.values().getOrElse(b and 0xF0 shr 4) {Pigeon.AircraftCategory.UNDECLARED})
+        builder.setClassValue(Pigeon.AircraftClass.values().getOrElse(b and 0x0F) {Pigeon.AircraftClass.UNDECLARED})
         builder.setOperatorAltitudeGeo(calcAltitude((byteBuffer.short and 0xFFFF.toShort()).toInt()))
 
         return builder.build()
@@ -315,11 +315,10 @@ class OdidMessageHandler : Pigeon.MessageApi {
     }
 
     private fun speedAccToEnum(acc: Int): Pigeon.SpeedAccuracy {
-        if (acc == 10) return Pigeon.SpeedAccuracy.meter_per_second_10
-        else if (acc == 3) return Pigeon.SpeedAccuracy.meter_per_second_3
-        else if (acc == 1) return Pigeon.SpeedAccuracy.meter_per_second_1
-        // meter_per_second_0_3
-        return Pigeon.SpeedAccuracy.Unknown
+        if (acc == 10) return Pigeon.SpeedAccuracy.METER_PER_SECOND_10
+        else if (acc == 3) return Pigeon.SpeedAccuracy.METER_PER_SECOND_3
+        else if (acc == 1) return Pigeon.SpeedAccuracy.METER_PER_SECOND_1
+        return Pigeon.SpeedAccuracy.UNKNOWN
     }
 
     private fun calcDirection(value: Int, EW: Int): Double {

@@ -120,37 +120,37 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
             {
                 let message : DTGBasicIdMessage? = dataParser.fromBufferBasicPayload(data, offset: offset, macAddress: peripheral.identifier.uuidString, error: &err)
                 message!.rssi = RSSI.intValue as NSNumber
-                basicMessageHandler.send(message!.toMap() as Any)
+                basicMessageHandler.send(message!.toList() as Any)
             }
             else if(type == DTGMessageType.location)
             {
                 let message : DTGLocationMessage? = dataParser.fromBufferLocationPayload(data, offset: offset, macAddress: peripheral.identifier.uuidString, error: &err)
                 message!.rssi = RSSI.intValue as NSNumber
-                locationMessageHandler.send(message!.toMap() as Any)
+                locationMessageHandler.send(message!.toList() as Any)
             }
             else if(type == DTGMessageType.operatorId)
             {
                 let message : DTGOperatorIdMessage? = dataParser.fromBufferOperatorIdPayload(data, offset: offset, macAddress: peripheral.identifier.uuidString, error: &err)
                 message!.rssi = RSSI.intValue as NSNumber
-                operatoridMessageHandler.send(message!.toMap() as Any)
+                operatoridMessageHandler.send(message!.toList() as Any)
             }
             else if(type == DTGMessageType.selfId)
             {
                 let message : DTGSelfIdMessage? = dataParser.fromBufferSelfIdPayload(data, offset: offset, macAddress: peripheral.identifier.uuidString, error: &err)
                 message!.rssi = RSSI.intValue as NSNumber
-                selfidMessageHandler.send(message!.toMap() as Any)
+                selfidMessageHandler.send(message!.toList() as Any)
             }
             else if(type == DTGMessageType.auth)
             {
                 let message : DTGAuthenticationMessage? = dataParser.fromBufferAuthenticationPayload(data, offset: offset, macAddress: peripheral.identifier.uuidString, error: &err)
                 message!.rssi = RSSI.intValue as NSNumber
-                authMessageHandler.send(message!.toMap() as Any)
+                authMessageHandler.send(message!.toList() as Any)
             }
             else if(type == DTGMessageType.system)
             {
                 let message : DTGSystemDataMessage? = dataParser.fromBufferSystemDataPayload(data, offset: offset, macAddress: peripheral.identifier.uuidString, error: &err)
                 message!.rssi = RSSI.intValue as NSNumber
-                systemMessageHandler.send(message!.toMap() as Any)
+                systemMessageHandler.send(message!.toList() as Any)
             }
             else if(type == DTGMessageType.messagePack)
             {

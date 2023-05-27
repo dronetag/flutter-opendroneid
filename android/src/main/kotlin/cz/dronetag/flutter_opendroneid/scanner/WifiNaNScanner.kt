@@ -105,47 +105,47 @@ class WifiNaNScanner (
         if(typeOrdinal == null)
             return;
         val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
-        if(type == Pigeon.MessageType.BasicId)
+        if(type == Pigeon.MessageType.BASIC_ID)
         {
             val message: Pigeon.BasicIdMessage? = messageHandler.fromBufferBasic(data  as ByteArray, 4,peerHash.hashCode().toString())
-            message?.source = Pigeon.MessageSource.WifiNaN
+            message?.source = Pigeon.MessageSource.WIFI_NAN
             message?.rssi = 0
-            basicMessagesHandler.send(message?.toMap() as Any)
+            basicMessagesHandler.send(message?.toList() as Any)
         }
-        else if(type == Pigeon.MessageType.Location)
+        else if(type == Pigeon.MessageType.LOCATION)
         {
             val message =  messageHandler.fromBufferLocation(data, 4,peerHash.hashCode().toString())
-            message?.source = Pigeon.MessageSource.WifiNaN;
+            message?.source = Pigeon.MessageSource.WIFI_NAN;
             message?.rssi = 0
-            locationMessagesHandler.send(message?.toMap() as Any)
+            locationMessagesHandler.send(message?.toList() as Any)
         }
-        else if(type == Pigeon.MessageType.OperatorId)
+        else if(type == Pigeon.MessageType.OPERATOR_ID)
         {
             val message = messageHandler.fromBufferOperatorId(data, 4,peerHash.hashCode().toString())
-            message?.source = Pigeon.MessageSource.WifiNaN
+            message?.source = Pigeon.MessageSource.WIFI_NAN
             message?.rssi = 0
-            operatorIdMessagesHandler.send(message?.toMap() as Any)
+            operatorIdMessagesHandler.send(message?.toList() as Any)
         }
-        else if(type == Pigeon.MessageType.SelfId)
+        else if(type == Pigeon.MessageType.SELF_ID)
         {
             val message: Pigeon.SelfIdMessage? = messageHandler.fromBufferSelfId(data, 4,peerHash.hashCode().toString())
-            message?.source = Pigeon.MessageSource.WifiNaN;
+            message?.source = Pigeon.MessageSource.WIFI_NAN;
             message?.rssi = 0
-            selfIdMessagesHandler.send(message?.toMap() as Any)
+            selfIdMessagesHandler.send(message?.toList() as Any)
         }
-        else if(type == Pigeon.MessageType.Auth)
+        else if(type == Pigeon.MessageType.AUTH)
         {
             val message =  messageHandler.fromBufferAuthentication(data, 4,peerHash.hashCode().toString())
-            message?.source = Pigeon.MessageSource.WifiNaN;
+            message?.source = Pigeon.MessageSource.WIFI_NAN;
             message?.rssi = 0
-            authenticationMessagesHandler.send(message?.toMap() as Any)
+            authenticationMessagesHandler.send(message?.toList() as Any)
         }
-        else if(type == Pigeon.MessageType.System)
+        else if(type == Pigeon.MessageType.SYSTEM)
         {
             val message = messageHandler.fromBufferSystemData(data, 4,peerHash.hashCode().toString())
-            message?.source = Pigeon.MessageSource.WifiNaN;
+            message?.source = Pigeon.MessageSource.WIFI_NAN;
             message?.rssi = 0
-            systemDataMessagesHandler.send(message?.toMap() as Any)
+            systemDataMessagesHandler.send(message?.toList() as Any)
         }
     }
 

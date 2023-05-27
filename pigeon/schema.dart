@@ -20,7 +20,7 @@ enum ScanPriority {
 enum MessageSource {
   BluetoothLegacy,
   BluetoothLongRange,
-  WifiNaN,
+  WifiNan,
   WifiBeacon,
   Unknown,
 }

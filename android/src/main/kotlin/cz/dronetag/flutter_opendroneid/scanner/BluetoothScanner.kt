@@ -78,7 +78,7 @@ class BluetoothScanner(
     }
 
     fun setScanPriority(priority: Pigeon.ScanPriority) {
-        if(priority == Pigeon.ScanPriority.High)
+        if(priority == Pigeon.ScanPriority.HIGH)
         {
             scanMode = ScanSettings.SCAN_MODE_LOW_LATENCY
         }
@@ -126,56 +126,56 @@ class BluetoothScanner(
     fun handleOdidMessage(result: ScanResult, offset: Long) {
         val scanRecord: ScanRecord = result.scanRecord ?: return
         val bytes = scanRecord.bytes ?: return
-        var source = Pigeon.MessageSource.BluetoothLegacy;
+        var source = Pigeon.MessageSource.BLUETOOTH_LEGACY;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bluetoothAdapter.isLeCodedPhySupported()) {
             if (result.getPrimaryPhy() == BluetoothDevice.PHY_LE_CODED)
-                source = Pigeon.MessageSource.BluetoothLongRange;
+                source = Pigeon.MessageSource.BLUETOOTH_LONG_RANGE;
         }
         val typeOrdinal = messageHandler.determineMessageType(bytes, offset) ?: return;
         val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
-        if(type == Pigeon.MessageType.BasicId)
+        if(type == Pigeon.MessageType.BASIC_ID)
         {
             val message: Pigeon.BasicIdMessage? = messageHandler.fromBufferBasic(bytes, offset, result.device.address)
             message?.source = source;
             message?.rssi = result.rssi.toLong();
-            basicMessagesHandler.send(message?.toMap() as Any)
+            basicMessagesHandler.send(message?.toList() as Any)
         }
-        else if(type == Pigeon.MessageType.Location)
+        else if(type == Pigeon.MessageType.LOCATION)
         {
             val message =  messageHandler.fromBufferLocation(bytes, offset, result.device.address)
             message?.source = source;
             message?.rssi = result.rssi.toLong();
-            locationMessagesHandler.send(message?.toMap() as Any)
+            locationMessagesHandler.send(message?.toList() as Any)
         }
-        else if(type == Pigeon.MessageType.OperatorId)
+        else if(type == Pigeon.MessageType.OPERATOR_ID)
         {
             val message = messageHandler.fromBufferOperatorId(bytes, offset, result.device.address)
             message?.source = source;
             message?.rssi = result.rssi.toLong();
-            operatorIdMessagesHandler.send(message?.toMap() as Any)
+            operatorIdMessagesHandler.send(message?.toList() as Any)
         }
-        else if(type == Pigeon.MessageType.SelfId)
+        else if(type == Pigeon.MessageType.SELF_ID)
         {
             val message: Pigeon.SelfIdMessage? = messageHandler.fromBufferSelfId(bytes, offset, result.device.address)
             message?.source = source;
             message?.rssi = result.rssi.toLong();
-            selfIdMessagesHandler.send(message?.toMap() as Any)
+            selfIdMessagesHandler.send(message?.toList() as Any)
         }
-        else if(type == Pigeon.MessageType.Auth)
+        else if(type == Pigeon.MessageType.AUTH)
         {
             val message =  messageHandler.fromBufferAuthentication(bytes, offset, result.device.address)
             message?.source = source;
             message?.rssi = result.rssi.toLong();
-            authenticationMessagesHandler.send(message?.toMap() as Any)
+            authenticationMessagesHandler.send(message?.toList() as Any)
         }
-        else if(type == Pigeon.MessageType.System)
+        else if(type == Pigeon.MessageType.SYSTEM)
         {
             val message = messageHandler.fromBufferSystemData(bytes, offset, result.device.address)
             message?.source = source;
             message?.rssi = result.rssi.toLong();
-            systemDataMessagesHandler.send(message?.toMap() as Any)
+            systemDataMessagesHandler.send(message?.toList() as Any)
         }
-        else if(type == Pigeon.MessageType.MessagePack)
+        else if(type == Pigeon.MessageType.MESSAGE_PACK)
         {
             var packOffset = offset.toInt() + 1
             val messageSize = bytes[packOffset++];
