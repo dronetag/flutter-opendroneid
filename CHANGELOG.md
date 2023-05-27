@@ -1,3 +1,7 @@
+## 0.12.0
+
+Changes made to ensure compatibility with new Flutter 3.10 and Dart 3.
+
 ## 0.11.3
 
 - Use the NEARBY_WIFI_DEVICES permission for Android >=13
