@@ -1,3 +1,7 @@
+## 0.12.1
+
+We require location permission for Bluetooth scanning on all Android versions, following the [Android official documentation](https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#declare).
+
 ## 0.12.0
 
 Changes made to ensure compatibility with new Flutter 3.10 and Dart 3.
