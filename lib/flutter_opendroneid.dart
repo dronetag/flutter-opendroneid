@@ -146,13 +146,10 @@ class FlutterOpenDroneId {
       if (!await Permission.bluetoothScan.status.isGranted)
         missingPermissions.add(Permission.bluetoothScan);
 
-      final androidVersionNumber = await getAndroidVersionNumber();
+      // Android also requires location permission to scan BT devices
 
-      // Android < 12 also requires location permission to scan BT devices
-      if (androidVersionNumber != null && androidVersionNumber < 12) {
-        if (!await Permission.location.status.isGranted)
-          missingPermissions.add(Permission.location);
-      }
+      if (!await Permission.location.status.isGranted)
+        missingPermissions.add(Permission.location);
     }
 
     if (missingPermissions.isNotEmpty)
