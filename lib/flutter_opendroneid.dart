@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_opendroneid/models/compare_extension.dart';
 import 'package:flutter_opendroneid/models/permissions_missing_exception.dart';
 import 'models/message_pack.dart';
 
@@ -207,6 +208,10 @@ class FlutterOpenDroneId {
           lastUpdate:
               DateTime.fromMillisecondsSinceEpoch(message.receivedTimestamp),
         );
+    if (storedPack.basicIdMessage != null &&
+        storedPack.basicIdMessage!.containsEqualData(message)) {
+      return;
+    }
     _storedPacks[mac] = storedPack.updateWithBasic(message);
     _packController.add(_storedPacks[message.macAddress]!);
   }
@@ -218,6 +223,11 @@ class FlutterOpenDroneId {
             macAddress: mac,
             lastUpdate:
                 DateTime.fromMillisecondsSinceEpoch(message.receivedTimestamp));
+    // skip location updates with same timestamp
+    if (storedPack.locationValid() &&
+        storedPack.locationMessage!.containsEqualData(message)) {
+      return;
+    }
     _storedPacks[mac] = storedPack.updateWithLocation(message);
     _packController.add(_storedPacks[message.macAddress]!);
   }
@@ -229,6 +239,10 @@ class FlutterOpenDroneId {
             macAddress: mac,
             lastUpdate:
                 DateTime.fromMillisecondsSinceEpoch(message.receivedTimestamp));
+    if (storedPack.operatorIDValid() &&
+        storedPack.operatorIdMessage!.containsEqualData(message)) {
+      return;
+    }
     _storedPacks[mac] = storedPack.updateWithOperatorId(message);
     _packController.add(_storedPacks[message.macAddress]!);
   }
@@ -240,6 +254,10 @@ class FlutterOpenDroneId {
             macAddress: mac,
             lastUpdate:
                 DateTime.fromMillisecondsSinceEpoch(message.receivedTimestamp));
+    if (storedPack.systemDataValid() &&
+        storedPack.systemDataMessage!.containsEqualData(message)) {
+      return;
+    }
     _storedPacks[mac] = storedPack.updateWithSystemData(message);
     _packController.add(_storedPacks[message.macAddress]!);
   }
@@ -253,6 +271,11 @@ class FlutterOpenDroneId {
             macAddress: mac,
             lastUpdate:
                 DateTime.fromMillisecondsSinceEpoch(message.receivedTimestamp));
+    // skip location updates with same timestamp
+    if (storedPack.authenticationMessage != null &&
+        storedPack.authenticationMessage!.containsEqualData(message)) {
+      return;
+    }
     _storedPacks[mac] = storedPack.updateWithAuthentication(message);
     _packController.add(_storedPacks[message.macAddress]!);
   }
@@ -265,6 +288,11 @@ class FlutterOpenDroneId {
           lastUpdate:
               DateTime.fromMillisecondsSinceEpoch(message.receivedTimestamp),
         );
+    // skip location updates with same timestamp
+    if (storedPack.selfIdMessage != null &&
+        storedPack.selfIdMessage!.containsEqualData(message)) {
+      return;
+    }
     _storedPacks[mac] = storedPack.updateWithSelfId(message);
     _packController.add(_storedPacks[message.macAddress]!);
   }
