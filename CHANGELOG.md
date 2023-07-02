@@ -1,3 +1,8 @@
+## 0.13.0
+
+- Streams are de-duplicated by fields comparison
+- Android SDK requirement bumped to version 33
+
 ## 0.12.1
 
 We require location permission for Bluetooth scanning on all Android versions, following the [Android official documentation](https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#declare).
