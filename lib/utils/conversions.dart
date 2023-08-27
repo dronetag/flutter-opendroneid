@@ -1,9 +1,9 @@
-import 'package:flutter_opendroneid/pigeon.dart';
+import 'package:dart_opendroneid/src/types.dart';
 
 /// Conversions extensions
 
 const Map<HorizontalAccuracy, double?> _horizontalAccuracyConversionMap = {
-  HorizontalAccuracy.Unknown: null,
+  HorizontalAccuracy.unknown: null,
   HorizontalAccuracy.kilometers_18_52: 18520,
   HorizontalAccuracy.kilometers_7_408: 7408,
   HorizontalAccuracy.kilometers_3_704: 3704,
@@ -19,7 +19,7 @@ const Map<HorizontalAccuracy, double?> _horizontalAccuracyConversionMap = {
 };
 
 const Map<VerticalAccuracy, double?> _verticalAccuracyConversionMap = {
-  VerticalAccuracy.Unknown: null,
+  VerticalAccuracy.unknown: null,
   VerticalAccuracy.meters_150: 150,
   VerticalAccuracy.meters_45: 45,
   VerticalAccuracy.meters_25: 25,
@@ -29,11 +29,11 @@ const Map<VerticalAccuracy, double?> _verticalAccuracyConversionMap = {
 };
 
 const Map<SpeedAccuracy, double?> _speedAccuracyConversionMap = {
-  SpeedAccuracy.Unknown: null,
-  SpeedAccuracy.meter_per_second_10: 10,
-  SpeedAccuracy.meter_per_second_3: 3,
-  SpeedAccuracy.meter_per_second_1: 1,
-  SpeedAccuracy.meter_per_second_0_3: 0.3,
+  SpeedAccuracy.unknown: null,
+  SpeedAccuracy.meterPerSecond_10: 10,
+  SpeedAccuracy.meterPerSecond_3: 3,
+  SpeedAccuracy.meterPerSecond_1: 1,
+  SpeedAccuracy.meterPerSecond_0_3: 0.3,
 };
 
 extension HorizontalAccuracyConversion on HorizontalAccuracy {

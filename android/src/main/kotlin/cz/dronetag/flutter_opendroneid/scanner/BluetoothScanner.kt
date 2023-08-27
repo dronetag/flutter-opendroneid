@@ -15,14 +15,13 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 class BluetoothScanner(
-        private val basicMessagesHandler: StreamHandler,
-        private val locationMessagesHandler: StreamHandler,
-        private val operatorIdMessagesHandler: StreamHandler,
-        private val selfIdMessagesHandler: StreamHandler,
-        private val authenticationMessagesHandler: StreamHandler,
-        private val systemDataMessagesHandler: StreamHandler,
+        private val odidPayloadStreamHandler: StreamHandler,
         private val bluetoothStateHandler: StreamHandler,
 ) {
+    companion object {
+        const val MAX_MESSAGE_SIZE = 25
+    }
+
     var isScanning = false
         get() = field
         set(value) {
@@ -42,7 +41,7 @@ class BluetoothScanner(
     private val serviceParcelUuid = ParcelUuid(serviceUuid)
     private val odidAdCode = byteArrayOf(0x0D.toByte())
 
-    private val messageHandler: OdidMessageHandler = OdidMessageHandler()
+    private val payloadHandler: OdidPayloadHandler = OdidPayloadHandler()
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun scan() {
@@ -66,10 +65,10 @@ class BluetoothScanner(
                 bluetoothAdapter.isLeExtendedAdvertisingSupported
         ) {
             scanSettings = ScanSettings.Builder()
-                    .setScanMode(scanMode)
-                    .setLegacy(false)
-                    .setPhy(ScanSettings.PHY_LE_ALL_SUPPORTED)
-                    .build()
+                .setScanMode(scanMode)
+                .setLegacy(false)
+                .setPhy(ScanSettings.PHY_LE_ALL_SUPPORTED)
+                .build()
         }
 
         bluetoothLeScanner.startScan(scanFilters, scanSettings, scanCallback)
@@ -123,68 +122,26 @@ class BluetoothScanner(
         }
     }
 
-    fun handleOdidMessage(result: ScanResult, offset: Long) {
+    fun handleODIDPayload(result: ScanResult, offset: Long) {
         val scanRecord: ScanRecord = result.scanRecord ?: return
         val bytes = scanRecord.bytes ?: return
         var source = Pigeon.MessageSource.BLUETOOTH_LEGACY;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bluetoothAdapter.isLeCodedPhySupported()) {
             if (result.getPrimaryPhy() == BluetoothDevice.PHY_LE_CODED)
                 source = Pigeon.MessageSource.BLUETOOTH_LONG_RANGE;
         }
-        val typeOrdinal = messageHandler.determineMessageType(bytes, offset) ?: return;
-        val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
-        if(type == Pigeon.MessageType.BASIC_ID)
-        {
-            val message: Pigeon.BasicIdMessage? = messageHandler.fromBufferBasic(bytes, offset, result.device.address)
-            message?.source = source;
-            message?.rssi = result.rssi.toLong();
-            basicMessagesHandler.send(message?.toList() as Any)
-        }
-        else if(type == Pigeon.MessageType.LOCATION)
-        {
-            val message =  messageHandler.fromBufferLocation(bytes, offset, result.device.address)
-            message?.source = source;
-            message?.rssi = result.rssi.toLong();
-            locationMessagesHandler.send(message?.toList() as Any)
-        }
-        else if(type == Pigeon.MessageType.OPERATOR_ID)
-        {
-            val message = messageHandler.fromBufferOperatorId(bytes, offset, result.device.address)
-            message?.source = source;
-            message?.rssi = result.rssi.toLong();
-            operatorIdMessagesHandler.send(message?.toList() as Any)
-        }
-        else if(type == Pigeon.MessageType.SELF_ID)
-        {
-            val message: Pigeon.SelfIdMessage? = messageHandler.fromBufferSelfId(bytes, offset, result.device.address)
-            message?.source = source;
-            message?.rssi = result.rssi.toLong();
-            selfIdMessagesHandler.send(message?.toList() as Any)
-        }
-        else if(type == Pigeon.MessageType.AUTH)
-        {
-            val message =  messageHandler.fromBufferAuthentication(bytes, offset, result.device.address)
-            message?.source = source;
-            message?.rssi = result.rssi.toLong();
-            authenticationMessagesHandler.send(message?.toList() as Any)
-        }
-        else if(type == Pigeon.MessageType.SYSTEM)
-        {
-            val message = messageHandler.fromBufferSystemData(bytes, offset, result.device.address)
-            message?.source = source;
-            message?.rssi = result.rssi.toLong();
-            systemDataMessagesHandler.send(message?.toList() as Any)
-        }
-        else if(type == Pigeon.MessageType.MESSAGE_PACK)
-        {
-            var packOffset = offset.toInt() + 1
-            val messageSize = bytes[packOffset++];
-            val messages = bytes[packOffset++];
-            for (i in 0..(messages - 1)) {
-                handleOdidMessage(result, packOffset.toLong())
-                packOffset += messageSize
-            }
-        }
+        if (bytes.size < offset + MAX_MESSAGE_SIZE) return
+    
+        val payload = payloadHandler.getPayload(
+            bytes.copyOfRange(offset.toInt(), MAX_MESSAGE_SIZE + offset.toInt()),
+            source,
+            result.device.address,
+            result.rssi.toLong(),
+            System.currentTimeMillis()
+        )
+
+        odidPayloadStreamHandler.send(payload?.toList() as Any)
     }
 
     val adapterStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -205,7 +162,7 @@ class BluetoothScanner(
 
     private val scanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
-            handleOdidMessage(result, 6)
+            handleODIDPayload(result, 6)
         }
 
         override fun onBatchScanResults(results: List<ScanResult?>?) {

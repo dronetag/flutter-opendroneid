@@ -24,20 +24,13 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
     private lateinit var context: Context
     private lateinit var activity: Activity
 
-    private val basicStreamHandler = StreamHandler()
-    private val locationStreamHandler = StreamHandler()
-    private val operatorIdStreamHandler = StreamHandler()
+    private val odidPayloadStreamHandler = StreamHandler()
     private val bluetoothStateStreamHandler = StreamHandler()
     private val wifiStateStreamHandler = StreamHandler()
-    private val selfIdMessagesHandler = StreamHandler()
-    private val authentificationMessagesHandler = StreamHandler()
-    private val systemDataMessagesHandler = StreamHandler()
 
     private var scanner: BluetoothScanner =
             BluetoothScanner(
-                    basicStreamHandler, locationStreamHandler, operatorIdStreamHandler,
-                    selfIdMessagesHandler, authentificationMessagesHandler, systemDataMessagesHandler,
-                    bluetoothStateStreamHandler,
+                    odidPayloadStreamHandler, bluetoothStateStreamHandler,
             )
     private lateinit var wifiScanner: WifiScanner
     private lateinit var wifiNaNScanner: WifiNaNScanner
@@ -51,14 +44,9 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         StreamHandler.bindMultipleHandlers(
                 flutterPluginBinding.binaryMessenger,
                 mapOf(
-                        "flutter_basic_messages" to basicStreamHandler,
-                        "flutter_location_messages" to locationStreamHandler,
-                        "flutter_operatorid_messages" to operatorIdStreamHandler,
-                        "flutter_selfid_messages" to selfIdMessagesHandler,
-                        "flutter_auth_messages" to authentificationMessagesHandler,
-                        "flutter_system_messages" to systemDataMessagesHandler,
-                        "flutter_odid_bt_state" to bluetoothStateStreamHandler,
-                        "flutter_odid_wifi_state" to wifiStateStreamHandler
+                    "flutter_odid_data" to odidPayloadStreamHandler,
+                    "flutter_odid_bt_state" to bluetoothStateStreamHandler,
+                    "flutter_odid_wifi_state" to wifiStateStreamHandler
                 )
         )
 
@@ -72,19 +60,11 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
 
         wifiScanner =
                 WifiScanner(
-                        basicStreamHandler, locationStreamHandler, operatorIdStreamHandler,
-                        selfIdMessagesHandler, authentificationMessagesHandler, systemDataMessagesHandler,
-                        wifiStateStreamHandler,
-                        wifiManager,
-                        context
+                        odidPayloadStreamHandler, wifiStateStreamHandler, wifiManager, context
                 )
         wifiNaNScanner =
                 WifiNaNScanner(
-                        basicStreamHandler, locationStreamHandler, operatorIdStreamHandler,
-                        selfIdMessagesHandler, authentificationMessagesHandler, systemDataMessagesHandler,
-                        wifiStateStreamHandler,
-                        wifiAwareManager,
-                        context
+                        odidPayloadStreamHandler, wifiStateStreamHandler, wifiAwareManager, context
                 )
     }
 
@@ -115,14 +95,12 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         wifiScanner.cancel()
         wifiNaNScanner.cancel()
         StreamHandler.clearMultipleHandlers(
-                binding.binaryMessenger,
-                listOf(
-                        "flutter_basic_messages",
-                        "flutter_location_messages",
-                        "flutter_operatorid_messages",
-                        "flutter_odid_bt_state",
-                        "flutter_odid_scan_state",
-                )
+            binding.binaryMessenger,
+            listOf(
+                "flutter_odid_data",
+                "flutter_odid_bt_state",
+                "flutter_odid_wifi_state",
+            )
         )
     }
 

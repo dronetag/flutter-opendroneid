@@ -13,17 +13,15 @@ import java.nio.ByteOrder
 import java.util.*
 
 class WifiScanner (
-    private val basicMessagesHandler: StreamHandler,
-    private val locationMessagesHandler: StreamHandler,
-    private val operatorIdMessagesHandler: StreamHandler,
-    private val selfIdMessagesHandler: StreamHandler,
-    private val authenticationMessagesHandler: StreamHandler,
-    private val systemDataMessagesHandler: StreamHandler,
+    private val odidPayloadStreamHandler: StreamHandler,
     private val wifiStateHandler: StreamHandler,
     private val wifiManager: WifiManager?,
     private val context: Context
 ) {
-    private val messageHandler = OdidMessageHandler()
+    companion object {
+        const val MAX_MESSAGE_SIZE = 25
+    }
+
     private val CIDLen = 3
     private val driStartByteOffset = 4
     private val DRICID = intArrayOf(0xFA, 0x0B, 0xBC)
@@ -34,6 +32,7 @@ class WifiScanner (
     private var scanFailed = 0
     private val wifiScanEnabled = true
     private val scanTimerInterval = 2
+    private val payloadHandler: OdidPayloadHandler = OdidPayloadHandler()
     var isScanning = false
 
     private var countDownTimer: CountDownTimer? = null
@@ -77,23 +76,24 @@ class WifiScanner (
                     val valueBytes = element.javaClass.getField("bytes")[element] ?: continue
                     val buf: ByteBuffer =
                         ByteBuffer.wrap(valueBytes as ByteArray).asReadOnlyBuffer()
-                    processRemoteIdVendorIE(scanResult, buf)
+                    receiveData(scanResult, buf)
                 }
             }
         } else {
             for (element in scanResult.informationElements) {
                 if (element != null && element.id == 221) {
                     val buf: ByteBuffer = element.bytes
-                    processRemoteIdVendorIE(scanResult, buf)
+                    receiveData(scanResult, buf)
                 }
             }
         }
     }
 
-    fun processRemoteIdVendorIE(scanResult: ScanResult, buf: ByteBuffer) {
+    fun receiveData(scanResult: ScanResult, buf: ByteBuffer) {
         if (buf.remaining() < 30){
             return
         }
+        val offset = 1
         val dri_CID = ByteArray(CIDLen)
         var arr = ByteArray(buf.remaining())
         buf.get(dri_CID, 0, CIDLen)
@@ -107,87 +107,19 @@ class WifiScanner (
             && vendorType[0] == vendorTypeValue.toByte()
         ) 
         {
-            buf.position(driStartByteOffset)
-            buf.get(arr, 0, buf.remaining())
-            val typeOrdinal = messageHandler.determineMessageType(arr, 1);
-            if(typeOrdinal == null)
-            {
-                return;
-            }
-            handleODIDMessage(arr, scanResult, 0, typeOrdinal)
+            val payload = payloadHandler.getPayload(
+                arr.copyOfRange(offset, MAX_MESSAGE_SIZE + offset),
+                Pigeon.MessageSource.WIFI_BEACON,
+                scanResult.BSSID,
+                scanResult.level.toLong(),
+                System.currentTimeMillis()
+            )
+
+            odidPayloadStreamHandler.send(payload?.toList() as Any)
         }
     }
 
-    fun handleODIDMessage(arr: ByteArray, scanResult: ScanResult, offset: Long, typeOrdinal: Long)
-    {
-            val type = Pigeon.MessageType.values()[typeOrdinal.toInt()]
-            if(type == Pigeon.MessageType.BASIC_ID)
-            {
-                var message: Pigeon.BasicIdMessage?
-                if(offset.toInt() == 0)
-                {
-                    message = messageHandler.fromBufferBasic(arr, 6, scanResult.BSSID)
-                }
-                else
-                {
-                    message = messageHandler.fromBufferBasic(arr, offset + 1, scanResult.BSSID)
-                }
-                message?.source = Pigeon.MessageSource.WIFI_BEACON;
-                message?.rssi = scanResult.level.toLong();
-                basicMessagesHandler.send(message?.toList() as Any)
-            }
-            else if(type == Pigeon.MessageType.LOCATION)
-            {
-                val message =  messageHandler.fromBufferLocation(arr, offset + 1,scanResult.BSSID)
-                message?.source = Pigeon.MessageSource.WIFI_BEACON;
-                message?.rssi = scanResult.level.toLong();
-                locationMessagesHandler.send(message?.toList() as Any)
-            }
-            else if(type == Pigeon.MessageType.OPERATOR_ID)
-            {
-                val message = messageHandler.fromBufferOperatorId(arr, offset + 1, scanResult.BSSID)
-                message?.source = Pigeon.MessageSource.WIFI_BEACON;
-                message?.rssi = scanResult.level.toLong();
-                operatorIdMessagesHandler.send(message?.toList() as Any)
-            }
-            else if(type == Pigeon.MessageType.SELF_ID)
-            {
-                val message: Pigeon.SelfIdMessage? = messageHandler.fromBufferSelfId(arr, offset + 1, scanResult.BSSID)
-                message?.source = Pigeon.MessageSource.WIFI_BEACON
-                message?.rssi = scanResult.level.toLong();
-                selfIdMessagesHandler.send(message?.toList() as Any)
-            }
-            else if(type == Pigeon.MessageType.AUTH)
-            {
-                val message =  messageHandler.fromBufferAuthentication(arr,offset + 1, scanResult.BSSID)
-                message?.source = Pigeon.MessageSource.WIFI_BEACON
-                message?.rssi = scanResult.level.toLong();
-                authenticationMessagesHandler.send(message?.toList() as Any)
-            }
-            else if(type == Pigeon.MessageType.SYSTEM)
-            {
-                val message = messageHandler.fromBufferSystemData(arr, offset + 1, scanResult.BSSID)
-                message?.source = Pigeon.MessageSource.WIFI_BEACON
-                message?.rssi = scanResult.level.toLong();
-                systemDataMessagesHandler.send(message?.toList() as Any)
-            }
-            else if(type == Pigeon.MessageType.MESSAGE_PACK)
-            {
-                val messageSize = arr[2];
-                val messages = arr[3];
-                var packOffset = 3;
-                for (i in 0..messages - 1) {
-                    val mtypeOrdinal = messageHandler.determineMessageType(arr, (packOffset + 1).toLong());
-                    if(mtypeOrdinal == null)
-                    {
-                        return;
-                    }
-                    // recursively call method to handle message
-                    handleODIDMessage(arr, scanResult, packOffset.toLong(), mtypeOrdinal)
-                    packOffset += messageSize
-                }
-            }
-    }
+    
 
     fun cancel() {
         if (!wifiScanEnabled) {
