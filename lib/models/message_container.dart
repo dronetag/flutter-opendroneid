@@ -62,6 +62,7 @@ class MessageContainer {
   MessageContainer update({
     required ODIDMessage message,
     required int receivedTimestamp,
+    required pigeon.MessageSource source,
     int? rssi,
   }) {
     if (message.runtimeType == MessagePack) {
@@ -69,7 +70,10 @@ class MessageContainer {
       var result = this;
       for (var packMessage in messages) {
         result = result.update(
-            message: packMessage, receivedTimestamp: receivedTimestamp);
+          message: packMessage,
+          receivedTimestamp: receivedTimestamp,
+          source: source,
+        );
       }
       return result;
     }
@@ -77,27 +81,39 @@ class MessageContainer {
       LocationMessage => copyWith(
           locationMessage: message as LocationMessage,
           lastMessageRssi: rssi,
-          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp)),
+          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
+          source: source,
+        ),
       BasicIDMessage => copyWith(
           basicIdMessage: message as BasicIDMessage,
           lastMessageRssi: rssi,
-          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp)),
+          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
+          source: source,
+        ),
       SelfIDMessage => copyWith(
           selfIdMessage: message as SelfIDMessage,
           lastMessageRssi: rssi,
-          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp)),
+          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
+          source: source,
+        ),
       OperatorIDMessage => copyWith(
           operatorIdMessage: message as OperatorIDMessage,
           lastMessageRssi: rssi,
-          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp)),
+          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
+          source: source,
+        ),
       AuthMessage => copyWith(
           authenticationMessage: message as AuthMessage,
           lastMessageRssi: rssi,
-          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp)),
+          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
+          source: source,
+        ),
       SystemMessage => copyWith(
           systemDataMessage: message as SystemMessage,
           lastMessageRssi: rssi,
-          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp)),
+          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
+          source: source,
+        ),
       _ => this
     };
   }

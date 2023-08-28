@@ -108,9 +108,11 @@ class FlutterOpenDroneId {
     final message = parseODIDMessage(payload.rawData);
     if (message == null) return;
     _storedPacks[payload.macAddress] = storedPack.update(
-        message: message,
-        receivedTimestamp: payload.receivedTimestamp,
-        rssi: payload.rssi);
+      message: message,
+      receivedTimestamp: payload.receivedTimestamp,
+      rssi: payload.rssi,
+      source: payload.source,
+    );
     _packController.add(_storedPacks[payload.macAddress]!);
   }
 
