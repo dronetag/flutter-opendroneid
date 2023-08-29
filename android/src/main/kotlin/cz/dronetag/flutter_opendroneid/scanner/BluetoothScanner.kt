@@ -15,36 +15,27 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 class BluetoothScanner(
-        private val odidPayloadStreamHandler: StreamHandler,
-        private val bluetoothStateHandler: StreamHandler,
-) {
-    companion object {
-        const val MAX_MESSAGE_SIZE = 25
-    }
+    odidPayloadStreamHandler: StreamHandler,
+    private val bluetoothStateHandler: StreamHandler,
+) : ODIDScanner(odidPayloadStreamHandler) {
+    private val TAG: String = BluetoothScanner::class.java.getSimpleName()
 
-    var isScanning = false
-        get() = field
-        set(value) {
-            field = value
-            bluetoothStateHandler.send(value)
-        }
     var scanMode = ScanSettings.SCAN_MODE_LOW_LATENCY
     val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-    /* OpenDroneID Bluetooth beacons identify themselves by setting the GAP AD Type to
-    * "Service Data - 16-bit UUID" and the value to 0xFFFA for ASTM International, ASTM Remote ID.
-    * https://www.bluetooth.com/specifications/assigned-numbers/ -> "Generic Access Profile"
-    * https://www.bluetooth.com/specifications/assigned-numbers/ -> "16-bit UUIDs"
-    * Vol 3, Part B, Section 2.5.1 of the Bluetooth 5.1 Core Specification
-    * The AD Application Code is set to 0x0D = Open Drone ID.
-    */
+    
+    /// OpenDroneID Bluetooth beacons identify themselves by setting the GAP AD Type to
+    /// "Service Data - 16-bit UUID" and the value to 0xFFFA for ASTM International, ASTM Remote ID.
+    /// https://www.bluetooth.com/specifications/assigned-numbers/ -> "Generic Access Profile"
+    /// https://www.bluetooth.com/specifications/assigned-numbers/ -> "16-bit UUIDs"
+    /// Vol 3, Part B, Section 2.5.1 of the Bluetooth 5.1 Core Specification
+    /// The AD Application Code is set to 0x0D = Open Drone ID.
+    
     private val serviceUuid = UUID.fromString("0000fffa-0000-1000-8000-00805f9b34fb")
     private val serviceParcelUuid = ParcelUuid(serviceUuid)
     private val odidAdCode = byteArrayOf(0x0D.toByte())
 
-    private val payloadHandler: OdidPayloadHandler = OdidPayloadHandler()
-
     @RequiresApi(Build.VERSION_CODES.O)
-    fun scan() {
+    override fun scan() {
         if (!bluetoothAdapter.isEnabled) return
         val bluetoothLeScanner: BluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         val builder: ScanFilter.Builder = ScanFilter.Builder()
@@ -52,28 +43,34 @@ class BluetoothScanner(
         val scanFilters: MutableList<ScanFilter> = ArrayList()
         scanFilters.add(builder.build())
 
-        Log.i("bluetooth LE extended supported:", bluetoothAdapter.isLeExtendedAdvertisingSupported.toString())
-        Log.i("bluetooth LE coded phy supported:", bluetoothAdapter.isLeCodedPhySupported.toString())
-        Log.i("bluetooth multiple advertisement supported:", bluetoothAdapter.isMultipleAdvertisementSupported.toString())
-        Log.i("bluetooth max adv data len:", bluetoothAdapter.leMaximumAdvertisingDataLength.toString())
+        logAdapterInfo(bluetoothAdapter)
 
-        var scanSettings = ScanSettings.Builder()
-                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                .build()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-                bluetoothAdapter.isLeCodedPhySupported &&
-                bluetoothAdapter.isLeExtendedAdvertisingSupported
-        ) {
-            scanSettings = ScanSettings.Builder()
-                .setScanMode(scanMode)
-                .setLegacy(false)
-                .setPhy(ScanSettings.PHY_LE_ALL_SUPPORTED)
-                .build()
-        }
+        var scanSettings = buildScanSettings()
 
         bluetoothLeScanner.startScan(scanFilters, scanSettings, scanCallback)
         isScanning = true
         bluetoothStateHandler.send(true)
+    }
+
+    override fun cancel() {
+        isScanning = false
+        if (!bluetoothAdapter.isEnabled) return
+        bluetoothStateHandler.send(false)
+        bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onAdapterStateReceived() {
+        val rawState = bluetoothAdapter.state
+        val commonState = getAdapterState()
+        if (rawState == BluetoothAdapter.STATE_OFF || rawState == BluetoothAdapter.STATE_TURNING_OFF) {
+            if (bluetoothAdapter.isEnabled) bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
+            isScanning = false
+        } else if ((rawState == BluetoothAdapter.STATE_ON)
+                && !isScanning) {
+            cancel()
+            scan()
+        }
     }
 
     fun setScanPriority(priority: Pigeon.ScanPriority) {
@@ -105,13 +102,6 @@ class BluetoothScanner(
         return bluetoothAdapter.leMaximumAdvertisingDataLength;
     }
 
-    fun cancel() {
-        isScanning = false
-        if (!bluetoothAdapter.isEnabled) return
-        bluetoothStateHandler.send(false)
-        bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
-    }
-
     fun getAdapterState(): Int {
         return when (bluetoothAdapter.state) {
             BluetoothAdapter.STATE_OFF -> 4
@@ -122,55 +112,58 @@ class BluetoothScanner(
         }
     }
 
-    fun handleODIDPayload(result: ScanResult, offset: Long) {
-        val scanRecord: ScanRecord = result.scanRecord ?: return
-        val bytes = scanRecord.bytes ?: return
-        var source = Pigeon.MessageSource.BLUETOOTH_LEGACY;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bluetoothAdapter.isLeCodedPhySupported()) {
-            if (result.getPrimaryPhy() == BluetoothDevice.PHY_LE_CODED)
-                source = Pigeon.MessageSource.BLUETOOTH_LONG_RANGE;
-        }
-        if (bytes.size < offset + MAX_MESSAGE_SIZE) return
-    
-        val payload = payloadHandler.getPayload(
-            bytes.copyOfRange(offset.toInt(), MAX_MESSAGE_SIZE + offset.toInt()),
-            source,
-            result.device.address,
-            result.rssi.toLong(),
-            System.currentTimeMillis()
-        )
-
-        odidPayloadStreamHandler.send(payload?.toList() as Any)
-    }
-
-    val adapterStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        @RequiresApi(Build.VERSION_CODES.O)
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val rawState = bluetoothAdapter.state
-            val commonState = getAdapterState()
-            if (rawState == BluetoothAdapter.STATE_OFF || rawState == BluetoothAdapter.STATE_TURNING_OFF) {
-                if (bluetoothAdapter.isEnabled) bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
-                isScanning = false
-            } else if ((rawState == BluetoothAdapter.STATE_ON)
-                    && !isScanning) {
-                cancel()
-                scan()
-            }
-        }
-    }
-
     private val scanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
-            handleODIDPayload(result, 6)
+            val scanRecord: ScanRecord = result.scanRecord ?: return
+            val bytes = scanRecord.bytes ?: return
+            var source = Pigeon.MessageSource.BLUETOOTH_LEGACY;
+
+            if (bytes.size < BT_OFFSET + MAX_MESSAGE_SIZE) return
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bluetoothAdapter.isLeCodedPhySupported()) {
+                if (result.getPrimaryPhy() == BluetoothDevice.PHY_LE_CODED)
+                    source = Pigeon.MessageSource.BLUETOOTH_LONG_RANGE;
+            }
+
+            receiveData(
+                offsetData(bytes, BT_OFFSET),
+                result.device.address,
+                source,
+                result.rssi.toLong(),
+            )
         }
 
         override fun onBatchScanResults(results: List<ScanResult?>?) {
-            Log.e("scanner", "Got batch scan results, unable to handle")
+            Log.e(TAG, "Got batch scan results, unable to handle")
         }
 
         override fun onScanFailed(errorCode: Int) {
-            Log.e("scanner", "Scan failed: $errorCode")
+            Log.e(TAG, "Scan failed: $errorCode")
         }
+    }
+
+    private fun logAdapterInfo(bluetoothAdapter: BluetoothAdapter) {
+        Log.i(TAG, "bluetooth LE extended supported: " + bluetoothAdapter.isLeExtendedAdvertisingSupported.toString())
+        Log.i(TAG, "bluetooth LE coded phy supported: " + bluetoothAdapter.isLeCodedPhySupported.toString())
+        Log.i(TAG, "bluetooth multiple advertisement supported: " + bluetoothAdapter.isMultipleAdvertisementSupported.toString())
+        Log.i(TAG, "bluetooth max adv data len:" + bluetoothAdapter.leMaximumAdvertisingDataLength.toString())
+    }
+
+    private fun buildScanSettings() : ScanSettings {
+        var scanSettings = ScanSettings.Builder()
+            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .build()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+            bluetoothAdapter.isLeCodedPhySupported &&
+            bluetoothAdapter.isLeExtendedAdvertisingSupported
+        ) {
+            scanSettings = ScanSettings.Builder()
+                .setScanMode(scanMode)
+                .setLegacy(false)
+                .setPhy(ScanSettings.PHY_LE_ALL_SUPPORTED)
+            .build()
+        }
+        return scanSettings
     }
 }

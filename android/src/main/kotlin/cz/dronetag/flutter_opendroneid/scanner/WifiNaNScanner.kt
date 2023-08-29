@@ -27,22 +27,16 @@ import java.util.List;
 
 
 class WifiNaNScanner (
-    private val odidPayloadStreamHandler: StreamHandler,
+    odidPayloadStreamHandler: StreamHandler,
     private val wifiStateHandler: StreamHandler,
     private val wifiAwareManager: WifiAwareManager?,
     private val context: Context
-) {
-    companion object {
-        const val MAX_MESSAGE_SIZE = 25
-    }
-
+)  : ODIDScanner(odidPayloadStreamHandler) {
+    private val TAG: String = WifiNaNScanner::class.java.getSimpleName()
+    
     private var wifiAwareSession: WifiAwareSession? = null
     private val wifiScanEnabled = true
     private var wifiAwareSupported = true
-    var isScanning = false
-
-    private val payloadHandler: OdidPayloadHandler = OdidPayloadHandler()
-    private val TAG: String = WifiNaNScanner::class.java.getSimpleName()
 
     init{
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
@@ -55,14 +49,35 @@ class WifiNaNScanner (
             wifiAwareSupported = true
         }
     }
-    
-    private val myReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        @RequiresApi(Build.VERSION_CODES.O)
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (wifiAwareManager!!.isAvailable) {
-                Log.i(TAG, "WiFi Aware became available.")
-                startScan()
-            }
+
+    override fun scan() {
+        if (!wifiScanEnabled) {
+            return
+        }
+        isScanning = true
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
+            !context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_AWARE)) {
+            Log.i(TAG, "WiFi Aware is not supported.");
+            wifiAwareSupported = false
+            return;
+        }
+        wifiAwareSupported = true
+        context.registerReceiver(adapterStateReceiver, IntentFilter(WifiAwareManager.ACTION_WIFI_AWARE_STATE_CHANGED))
+        startScan();
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun cancel() {
+        if (!wifiAwareSupported) return
+        isScanning = false;
+        stopScan()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onAdapterStateReceived() {
+        if (wifiAwareManager!!.isAvailable) {
+            Log.i(TAG, "WiFi Aware became available.")
+            startScan()
         }
     }
 
@@ -80,36 +95,16 @@ class WifiNaNScanner (
                     serviceSpecificInfo: ByteArray?,
                     matchFilter: MutableList<ByteArray>?
                 ) {
-                    val transportType = "NAN"
-
-                    val timeNano: Long = SystemClock.elapsedRealtimeNanos()
-                    if(serviceSpecificInfo != null)
+                    if (serviceSpecificInfo != null)
                         receiveData(
-                            serviceSpecificInfo,
-                            peerHandle.hashCode(),
-                            timeNano,
-                            transportType
+                            offsetData(serviceSpecificInfo, WIFI_NAN_OFFSET),
+                            peerHandle.hashCode().toString(),
+                            Pigeon.MessageSource.WIFI_NAN,
                         )
                 }
             }, null)
         }
 
-    }
-
-    fun receiveData(
-        data: ByteArray, peerHash: Int, timeNano: Long,
-        transportType: String?
-    ) {
-        val offset = 4
-        val payload = payloadHandler.getPayload(
-            data.copyOfRange(offset, MAX_MESSAGE_SIZE + offset),
-            Pigeon.MessageSource.WIFI_NAN,
-            peerHash.hashCode().toString(),
-            0,
-            System.currentTimeMillis()
-        )
-
-        odidPayloadStreamHandler.send(payload?.toList() as Any)        
     }
 
     @TargetApi(Build.VERSION_CODES.O)
@@ -122,8 +117,13 @@ class WifiNaNScanner (
             }
         }
 
+    fun isWifiAwareSupported(): Boolean
+    {
+        return wifiAwareSupported;
+    }
+
     @TargetApi(Build.VERSION_CODES.O)
-    fun startScan() {
+    private fun startScan() {
         if (!wifiAwareSupported) return
         if (wifiAwareManager!!.isAvailable)
         {
@@ -136,41 +136,13 @@ class WifiNaNScanner (
         }
     }
 
-    fun isWifiAwareSupported(): Boolean
-    {
-        return wifiAwareSupported;
-    }
-
     @TargetApi(Build.VERSION_CODES.O)
-    fun stopScan() {
+    private fun stopScan() {
         if (!wifiAwareSupported) return
         if (wifiAwareManager != null && wifiAwareManager!!.isAvailable && wifiAwareSession != null)
         {
             wifiAwareSession!!.close()
             wifiStateHandler.send(false)
         }
-    }
-
-    fun scan() {
-        if (!wifiScanEnabled) {
-            return
-        }
-        isScanning = true
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
-            !context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_AWARE)) {
-            Log.i(TAG, "WiFi Aware is not supported.");
-            wifiAwareSupported = false
-            return;
-        }
-        wifiAwareSupported = true
-        context.registerReceiver(myReceiver, IntentFilter(WifiAwareManager.ACTION_WIFI_AWARE_STATE_CHANGED))
-        startScan();
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun cancel() {
-        if (!wifiAwareSupported) return
-        isScanning = false;
-        stopScan()
     }
 }
