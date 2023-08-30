@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter_opendroneid/models/constants.dart';
 import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
 import 'package:dart_opendroneid/src/types.dart';
+import 'package:flutter_opendroneid/utils/compare_extension.dart';
 
 class MessageContainer {
   final String macAddress;
@@ -59,7 +60,7 @@ class MessageContainer {
         systemDataMessage: systemDataMessage ?? this.systemDataMessage,
       );
 
-  MessageContainer update({
+  MessageContainer? update({
     required ODIDMessage message,
     required int receivedTimestamp,
     required pigeon.MessageSource source,
@@ -69,97 +70,79 @@ class MessageContainer {
       final messages = (message as MessagePack).messages;
       var result = this;
       for (var packMessage in messages) {
-        result = result.update(
+        final update = result.update(
           message: packMessage,
           receivedTimestamp: receivedTimestamp,
           source: source,
         );
+        if (update != null) result = update;
       }
       return result;
     }
+    // update pack only if new data differ from saved ones
     return switch (message.runtimeType) {
-      LocationMessage => copyWith(
-          locationMessage: message as LocationMessage,
-          lastMessageRssi: rssi,
-          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
-          source: source,
-        ),
-      BasicIDMessage => copyWith(
-          basicIdMessage: message as BasicIDMessage,
-          lastMessageRssi: rssi,
-          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
-          source: source,
-        ),
-      SelfIDMessage => copyWith(
-          selfIdMessage: message as SelfIDMessage,
-          lastMessageRssi: rssi,
-          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
-          source: source,
-        ),
-      OperatorIDMessage => copyWith(
-          operatorIdMessage: message as OperatorIDMessage,
-          lastMessageRssi: rssi,
-          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
-          source: source,
-        ),
-      AuthMessage => copyWith(
-          authenticationMessage: message as AuthMessage,
-          lastMessageRssi: rssi,
-          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
-          source: source,
-        ),
-      SystemMessage => copyWith(
-          systemDataMessage: message as SystemMessage,
-          lastMessageRssi: rssi,
-          lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
-          source: source,
-        ),
-      _ => this
+      LocationMessage => locationMessage != null &&
+              locationMessage!.containsEqualData(message as LocationMessage)
+          ? null
+          : copyWith(
+              locationMessage: message as LocationMessage,
+              lastMessageRssi: rssi,
+              lastUpdate:
+                  DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
+              source: source,
+            ),
+      BasicIDMessage => basicIdMessage != null &&
+              basicIdMessage!.containsEqualData(message as BasicIDMessage)
+          ? null
+          : copyWith(
+              basicIdMessage: message as BasicIDMessage,
+              lastMessageRssi: rssi,
+              lastUpdate:
+                  DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
+              source: source,
+            ),
+      SelfIDMessage => selfIdMessage != null &&
+              selfIdMessage!.containsEqualData(message as SelfIDMessage)
+          ? null
+          : copyWith(
+              selfIdMessage: message as SelfIDMessage,
+              lastMessageRssi: rssi,
+              lastUpdate:
+                  DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
+              source: source,
+            ),
+      OperatorIDMessage => operatorIdMessage != null &&
+              operatorIdMessage!.containsEqualData(message as OperatorIDMessage)
+          ? null
+          : copyWith(
+              operatorIdMessage: message as OperatorIDMessage,
+              lastMessageRssi: rssi,
+              lastUpdate:
+                  DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
+              source: source,
+            ),
+      AuthMessage => authenticationMessage != null &&
+              authenticationMessage!.containsEqualData(message as AuthMessage)
+          ? null
+          : copyWith(
+              authenticationMessage: message as AuthMessage,
+              lastMessageRssi: rssi,
+              lastUpdate:
+                  DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
+              source: source,
+            ),
+      SystemMessage => systemDataMessage != null &&
+              systemDataMessage!.containsEqualData(message as SystemMessage)
+          ? null
+          : copyWith(
+              systemDataMessage: message as SystemMessage,
+              lastMessageRssi: rssi,
+              lastUpdate:
+                  DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
+              source: source,
+            ),
+      _ => null
     };
-  }
-
-  MessageContainer updateWithOperatorId({
-    required OperatorIDMessage message,
-    required int receivedTimestamp,
-    int? rssi,
-  }) {
-    return copyWith(
-        operatorIdMessage: message,
-        lastMessageRssi: rssi,
-        lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp));
-  }
-
-  MessageContainer updateWithAuthentication({
-    required AuthMessage message,
-    required int receivedTimestamp,
-    int? rssi,
-  }) {
-    return copyWith(
-        authenticationMessage: message,
-        lastMessageRssi: rssi,
-        lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp));
-  }
-
-  MessageContainer updateWithSystemData({
-    required SystemMessage message,
-    required int receivedTimestamp,
-    int? rssi,
-  }) {
-    return copyWith(
-        systemDataMessage: message,
-        lastMessageRssi: rssi,
-        lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp));
-  }
-
-  MessageContainer updateWithSelfId({
-    required SelfIDMessage message,
-    required int receivedTimestamp,
-    int? rssi,
-  }) {
-    return copyWith(
-        selfIdMessage: message,
-        lastMessageRssi: rssi,
-        lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp));
   }
 
   pigeon.MessageSource getPackSource() => source;

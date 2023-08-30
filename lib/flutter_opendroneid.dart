@@ -107,13 +107,17 @@ class FlutterOpenDroneId {
     // TODO: check for duplicate messages
     final message = parseODIDMessage(payload.rawData);
     if (message == null) return;
-    _storedPacks[payload.macAddress] = storedPack.update(
+    final updatedPack = storedPack.update(
       message: message,
       receivedTimestamp: payload.receivedTimestamp,
       rssi: payload.rssi,
       source: payload.source,
     );
-    _packController.add(_storedPacks[payload.macAddress]!);
+    // update was refused if updatedPack is null
+    if (updatedPack != null) {
+      _storedPacks[payload.macAddress] = updatedPack;
+      _packController.add(updatedPack);
+    }
   }
 
   /// Checks all required Bluetooth permissions and throws
