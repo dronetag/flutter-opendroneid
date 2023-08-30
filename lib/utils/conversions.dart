@@ -1,4 +1,6 @@
 import 'package:dart_opendroneid/src/types.dart';
+import 'package:dart_opendroneid/src/types/uas_id.dart';
+import 'package:dart_opendroneid/src/types/ua_classification.dart';
 
 /// Conversions extensions
 
@@ -36,6 +38,69 @@ const Map<SpeedAccuracy, double?> _speedAccuracyConversionMap = {
   SpeedAccuracy.meterPerSecond_0_3: 0.3,
 };
 
+const Map<IDType, String> _idTypeConversionMap = {
+  IDType.none: 'None',
+  IDType.serialNumber: 'Serial Number',
+  IDType.CAARegistrationID: 'CAA Registration ID',
+  IDType.UTMAssignedID: 'UTM Assigned ID',
+  IDType.specificSessionID: 'Specific Session ID',
+};
+
+const Map<UAType, String> _uaTypeConversionMap = {
+  UAType.none: 'None',
+  UAType.aeroplane: 'Aeroplane',
+  UAType.helicopterOrMultirotor: 'Helicopter Or Multirotor',
+  UAType.gyroplane: 'Gyroplane',
+  UAType.hybridLift: 'Hybrid Lift',
+  UAType.ornithopter: 'Ornithopter',
+  UAType.glider: 'Glider',
+  UAType.kite: 'Kite',
+  UAType.freeBalloon: 'Free Balloon',
+  UAType.captiveBalloon: 'Captive Balloon',
+  UAType.airship: 'Airship',
+  UAType.freeFallParachute: 'Free Fall Parachute',
+  UAType.rocket: 'Rocket',
+  UAType.tetheredPoweredAircraft: 'Tethered Powered Aircraft',
+  UAType.groundObstacle: 'Ground Obstacle',
+  UAType.other: 'Other',
+};
+
+const Map<UAClassEurope, String> _uaClassEuropeConversionMap = {
+  UAClassEurope.undefined: 'Undefined',
+  UAClassEurope.EUClass_0: 'EU Class 0',
+  UAClassEurope.EUClass_1: 'EU Class 1',
+  UAClassEurope.EUClass_2: 'EU Class 2',
+  UAClassEurope.EUClass_3: 'EU Class 3',
+  UAClassEurope.EUClass_4: 'EU Class 4',
+  UAClassEurope.EUClass_5: 'EU Class 5',
+  UAClassEurope.EUClass_6: 'EU Class 6',
+};
+
+const Map<UACategoryEurope, String> _uaCategoryEuropeConversionMap = {
+  UACategoryEurope.undefined: 'Undefined',
+  UACategoryEurope.EUOpen: 'EU Open',
+  UACategoryEurope.EUSpecific: 'EU Specific',
+  UACategoryEurope.EUCertified: 'EU Certified',
+};
+
+const Map<OperatorLocationType, String> _operatorLocTypeConversionMap = {
+  OperatorLocationType.fixed: 'Fixed',
+  OperatorLocationType.takeOff: 'Take Off',
+  OperatorLocationType.dynamic: 'Dynamic',
+};
+
+const Map<HeightType, String> _heightTypeConversionMap = {
+  HeightType.aboveGroundLevel: 'Above Ground Level',
+  HeightType.aboveTakeoff: 'Above Take Off',
+};
+
+const Map<OperationalStatus, String> _operationalStatusConversionMap = {
+  OperationalStatus.ground: 'Grounded',
+  OperationalStatus.airborne: 'Airborne',
+  OperationalStatus.emergency: 'Emergency',
+  OperationalStatus.none: 'Unknown',
+};
+
 extension HorizontalAccuracyConversion on HorizontalAccuracy {
   double? toMeters() => _horizontalAccuracyConversionMap[this];
 }
@@ -46,4 +111,53 @@ extension VerticalAccuracyConversion on VerticalAccuracy {
 
 extension SpeedAccuracyConversion on SpeedAccuracy {
   double? toMetersPerSecond() => _speedAccuracyConversionMap[this];
+}
+
+extension UASIDConversion on UASID {
+  String? asString() => switch (this.runtimeType) {
+        SerialNumber => (this as SerialNumber).serialNumber,
+        IDNone() => null,
+        UTMAssignedID => (this as UTMAssignedID).id.toString(),
+        SpecificSessionID => (this as SpecificSessionID).id.toString(),
+        CAARegistrationID => (this as CAARegistrationID).registrationID,
+        _ => null,
+      };
+}
+
+extension IDTypeConversion on IDType {
+  String? asString() => _idTypeConversionMap[this];
+}
+
+extension UATypeConversion on UAType {
+  String? asString() => _uaTypeConversionMap[this];
+}
+
+extension UAClassificationConversion on UAClassification {
+  bool isEuropeClassification() => this is UAClassificationEurope;
+  String? uaClassEuropeString() => isEuropeClassification()
+      ? (this as UAClassificationEurope).uaClassEurope.asString()
+      : null;
+  String? uaCategoryEuropeString() => isEuropeClassification()
+      ? (this as UAClassificationEurope).uaCategoryEurope.asString()
+      : null;
+}
+
+extension UACategoryEuropeConversion on UACategoryEurope {
+  String? asString() => _uaCategoryEuropeConversionMap[this];
+}
+
+extension UAClassEuropeConversion on UAClassEurope {
+  String? asString() => _uaClassEuropeConversionMap[this];
+}
+
+extension OperatorLocationTypeConversion on OperatorLocationType {
+  String? asString() => _operatorLocTypeConversionMap[this];
+}
+
+extension HeightTypeConversion on HeightType {
+  String? asString() => _heightTypeConversionMap[this];
+}
+
+extension OperationalStatusConversion on OperationalStatus {
+  String? asString() => _operationalStatusConversionMap[this];
 }
