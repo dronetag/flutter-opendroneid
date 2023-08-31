@@ -21,7 +21,7 @@ class FlutterOpenDroneId {
   static const _wifiStateEventChannel =
       const EventChannel('flutter_odid_wifi_state');
 
-  static StreamSubscription? _rawDataSubscription;
+  static StreamSubscription? _odidDataSubscription;
 
   static final _packController = StreamController<MessageContainer>.broadcast();
   static Map<String, MessageContainer> _storedPacks = {};
@@ -55,7 +55,7 @@ class FlutterOpenDroneId {
   /// To further receive data, listen to
   /// streams.
   static Future<void> startScan(UsedTechnologies usedTechnologies) async {
-    _rawDataSubscription = odidPayloadEventChannel
+    _odidDataSubscription = odidPayloadEventChannel
         .receiveBroadcastStream()
         .listen((payload) => _updatePacks(pigeon.ODIDPayload.decode(payload)));
 
@@ -75,7 +75,7 @@ class FlutterOpenDroneId {
   static Future<void> stopScan() async {
     if (await _api.isScanningBluetooth()) await _api.stopScanBluetooth();
     if (await _api.isScanningWifi()) await _api.stopScanWifi();
-    _rawDataSubscription?.cancel();
+    _odidDataSubscription?.cancel();
   }
 
   static Future<void> setBtScanPriority(pigeon.ScanPriority priority) async {
@@ -104,7 +104,6 @@ class FlutterOpenDroneId {
           lastUpdate:
               DateTime.fromMillisecondsSinceEpoch(payload.receivedTimestamp),
         );
-    // TODO: check for duplicate messages
     final message = parseODIDMessage(payload.rawData);
     if (message == null) return;
     final updatedPack = storedPack.update(

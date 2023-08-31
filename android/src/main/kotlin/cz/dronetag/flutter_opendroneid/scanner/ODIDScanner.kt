@@ -5,9 +5,11 @@ import android.content.Context
 import android.content.Intent
 
 /// Contains common functinality for ODID scanners 
-/// Creates [ODIDPayload] instances implementin Pigeon PayloadAPI
+/// Derived scanners should use receiveData method that takes raw data and metadata
+/// and sends it to stream
+/// Creates [ODIDPayload] instances implementing Pigeon PayloadAPI
 abstract class ODIDScanner(
-    val odidPayloadStreamHandler: StreamHandler
+    private val odidPayloadStreamHandler: StreamHandler
 ) : Pigeon.PayloadApi {
 
     companion object {
@@ -58,6 +60,6 @@ abstract class ODIDScanner(
         odidPayloadStreamHandler.send(payload?.toList() as Any)        
     }
 
-    /// returs [ByteArray] without first offset elements
+    /// returns ByteArray without first offset elements
     inline fun offsetData(data: ByteArray, offset: Int) : ByteArray = data.copyOfRange(offset, data.size)
 }

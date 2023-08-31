@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter_opendroneid/models/constants.dart';
 import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
 import 'package:dart_opendroneid/src/types.dart';
@@ -31,9 +29,6 @@ class MessageContainer {
     this.systemDataMessage,
   });
 
-  static const colorMax = 120;
-  static const colorOffset = 90;
-
   MessageContainer copyWith({
     String? macAddress,
     int? lastMessageRssi,
@@ -60,6 +55,9 @@ class MessageContainer {
         systemDataMessage: systemDataMessage ?? this.systemDataMessage,
       );
 
+  /// Returns new MessageContainer updated with message.
+  /// Null is returned if update is refused, because it contains duplicate or
+  /// corrupted data.
   MessageContainer? update({
     required ODIDMessage message,
     required int receivedTimestamp,
@@ -146,28 +144,6 @@ class MessageContainer {
   }
 
   pigeon.MessageSource getPackSource() => source;
-
-  /// Calculates a color from mac address, that uniquely identifies the device
-  Color getPackColor() {
-    final len = macAddress.length;
-    return Color.fromARGB(
-      locationMessage?.status != OperationalStatus.airborne ? 80 : 255,
-      colorOffset +
-          32 +
-          macAddress
-                  .substring(0, len ~/ 2)
-                  .codeUnits
-                  .reduce((sum, e) => sum + e) %
-              (colorMax - 32),
-      colorOffset +
-          macAddress.codeUnits.reduce((sum, e) => (sum * e) % colorMax),
-      colorOffset +
-          macAddress
-              .substring(len ~/ 2)
-              .codeUnits
-              .fold(255, (sum, e) => sum - e % colorMax),
-    );
-  }
 
   bool operatorIDSet() {
     return operatorIdMessage != null &&

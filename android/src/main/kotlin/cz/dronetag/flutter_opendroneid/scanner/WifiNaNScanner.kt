@@ -33,10 +33,46 @@ class WifiNaNScanner (
     private val context: Context
 )  : ODIDScanner(odidPayloadStreamHandler) {
     private val TAG: String = WifiNaNScanner::class.java.getSimpleName()
-    
-    private var wifiAwareSession: WifiAwareSession? = null
     private val wifiScanEnabled = true
     private var wifiAwareSupported = true
+
+    private var wifiAwareSession: WifiAwareSession? = null
+
+    // callback for Wi-Fi Aware session advertisement
+    private val attachCallback: AttachCallback = @RequiresApi(Build.VERSION_CODES.O)
+    object : AttachCallback() {
+        override fun onAttached(session: WifiAwareSession) {
+            if (!wifiAwareSupported) return
+            wifiAwareSession = session
+            val config = SubscribeConfig.Builder()
+                .setServiceName("org.opendroneid.remoteid")
+                .build()
+            wifiAwareSession!!.subscribe(config, object : DiscoverySessionCallback() {
+                override fun onServiceDiscovered(
+                    peerHandle: PeerHandle?,
+                    serviceSpecificInfo: ByteArray?,
+                    matchFilter: MutableList<ByteArray>?
+                ) {
+                    if (serviceSpecificInfo != null)
+                        receiveData(
+                            offsetData(serviceSpecificInfo, WIFI_NAN_OFFSET),
+                            peerHandle.hashCode().toString(),
+                            Pigeon.MessageSource.WIFI_NAN,
+                        )
+                }
+            }, null)
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private val identityChangedListener: IdentityChangedListener =
+        object : IdentityChangedListener() {
+            override fun onIdentityChanged(mac: ByteArray) {
+                val macAddress = arrayOfNulls<Byte>(mac.size)
+                var i = 0
+                for (b in mac) macAddress[i++] = b
+            }
+        }
 
     init{
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
@@ -51,9 +87,6 @@ class WifiNaNScanner (
     }
 
     override fun scan() {
-        if (!wifiScanEnabled) {
-            return
-        }
         isScanning = true
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
             !context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_AWARE)) {
@@ -80,42 +113,6 @@ class WifiNaNScanner (
             startScan()
         }
     }
-
-    private val attachCallback: AttachCallback = @RequiresApi(Build.VERSION_CODES.O)
-    object : AttachCallback() {
-        override fun onAttached(session: WifiAwareSession) {
-            if (!wifiAwareSupported) return
-            wifiAwareSession = session
-            val config = SubscribeConfig.Builder()
-                .setServiceName("org.opendroneid.remoteid")
-                .build()
-            wifiAwareSession!!.subscribe(config, object : DiscoverySessionCallback() {
-                override fun onServiceDiscovered(
-                    peerHandle: PeerHandle?,
-                    serviceSpecificInfo: ByteArray?,
-                    matchFilter: MutableList<ByteArray>?
-                ) {
-                    if (serviceSpecificInfo != null)
-                        receiveData(
-                            offsetData(serviceSpecificInfo, WIFI_NAN_OFFSET),
-                            peerHandle.hashCode().toString(),
-                            Pigeon.MessageSource.WIFI_NAN,
-                        )
-                }
-            }, null)
-        }
-
-    }
-
-    @TargetApi(Build.VERSION_CODES.O)
-    private val identityChangedListener: IdentityChangedListener =
-        object : IdentityChangedListener() {
-            override fun onIdentityChanged(mac: ByteArray) {
-                val macAddress = arrayOfNulls<Byte>(mac.size)
-                var i = 0
-                for (b in mac) macAddress[i++] = b
-            }
-        }
 
     fun isWifiAwareSupported(): Boolean
     {

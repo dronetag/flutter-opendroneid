@@ -12,6 +12,13 @@ import android.os.CountDownTimer
 import java.nio.ByteOrder
 import java.util.*
 
+/// Wi-Fi Beacons Scanner
+/// There are 2 ways to control WiFi scan:
+/// Continuous scan: Calls startScan() from scan completion callback
+/// Periodic scan: countdown timer triggers startScan after expiry of the timer.
+/// If phone is debug mode and scan throttling is off, scan is triggered from onReceive() callback.
+/// But if scan throttling is turned on on the phone (default setting on the phone), then scan throttling kick in.
+/// In case of throttling, startScan() fails. We need timer thread to periodically kick off scanning.
 class WifiScanner (
     odidPayloadStreamHandler: StreamHandler,
     private val wifiStateHandler: StreamHandler,
@@ -19,7 +26,6 @@ class WifiScanner (
     private val context: Context
 ) : ODIDScanner(odidPayloadStreamHandler) {
     private val TAG: String = WifiScanner::class.java.getSimpleName()
-    
     private val CIDLen = 3
     private val DRICID = intArrayOf(0xFA, 0x0B, 0xBC)
     private val vendorTypeLen = 1
@@ -27,8 +33,10 @@ class WifiScanner (
     private var scanSuccess = 0
     private var scanFailed = 0
     private val scanTimerInterval = 2
+
     private var countDownTimer: CountDownTimer? = null
 
+    // callback for receiving Wi-Fi scan results
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(contxt: Context?, intent: Intent?) {
             if (wifiManager == null) {
@@ -47,7 +55,8 @@ class WifiScanner (
                         e.printStackTrace()
                     }
                 }
-                scan()
+                if(isScanning)
+                    scan()
             }
         }
     }
@@ -154,12 +163,6 @@ class WifiScanner (
                 && vendorType[0] == vendorTypeValue.toByte()
     }
 
-    // There are 2 ways to control WiFi scan:
-    // Continuous scan: Calls startSCan() from scan completion callback
-    // Periodic scan: countdown timer triggers startScan after expiry of the timer.
-    // If phone is debug mode and scan throttling is off, scan is triggered from onReceive() callback.
-    // But if scan throttling is turned on on the phone (default setting on the phone), then scan throttling kick in.
-    // In case of throttling, startScan() fails. We need timer thread to periodically kick off scanning.
     private fun startCountDownTimer() {
         countDownTimer = object : CountDownTimer(
             Long.MAX_VALUE,
@@ -167,7 +170,8 @@ class WifiScanner (
         ) {
             // This is called after every ScanTimerInterval sec.
             override fun onTick(millisUntilFinished: Long) {
-                scan()
+                if(isScanning)
+                    scan()
             }
 
             override fun onFinish() {}

@@ -19,20 +19,50 @@ class BluetoothScanner(
     private val bluetoothStateHandler: StreamHandler,
 ) : ODIDScanner(odidPayloadStreamHandler) {
     private val TAG: String = BluetoothScanner::class.java.getSimpleName()
+    private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
-    var scanMode = ScanSettings.SCAN_MODE_LOW_LATENCY
-    val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-    
+    private var scanMode = ScanSettings.SCAN_MODE_LOW_LATENCY
+
     /// OpenDroneID Bluetooth beacons identify themselves by setting the GAP AD Type to
     /// "Service Data - 16-bit UUID" and the value to 0xFFFA for ASTM International, ASTM Remote ID.
     /// https://www.bluetooth.com/specifications/assigned-numbers/ -> "Generic Access Profile"
     /// https://www.bluetooth.com/specifications/assigned-numbers/ -> "16-bit UUIDs"
     /// Vol 3, Part B, Section 2.5.1 of the Bluetooth 5.1 Core Specification
     /// The AD Application Code is set to 0x0D = Open Drone ID.
-    
     private val serviceUuid = UUID.fromString("0000fffa-0000-1000-8000-00805f9b34fb")
     private val serviceParcelUuid = ParcelUuid(serviceUuid)
     private val odidAdCode = byteArrayOf(0x0D.toByte())
+
+    /// Callback for receiving data: read data from ScanRecord and call receiveData
+    private val scanCallback: ScanCallback = object : ScanCallback() {
+        override fun onScanResult(callbackType: Int, result: ScanResult) {
+            val scanRecord: ScanRecord = result.scanRecord ?: return
+            val bytes = scanRecord.bytes ?: return
+            var source = Pigeon.MessageSource.BLUETOOTH_LEGACY;
+
+            if (bytes.size < BT_OFFSET + MAX_MESSAGE_SIZE) return
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bluetoothAdapter.isLeCodedPhySupported()) {
+                if (result.getPrimaryPhy() == BluetoothDevice.PHY_LE_CODED)
+                    source = Pigeon.MessageSource.BLUETOOTH_LONG_RANGE;
+            }
+
+            receiveData(
+                offsetData(bytes, BT_OFFSET),
+                result.device.address,
+                source,
+                result.rssi.toLong(),
+            )
+        }
+
+        override fun onBatchScanResults(results: List<ScanResult?>?) {
+            Log.e(TAG, "Got batch scan results, unable to handle")
+        }
+
+        override fun onScanFailed(errorCode: Int) {
+            Log.e(TAG, "Scan failed: $errorCode")
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun scan() {
@@ -109,36 +139,6 @@ class BluetoothScanner(
             BluetoothAdapter.STATE_TURNING_OFF -> 1
             BluetoothAdapter.STATE_TURNING_ON -> 1
             else -> 0
-        }
-    }
-
-    private val scanCallback: ScanCallback = object : ScanCallback() {
-        override fun onScanResult(callbackType: Int, result: ScanResult) {
-            val scanRecord: ScanRecord = result.scanRecord ?: return
-            val bytes = scanRecord.bytes ?: return
-            var source = Pigeon.MessageSource.BLUETOOTH_LEGACY;
-
-            if (bytes.size < BT_OFFSET + MAX_MESSAGE_SIZE) return
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bluetoothAdapter.isLeCodedPhySupported()) {
-                if (result.getPrimaryPhy() == BluetoothDevice.PHY_LE_CODED)
-                    source = Pigeon.MessageSource.BLUETOOTH_LONG_RANGE;
-            }
-
-            receiveData(
-                offsetData(bytes, BT_OFFSET),
-                result.device.address,
-                source,
-                result.rssi.toLong(),
-            )
-        }
-
-        override fun onBatchScanResults(results: List<ScanResult?>?) {
-            Log.e(TAG, "Got batch scan results, unable to handle")
-        }
-
-        override fun onScanFailed(errorCode: Int) {
-            Log.e(TAG, "Scan failed: $errorCode")
         }
     }
 
