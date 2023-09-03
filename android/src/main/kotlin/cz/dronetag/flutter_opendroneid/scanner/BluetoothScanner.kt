@@ -46,9 +46,11 @@ class BluetoothScanner(
                 if (result.getPrimaryPhy() == BluetoothDevice.PHY_LE_CODED)
                     source = Pigeon.MessageSource.BLUETOOTH_LONG_RANGE;
             }
-
+            // if using BLE, max size of data is MAX_BLE_ADV_SIZE
+            // if using BT5, data can be longer up to 256 bytes
+            val isBLE = maxAdvDataLen() <= MAX_BLE_ADV_SIZE
             receiveData(
-                offsetData(bytes, BT_OFFSET),
+                if(isBLE) getDataFromIndex(bytes, BT_OFFSET, MAX_BLE_ADV_SIZE) else offsetData(bytes, BT_OFFSET),
                 result.device.address,
                 source,
                 result.rssi.toLong(),

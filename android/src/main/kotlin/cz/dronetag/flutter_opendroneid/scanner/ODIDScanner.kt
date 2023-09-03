@@ -15,6 +15,7 @@ abstract class ODIDScanner(
     companion object {
         const val MAX_MESSAGE_SIZE = 25
         const val BT_OFFSET = 6
+        const val MAX_BLE_ADV_SIZE = 31
         const val WIFI_BEACON_OFFSET = 5
         const val WIFI_NAN_OFFSET = 1
     }
@@ -62,4 +63,7 @@ abstract class ODIDScanner(
 
     /// returns ByteArray without first offset elements
     inline fun offsetData(data: ByteArray, offset: Int) : ByteArray = data.copyOfRange(offset, data.size)
+
+    /// returns ByteArray with bytes from start to end
+    inline fun getDataFromIndex(data: ByteArray, start: Int, end: Int) : ByteArray = data.copyOfRange(start, end)
 }
