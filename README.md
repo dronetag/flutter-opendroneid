@@ -4,11 +4,15 @@
 
 A flutter plugin for reading Wi-Fi and Bluetooth Remote ID advertisements using native Android and iOS platform-specific implementation. The format of data is defined in the [ASTM F3411](https://www.astm.org/f3411-22a.html) Remote ID and the [ASD-STAN prEN 4709-002](http://asd-stan.org/downloads/asd-stan-pren-4709-002-p1/) Direct Remote ID specifications.
 
+The platform-specific implementation reads raw message bytes from Wi-Fi and Bluetooth Remote ID advertisements. Then the raw payload with metadata is passed using event channels to the Dart side. Raw data are parsed to Remote ID messages using [Dart-opendroneid library](https://github.com/dronetag/dart-opendroneid).
+
+[The pigeon library](https://pub.dev/packages/pigeon) is used to define the messaging protocol between the platform host and Flutter client. The messaging protocol is defined in [schema.dart](pigeon/schema.dart).
+
 The architecture of native code is inspired by [OpenDroneID Android receiver application](https://github.com/opendroneid/receiver-android).
 
 ## Pre-requisities
 
-- Flutter 3.0.5 or newer
+- Flutter 3.10.0 or newer
 
 ## Getting Started
 
