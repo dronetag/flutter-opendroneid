@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  FLUTTER_VERSION: '3.13.x'
+  FLUTTER_VERSION: "3.13.x"
 
 jobs:
   integration:
@@ -27,25 +27,9 @@ jobs:
     secrets:
       github-token: ${{ secrets.GITHUB_TOKEN }}
 
-  bump-pubspec:
-    name: Bump version in pubspec.yaml
-    needs: release-version
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - uses: dronetag/gha-shared/.github/actions/update-pubspec-version@master
-        with:
-          version: ${{ needs.release-version.outputs.version }}
-      - name: Commit & push
-        run: |
-          git commit -a -m "chore: Bump pubspec.yaml version to ${{ needs.release-version.outputs.version }}"
-          git push
-
-
   publish:
     name: Publish to pub.dev
-    needs: bump-pubspec
+    needs: release-version
     permissions:
       id-token: write
     runs-on: ubuntu-latest
@@ -56,5 +40,8 @@ jobs:
         uses: dronetag/gha-shared/.github/actions/flutter-install@master
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
+      - uses: dronetag/gha-shared/.github/actions/update-pubspec-version@master
+        with:
+          version: ${{ needs.release-version.outputs.version }}
       - name: Publish to pub.dev
         run: flutter pub publish -f
