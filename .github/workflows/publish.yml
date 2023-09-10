@@ -1,0 +1,60 @@
+name: Publish to pub.dev
+
+# Publish workflow releases a new version, updates changelog
+# and publishes the library to pub.dev
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  FLUTTER_VERSION: '3.13.x'
+
+jobs:
+  integration:
+    name: Run integration
+    uses: ./.github/workflows/integration.yml
+
+  release-version:
+    name: Release a new version
+    needs: integration
+    uses: dronetag/gha-shared/.github/workflows/create-release.yml@master
+    concurrency: release-version-${{ github.repository }}
+    with:
+      install-changelog-plugin: true
+      must-release: true
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  bump-pubspec:
+    name: Bump version in pubspec.yaml
+    needs: release-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: dronetag/gha-shared/.github/actions/update-pubspec-version@master
+        with:
+          version: ${{ needs.release-version.outputs.version }}
+      - name: Commit & push
+        run: |
+          git commit -a -m "chore: Bump pubspec.yaml version to ${{ needs.release-version.outputs.version }}"
+          git push
+
+
+  publish:
+    name: Publish to pub.dev
+    needs: bump-pubspec
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install the project
+        uses: dronetag/gha-shared/.github/actions/flutter-install@master
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+      - name: Publish to pub.dev
+        run: flutter pub publish -f
