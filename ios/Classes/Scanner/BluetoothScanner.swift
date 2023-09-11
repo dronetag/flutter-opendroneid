@@ -95,7 +95,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
         )    
     }
     
-    func getPayloadRawData(_ rawData: FlutterStandardTypedData, source: DTGMessageSource, macAddress: String, rssi: NSNumber, receivedTimestamp: NSNumber, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGODIDPayload? {
+    func buildPayloadRawData(_ rawData: FlutterStandardTypedData, source: DTGMessageSource, macAddress: String, rssi: NSNumber, receivedTimestamp: NSNumber, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGODIDPayload? {
         return DTGODIDPayload.make(withRawData: rawData, receivedTimestamp: receivedTimestamp, macAddress: macAddress, rssi: rssi, source: source)
     }
 
@@ -106,7 +106,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
         }
         var err: FlutterError?
         let systimestamp = Int(Date().timeIntervalSince1970 * 1000)
-        let payload = getPayloadRawData(data, source: DTGMessageSource.bluetoothLegacy, macAddress: peripheral.identifier.uuidString, rssi: RSSI.intValue as NSNumber, receivedTimestamp: systimestamp as NSNumber, error: &err)
+        let payload = buildPayloadRawData(data, source: DTGMessageSource.bluetoothLegacy, macAddress: peripheral.identifier.uuidString, rssi: RSSI.intValue as NSNumber, receivedTimestamp: systimestamp as NSNumber, error: &err)
 
         odidPayloadStreamHandler.send(payload!.toList() as Any)
     }

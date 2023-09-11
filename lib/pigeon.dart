@@ -426,9 +426,9 @@ class PayloadApi {
 
   static const MessageCodec<Object?> codec = _PayloadApiCodec();
 
-  Future<ODIDPayload> getPayload(Uint8List arg_rawData, MessageSource arg_source, String arg_macAddress, int arg_rssi, int arg_receivedTimestamp) async {
+  Future<ODIDPayload> buildPayload(Uint8List arg_rawData, MessageSource arg_source, String arg_macAddress, int arg_rssi, int arg_receivedTimestamp) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_opendroneid.PayloadApi.getPayload', codec,
+        'dev.flutter.pigeon.flutter_opendroneid.PayloadApi.buildPayload', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_rawData, arg_source.index, arg_macAddress, arg_rssi, arg_receivedTimestamp]) as List<Object?>?;

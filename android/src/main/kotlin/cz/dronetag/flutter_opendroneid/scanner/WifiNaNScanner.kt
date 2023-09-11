@@ -32,6 +32,11 @@ class WifiNaNScanner (
     private val wifiAwareManager: WifiAwareManager?,
     private val context: Context
 )  : ODIDScanner(odidPayloadStreamHandler) {
+
+    companion object {
+        const val WIFI_NAN_OFFSET = 1
+    }
+
     private val TAG: String = WifiNaNScanner::class.java.getSimpleName()
     private val wifiScanEnabled = true
     private var wifiAwareSupported = true

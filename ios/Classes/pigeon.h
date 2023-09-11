@@ -87,7 +87,7 @@ NSObject<FlutterMessageCodec> *DTGPayloadApiGetCodec(void);
 
 @protocol DTGPayloadApi
 /// @return `nil` only when `error != nil`.
-- (nullable DTGODIDPayload *)getPayloadRawData:(FlutterStandardTypedData *)rawData source:(DTGMessageSource)source macAddress:(NSString *)macAddress rssi:(NSNumber *)rssi receivedTimestamp:(NSNumber *)receivedTimestamp error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable DTGODIDPayload *)buildPayloadRawData:(FlutterStandardTypedData *)rawData source:(DTGMessageSource)source macAddress:(NSString *)macAddress rssi:(NSNumber *)rssi receivedTimestamp:(NSNumber *)receivedTimestamp error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void DTGPayloadApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGPayloadApi> *_Nullable api);

@@ -658,7 +658,7 @@ public class Pigeon {
   public interface PayloadApi {
 
     @NonNull 
-    ODIDPayload getPayload(@NonNull byte[] rawData, @NonNull MessageSource source, @NonNull String macAddress, @NonNull Long rssi, @NonNull Long receivedTimestamp);
+    ODIDPayload buildPayload(@NonNull byte[] rawData, @NonNull MessageSource source, @NonNull String macAddress, @NonNull Long rssi, @NonNull Long receivedTimestamp);
 
     /** The codec used by PayloadApi. */
     static @NonNull MessageCodec<Object> getCodec() {
@@ -669,7 +669,7 @@ public class Pigeon {
       {
         BasicMessageChannel<Object> channel =
             new BasicMessageChannel<>(
-                binaryMessenger, "dev.flutter.pigeon.flutter_opendroneid.PayloadApi.getPayload", getCodec());
+                binaryMessenger, "dev.flutter.pigeon.flutter_opendroneid.PayloadApi.buildPayload", getCodec());
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
@@ -681,7 +681,7 @@ public class Pigeon {
                 Number rssiArg = (Number) args.get(3);
                 Number receivedTimestampArg = (Number) args.get(4);
                 try {
-                  ODIDPayload output = api.getPayload(rawDataArg, sourceArg, macAddressArg, (rssiArg == null) ? null : rssiArg.longValue(), (receivedTimestampArg == null) ? null : receivedTimestampArg.longValue());
+                  ODIDPayload output = api.buildPayload(rawDataArg, sourceArg, macAddressArg, (rssiArg == null) ? null : rssiArg.longValue(), (receivedTimestampArg == null) ? null : receivedTimestampArg.longValue());
                   wrapped.add(0, output);
                 }
  catch (Throwable exception) {

@@ -18,6 +18,12 @@ class BluetoothScanner(
     odidPayloadStreamHandler: StreamHandler,
     private val bluetoothStateHandler: StreamHandler,
 ) : ODIDScanner(odidPayloadStreamHandler) {
+
+    companion object {
+        const val BT_OFFSET = 6
+        const val MAX_BLE_ADV_SIZE = 31
+    }
+
     private val TAG: String = BluetoothScanner::class.java.getSimpleName()
     private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 

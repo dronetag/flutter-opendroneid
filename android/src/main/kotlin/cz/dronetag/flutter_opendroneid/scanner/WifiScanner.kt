@@ -25,6 +25,11 @@ class WifiScanner (
     private val wifiManager: WifiManager?,
     private val context: Context
 ) : ODIDScanner(odidPayloadStreamHandler) {
+
+    companion object {
+        const val WIFI_BEACON_OFFSET = 5
+    }
+
     private val TAG: String = WifiScanner::class.java.getSimpleName()
     private val CIDLen = 3
     private val DRICID = intArrayOf(0xFA, 0x0B, 0xBC)

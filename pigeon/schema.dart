@@ -85,6 +85,6 @@ abstract class Api {
 // ODIDPayload is not generated until used in API
 @HostApi()
 abstract class PayloadApi {
-  ODIDPayload getPayload(Uint8List rawData, MessageSource source,
+  ODIDPayload buildPayload(Uint8List rawData, MessageSource source,
       String macAddress, int rssi, int receivedTimestamp);
 }

@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 
-/// Contains common functinality for ODID scanners 
+/// Contains common functinality for ODID scanners.
 /// Derived scanners should use receiveData method that takes raw data and metadata
 /// and sends it to stream
 /// Creates [ODIDPayload] instances implementing Pigeon PayloadAPI
@@ -14,10 +14,6 @@ abstract class ODIDScanner(
 
     companion object {
         const val MAX_MESSAGE_SIZE = 25
-        const val BT_OFFSET = 6
-        const val MAX_BLE_ADV_SIZE = 31
-        const val WIFI_BEACON_OFFSET = 5
-        const val WIFI_NAN_OFFSET = 1
     }
 
     var isScanning = false
@@ -38,7 +34,7 @@ abstract class ODIDScanner(
 
     abstract fun onAdapterStateReceived()
 
-    override fun getPayload(rawData: ByteArray, source: Pigeon.MessageSource, macAddress: String, rssi: Long, receivedTimestamp: Long): Pigeon.ODIDPayload {
+    override fun buildPayload(rawData: ByteArray, source: Pigeon.MessageSource, macAddress: String, rssi: Long, receivedTimestamp: Long): Pigeon.ODIDPayload {
         val builder = Pigeon.ODIDPayload.Builder()
 
         builder.setRawData(rawData)
@@ -54,7 +50,7 @@ abstract class ODIDScanner(
     fun receiveData(
         data: ByteArray, macAddress: String, source: Pigeon.MessageSource, rssi: Long = 0
     ) {
-        val payload = getPayload(
+        val payload = buildPayload(
             data, source, macAddress, rssi, System.currentTimeMillis()
         )
 

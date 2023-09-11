@@ -3,6 +3,9 @@ import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
 import 'package:dart_opendroneid/src/types.dart';
 import 'package:flutter_opendroneid/utils/compare_extension.dart';
 
+/// The [MessageContainer] groups together messages of different types
+/// from one device. It contains one instance of each message. The container is
+/// then sent using stream to client of the library.
 class MessageContainer {
   final String macAddress;
   final DateTime lastUpdate;
@@ -143,39 +146,36 @@ class MessageContainer {
     };
   }
 
-  pigeon.MessageSource getPackSource() => source;
+  pigeon.MessageSource get packSource => source;
 
-  bool operatorIDSet() {
-    return operatorIdMessage != null &&
-        operatorIdMessage!.operatorID != OPERATOR_ID_NOT_SET;
-  }
+  bool get operatorIDSet =>
+      operatorIdMessage != null &&
+      operatorIdMessage!.operatorID != OPERATOR_ID_NOT_SET;
 
-  bool operatorIDValid() {
+  bool get operatorIDValid {
     final validCharacters = RegExp(r'^[a-zA-Z0-9]+$');
     return operatorIdMessage != null &&
         operatorIdMessage!.operatorID.length == 16 &&
         validCharacters.hasMatch(operatorIdMessage!.operatorID);
   }
 
-  bool systemDataValid() {
-    return systemDataMessage != null &&
-        systemDataMessage?.operatorLocation != null &&
-        systemDataMessage!.operatorLocation!.latitude != INV_LAT &&
-        systemDataMessage?.operatorLocation!.longitude != INV_LON &&
-        systemDataMessage!.operatorLocation!.latitude <= MAX_LAT &&
-        systemDataMessage!.operatorLocation!.latitude >= MIN_LAT &&
-        systemDataMessage!.operatorLocation!.longitude <= MAX_LON &&
-        systemDataMessage!.operatorLocation!.longitude >= MIN_LON;
-  }
+  bool get systemDataValid =>
+      systemDataMessage != null &&
+      systemDataMessage?.operatorLocation != null &&
+      systemDataMessage!.operatorLocation!.latitude != INV_LAT &&
+      systemDataMessage?.operatorLocation!.longitude != INV_LON &&
+      systemDataMessage!.operatorLocation!.latitude <= MAX_LAT &&
+      systemDataMessage!.operatorLocation!.latitude >= MIN_LAT &&
+      systemDataMessage!.operatorLocation!.longitude <= MAX_LON &&
+      systemDataMessage!.operatorLocation!.longitude >= MIN_LON;
 
-  bool locationValid() {
-    return locationMessage != null &&
-        locationMessage?.location != null &&
-        locationMessage!.location!.latitude != INV_LAT &&
-        locationMessage!.location!.longitude != INV_LON &&
-        locationMessage!.location!.latitude <= MAX_LAT &&
-        locationMessage!.location!.longitude <= MAX_LON &&
-        locationMessage!.location!.latitude >= MIN_LAT &&
-        locationMessage!.location!.longitude >= MIN_LON;
-  }
+  bool get locationValid =>
+      locationMessage != null &&
+      locationMessage?.location != null &&
+      locationMessage!.location!.latitude != INV_LAT &&
+      locationMessage!.location!.longitude != INV_LON &&
+      locationMessage!.location!.latitude <= MAX_LAT &&
+      locationMessage!.location!.longitude <= MAX_LON &&
+      locationMessage!.location!.latitude >= MIN_LAT &&
+      locationMessage!.location!.longitude >= MIN_LON;
 }
