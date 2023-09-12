@@ -3,14 +3,10 @@ import UIKit
 
 @available(iOS 13.0.0, *)
 public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
+
     private var bluetoothScanner: BluetoothScanner!
     
-    private let locationMessagesStreamHandler = StreamHandler()
-    private let operatoridMessagesStreamHandler = StreamHandler()
-    private let basicMessagesStreamHandler = StreamHandler()
-    private let authMessagesStreamHandler = StreamHandler()
-    private let selfidMessagesStreamHandler = StreamHandler()
-    private let systemMessagesStreamHandler = StreamHandler()
+    private let odidPayloadStreamHandler = StreamHandler()
     private let bluetoothStateStreamHandler = StreamHandler()
     private let wifiStateStreamHandler = StreamHandler()
     
@@ -19,26 +15,14 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
         let instance : SwiftFlutterOpendroneidPlugin & DTGApi & NSObjectProtocol = SwiftFlutterOpendroneidPlugin.init()
         DTGApiSetup(messenger, instance);
         
-        //let instance = SwiftFlutterOpendroneidPlugin()
-        
         // Event channels
-        FlutterEventChannel(name: "flutter_location_messages", binaryMessenger: registrar.messenger()).setStreamHandler(instance.locationMessagesStreamHandler)
-        FlutterEventChannel(name: "flutter_operatorid_messages", binaryMessenger: registrar.messenger()).setStreamHandler(instance.operatoridMessagesStreamHandler)
-        FlutterEventChannel(name: "flutter_basic_messages", binaryMessenger: registrar.messenger()).setStreamHandler(instance.basicMessagesStreamHandler)
-        FlutterEventChannel(name: "flutter_system_messages", binaryMessenger: registrar.messenger()).setStreamHandler(instance.systemMessagesStreamHandler)
-        FlutterEventChannel(name: "flutter_selfid_messages", binaryMessenger: registrar.messenger()).setStreamHandler(instance.selfidMessagesStreamHandler)
-        FlutterEventChannel(name: "flutter_auth_messages", binaryMessenger: registrar.messenger()).setStreamHandler(instance.authMessagesStreamHandler)
+        FlutterEventChannel(name: "flutter_odid_data", binaryMessenger: registrar.messenger()).setStreamHandler(instance.odidPayloadStreamHandler)
         FlutterEventChannel(name: "flutter_odid_bt_state", binaryMessenger: registrar.messenger()).setStreamHandler(instance.bluetoothStateStreamHandler)
         FlutterEventChannel(name: "flutter_odid_wifi_state", binaryMessenger: registrar.messenger()).setStreamHandler(instance.wifiStateStreamHandler)
         
         // Register bluetooth scanner
         instance.bluetoothScanner = BluetoothScanner(
-            basicMessageHandler: instance.basicMessagesStreamHandler,
-            locationMessageHandler: instance.locationMessagesStreamHandler,
-            operatoridMessageHandler: instance.operatoridMessagesStreamHandler,
-            authMessageHandler: instance.authMessagesStreamHandler,
-            systemMessageHandler: instance.systemMessagesStreamHandler,
-            selfidMessageHandler: instance.selfidMessagesStreamHandler,
+            odidPayloadStreamHandler: instance.odidPayloadStreamHandler,
             scanStateHandler: instance.bluetoothStateStreamHandler
         )
     }

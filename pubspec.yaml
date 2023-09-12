@@ -10,9 +10,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  pigeon: ^10.0.0
   permission_handler: ^10.2.0 
   device_info_plus: ^8.0.0
+  dart_opendroneid: ^0.1.0
+
+dev_dependencies:
+  pigeon: ^10.1.6
 
 flutter:
   plugin:
