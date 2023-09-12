@@ -1,3 +1,19 @@
+# [0.14.0](https://github.com/dronetag/flutter-opendroneid/compare/v0.13.0...v0.14.0) (2023-09-12)
+
+
+### Bug Fixes
+
+* update container with source of current message update ([c477388](https://github.com/dronetag/flutter-opendroneid/commit/c47738842cc2f9c115af3bbb59f8deba431b3d08))
+
+
+### Features
+
+* add conversions of message values to strings ([7b43b50](https://github.com/dronetag/flutter-opendroneid/commit/7b43b5058d013ffaa67b369662e72e39114e215b))
+* put back duplicate messages filtering ([f1d1001](https://github.com/dronetag/flutter-opendroneid/commit/f1d1001fe70240d1dee954bf68ec9c9f9296669a))
+* remove message parsing, use dart-odid ([c3dda27](https://github.com/dronetag/flutter-opendroneid/commit/c3dda27db63533623d8bba5c7970775b0ee19319))
+* shorted BLE advertisements to max 31 bytes ([8da4ea2](https://github.com/dronetag/flutter-opendroneid/commit/8da4ea2aaff5b75845a63066e809719553a0442a))
+* Use dart-opendroneid for parsing & pass raw bytes from native (DT-2604) ([#21](https://github.com/dronetag/flutter-opendroneid/issues/21)) ([87f5481](https://github.com/dronetag/flutter-opendroneid/commit/87f548145dc9bd2bdb30eb12c2636ed293e187b0))
+
 ## 0.13.0
 
 - Streams are de-duplicated by fields comparison
