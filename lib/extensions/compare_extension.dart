@@ -1,4 +1,4 @@
-import 'package:dart_opendroneid/src/types.dart';
+import 'package:dart_opendroneid/dart_opendroneid.dart';
 
 // extensions to check whether messages have the same data
 // The messages may not necessarily be the same, timestamp, rssi are ignored

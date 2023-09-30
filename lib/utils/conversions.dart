@@ -1,6 +1,4 @@
-import 'package:dart_opendroneid/src/types.dart';
-import 'package:dart_opendroneid/src/types/uas_id.dart';
-import 'package:dart_opendroneid/src/types/ua_classification.dart';
+import 'package:dart_opendroneid/dart_opendroneid.dart';
 import 'package:flutter_opendroneid/extensions/list_extension.dart';
 
 /// Conversions extensions
