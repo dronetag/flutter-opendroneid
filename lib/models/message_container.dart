@@ -1,7 +1,7 @@
 import 'package:flutter_opendroneid/models/constants.dart';
 import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
 import 'package:dart_opendroneid/src/types.dart';
-import 'package:flutter_opendroneid/utils/compare_extension.dart';
+import 'package:flutter_opendroneid/extensions/compare_extension.dart';
 
 /// The [MessageContainer] groups together messages of different types
 /// from one device. It contains one instance of each message. The container is
