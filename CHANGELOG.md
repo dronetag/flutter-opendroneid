@@ -1,3 +1,10 @@
+# [0.15.0](https://github.com/dronetag/flutter-opendroneid/compare/v0.14.2...v0.15.0) (2023-10-01)
+
+
+### Features
+
+* Re-export Dart ODID types ([0055df7](https://github.com/dronetag/flutter-opendroneid/commit/0055df71b1368bb9d003d12175fa40808f53850e))
+
 ## [0.14.2](https://github.com/dronetag/flutter-opendroneid/compare/v0.14.1...v0.14.2) (2023-10-01)
 
 
