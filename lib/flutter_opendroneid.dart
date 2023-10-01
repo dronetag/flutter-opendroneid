@@ -10,6 +10,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
 
+export 'package:dart_opendroneid/src/types.dart';
+
 enum UsedTechnologies { Wifi, Bluetooth, Both, None }
 
 class FlutterOpenDroneId {
