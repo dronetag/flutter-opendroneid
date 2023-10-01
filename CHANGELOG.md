@@ -1,3 +1,11 @@
+## [0.14.2](https://github.com/dronetag/flutter-opendroneid/compare/v0.14.1...v0.14.2) (2023-10-01)
+
+
+### Bug Fixes
+
+* edit uasid string conversion ([c32c65c](https://github.com/dronetag/flutter-opendroneid/commit/c32c65c0cebfe94f8e164e3b1d3679871630d90b))
+* Fix UAS ID string conversion ([#23](https://github.com/dronetag/flutter-opendroneid/issues/23)) ([3686963](https://github.com/dronetag/flutter-opendroneid/commit/368696300b72edd29d752c602c7a3c72e292e6aa))
+
 ## [0.14.1](https://github.com/dronetag/flutter-opendroneid/compare/v0.14.0...v0.14.1) (2023-09-21)
 
 # [0.14.0](https://github.com/dronetag/flutter-opendroneid/compare/v0.13.0...v0.14.0) (2023-09-12)
