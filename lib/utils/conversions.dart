@@ -1,9 +1,10 @@
 import 'package:dart_opendroneid/src/types.dart';
 import 'package:dart_opendroneid/src/types/uas_id.dart';
 import 'package:dart_opendroneid/src/types/ua_classification.dart';
+import 'package:flutter_opendroneid/extensions/list_extension.dart';
 
 /// Conversions extensions
-
+// TODO move to dart-opendroneid in the future(?)
 const Map<HorizontalAccuracy, double?> _horizontalAccuracyConversionMap = {
   HorizontalAccuracy.unknown: null,
   HorizontalAccuracy.kilometers_18_52: 18520,
@@ -115,11 +116,11 @@ extension SpeedAccuracyConversion on SpeedAccuracy {
 
 extension UASIDConversion on UASID {
   String? asString() => switch (this.runtimeType) {
-        SerialNumber => (this as SerialNumber).serialNumber,
         IDNone() => null,
-        UTMAssignedID => (this as UTMAssignedID).id.toString(),
-        SpecificSessionID => (this as SpecificSessionID).id.toString(),
-        CAARegistrationID => (this as CAARegistrationID).registrationID,
+        SerialNumber(serialNumber: final sn) => sn,
+        CAARegistrationID(registrationID: final regId) => regId,
+        UTMAssignedID(id: final id) => id.toHexString(),
+        SpecificSessionID(id: final id) => id.toHexString(),
         _ => null,
       };
 }
