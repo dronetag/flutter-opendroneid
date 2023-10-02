@@ -113,13 +113,12 @@ extension SpeedAccuracyConversion on SpeedAccuracy {
 }
 
 extension UASIDConversion on UASID {
-  String? asString() => switch (this.runtimeType) {
+  String? asString() => switch (this) {
         IDNone() => null,
         SerialNumber(serialNumber: final sn) => sn,
         CAARegistrationID(registrationID: final regId) => regId,
         UTMAssignedID(id: final id) => id.toHexString(),
         SpecificSessionID(id: final id) => id.toHexString(),
-        _ => null,
       };
 }
 
