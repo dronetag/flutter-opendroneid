@@ -1,3 +1,11 @@
+## [0.15.1](https://github.com/dronetag/flutter-opendroneid/compare/v0.15.0...v0.15.1) (2023-10-03)
+
+
+### Bug Fixes
+
+* Fix runtimeType incorrectly used for UASID.asString() ([#24](https://github.com/dronetag/flutter-opendroneid/issues/24)) ([e6ee8b5](https://github.com/dronetag/flutter-opendroneid/commit/e6ee8b5d30b9a945852a31bed687e51a2c1c3acf))
+* uasid asString conversion ([6018e98](https://github.com/dronetag/flutter-opendroneid/commit/6018e98fa243d0ba68442a6dc5b385d2dc753ccc))
+
 # [0.15.0](https://github.com/dronetag/flutter-opendroneid/compare/v0.14.2...v0.15.0) (2023-10-01)
 
 
