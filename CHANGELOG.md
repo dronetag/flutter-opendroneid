@@ -1,3 +1,7 @@
+## 0.15.2
+
+* Updated permission_handler dependent library to v11.x.x
+
 ## [0.15.1](https://github.com/dronetag/flutter-opendroneid/compare/v0.15.0...v0.15.1) (2023-10-03)
 
 
