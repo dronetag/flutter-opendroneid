@@ -12,7 +12,10 @@ dependencies:
     sdk: flutter
   permission_handler: ^11.0.1
   device_info_plus: ^8.0.0
-  dart_opendroneid: ^0.3.0
+  dart_opendroneid: 
+    git:
+      url: git@github.com:dronetag/dart-opendroneid.git
+      ref: feat/DT-2852-parse-auth-message
 
 dev_dependencies:
   pigeon: ^10.1.6
