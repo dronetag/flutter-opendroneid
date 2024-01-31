@@ -100,6 +100,21 @@ const Map<OperationalStatus, String> _operationalStatusConversionMap = {
   OperationalStatus.none: 'Unknown',
 };
 
+const Map<AuthType, String> _authTypeConversionMap = {
+  AuthType.none: 'None',
+  AuthType.UASIDSignature: 'UAS ID Signature',
+  AuthType.operatorIDSignature: 'Operator ID Signature',
+  AuthType.messageSetSignature: 'Message Set Signature',
+  AuthType.networkRemoteID: 'Network Remote ID',
+  AuthType.specificAuthentication: 'Specific Authentication',
+  AuthType.privateUse0xA: 'Private Use 0xA',
+  AuthType.privateUse0xB: 'Private Use 0xB',
+  AuthType.privateUse0xC: 'Private Use 0xC',
+  AuthType.privateUse0xD: 'Private Use 0xD',
+  AuthType.privateUse0xE: 'Private Use 0xE',
+  AuthType.privateUse0xF: 'Private Use 0xF',
+};
+
 extension HorizontalAccuracyConversion on HorizontalAccuracy {
   double? toMeters() => _horizontalAccuracyConversionMap[this];
 }
@@ -158,4 +173,8 @@ extension HeightTypeConversion on HeightType {
 
 extension OperationalStatusConversion on OperationalStatus {
   String? asString() => _operationalStatusConversionMap[this];
+}
+
+extension AuthTypeConversion on AuthType {
+  String? asString() => _authTypeConversionMap[this];
 }
