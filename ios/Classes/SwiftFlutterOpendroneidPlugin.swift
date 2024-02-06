@@ -3,28 +3,52 @@ import UIKit
 
 @available(iOS 13.0.0, *)
 public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
+    private static var eventChannels: [String: FlutterEventChannel] = [:]
 
     private var bluetoothScanner: BluetoothScanner!
-    
-    private let odidPayloadStreamHandler = StreamHandler()
-    private let bluetoothStateStreamHandler = StreamHandler()
-    private let wifiStateStreamHandler = StreamHandler()
+
+    private let streamHandlers: [String: StreamHandler] = [
+        "flutter_odid_data": StreamHandler(),
+        "flutter_odid_bt_state": StreamHandler(),
+        "flutter_odid_wifi_state": StreamHandler()
+    ]
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let messenger : FlutterBinaryMessenger = registrar.messenger()
         let instance : SwiftFlutterOpendroneidPlugin & DTGApi & NSObjectProtocol = SwiftFlutterOpendroneidPlugin.init()
         DTGApiSetup(messenger, instance);
         
-        // Event channels
-        FlutterEventChannel(name: "flutter_odid_data", binaryMessenger: registrar.messenger()).setStreamHandler(instance.odidPayloadStreamHandler)
-        FlutterEventChannel(name: "flutter_odid_bt_state", binaryMessenger: registrar.messenger()).setStreamHandler(instance.bluetoothStateStreamHandler)
-        FlutterEventChannel(name: "flutter_odid_wifi_state", binaryMessenger: registrar.messenger()).setStreamHandler(instance.wifiStateStreamHandler)
+        // Register event channels
+        eventChannels = [
+            "flutter_odid_data": FlutterEventChannel(name: "flutter_odid_data", binaryMessenger: registrar.messenger()),
+            "flutter_odid_bt_state": FlutterEventChannel(name: "flutter_odid_bt_state", binaryMessenger: registrar.messenger()),
+            "flutter_odid_wifi_state": FlutterEventChannel(name: "flutter_odid_wifi_state", binaryMessenger: registrar.messenger()),
+        ]
+        
+        // Register stream handlers
+        for entry in SwiftFlutterOpendroneidPlugin.eventChannels {
+            entry.value.setStreamHandler(
+                instance.streamHandlers[entry.key]
+            )
+        }
         
         // Register bluetooth scanner
         instance.bluetoothScanner = BluetoothScanner(
-            odidPayloadStreamHandler: instance.odidPayloadStreamHandler,
-            scanStateHandler: instance.bluetoothStateStreamHandler
+            odidPayloadStreamHandler: instance.streamHandlers["flutter_odid_data"]!,
+            scanStateHandler: instance.streamHandlers["flutter_odid_bt_state"]!
         )
+    
+        registrar.addApplicationDelegate(instance)
+    }
+    
+    public func applicationWillTerminate(_ application: UIApplication) {
+        for channel in SwiftFlutterOpendroneidPlugin.eventChannels.values {
+            channel.setStreamHandler(nil)
+        }
+        SwiftFlutterOpendroneidPlugin.eventChannels.removeAll()
+        for handler in streamHandlers.values {
+            handler.onCancel(withArguments: nil)
+        }
     }
 
     public func btMaxAdvDataLen() async -> (NSNumber?, FlutterError?) {
