@@ -5,14 +5,14 @@ repository: https://github.com/dronetag/flutter-opendroneid
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.10.0"
+  flutter: ">=3.16.7"
 
 dependencies:
   flutter:
     sdk: flutter
-  permission_handler: ^11.0.1
-  device_info_plus: ^8.0.0
-  dart_opendroneid: ^0.3.0
+  permission_handler: ^11.2.0
+  device_info_plus: ^9.1.2
+  dart_opendroneid: ^0.4.0
 
 dev_dependencies:
   pigeon: ^10.1.6

@@ -12,7 +12,7 @@ The architecture of native code is inspired by [OpenDroneID Android receiver app
 
 ## Pre-requisities
 
-- Flutter 3.10.0 or newer
+- Flutter 3.16.7 or newer
 
 ## Getting Started
 
