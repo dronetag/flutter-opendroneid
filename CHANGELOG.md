@@ -1,3 +1,9 @@
+## 0.16.0
+
+* Gradle & dependencies updates
+* Flutter version bumped to 3.16.7
+* Fixed event channels not correctly disposed when the app quits
+
 ## 0.15.2
 
 * Updated permission_handler dependent library to v11.x.x
