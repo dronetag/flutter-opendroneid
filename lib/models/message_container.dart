@@ -2,6 +2,7 @@ import 'package:dart_opendroneid/dart_opendroneid.dart';
 import 'package:flutter_opendroneid/extensions/compare_extension.dart';
 import 'package:flutter_opendroneid/models/constants.dart';
 import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
+import 'package:flutter_opendroneid/utils/conversions.dart';
 
 /// The [MessageContainer] groups together messages of different types
 /// from one device. It contains one instance of each message. The container is
@@ -12,7 +13,7 @@ class MessageContainer {
   final pigeon.MessageSource source;
   final int? lastMessageRssi;
 
-  final BasicIDMessage? basicIdMessage;
+  final Map<IDType, BasicIDMessage>? basicIdMessages;
   final LocationMessage? locationMessage;
   final OperatorIDMessage? operatorIdMessage;
   final SelfIDMessage? selfIdMessage;
@@ -24,7 +25,7 @@ class MessageContainer {
     required this.lastUpdate,
     required this.source,
     this.lastMessageRssi,
-    this.basicIdMessage,
+    this.basicIdMessages,
     this.locationMessage,
     this.operatorIdMessage,
     this.selfIdMessage,
@@ -37,7 +38,7 @@ class MessageContainer {
     int? lastMessageRssi,
     DateTime? lastUpdate,
     pigeon.MessageSource? source,
-    BasicIDMessage? basicIdMessage,
+    Map<IDType, BasicIDMessage>? basicIdMessage,
     LocationMessage? locationMessage,
     OperatorIDMessage? operatorIdMessage,
     SelfIDMessage? selfIdMessage,
@@ -49,7 +50,7 @@ class MessageContainer {
         lastMessageRssi: lastMessageRssi ?? this.lastMessageRssi,
         lastUpdate: lastUpdate ?? DateTime.now(),
         source: source ?? this.source,
-        basicIdMessage: basicIdMessage ?? this.basicIdMessage,
+        basicIdMessages: basicIdMessage ?? this.basicIdMessages,
         locationMessage: locationMessage ?? this.locationMessage,
         operatorIdMessage: operatorIdMessage ?? this.operatorIdMessage,
         selfIdMessage: selfIdMessage ?? this.selfIdMessage,
@@ -92,16 +93,12 @@ class MessageContainer {
                   DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
               source: source,
             ),
-      BasicIDMessage => basicIdMessage != null &&
-              basicIdMessage!.containsEqualData(message as BasicIDMessage)
-          ? null
-          : copyWith(
-              basicIdMessage: message as BasicIDMessage,
-              lastMessageRssi: rssi,
-              lastUpdate:
-                  DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
-              source: source,
-            ),
+      BasicIDMessage => _updateBasicIDMessages(
+          message: message as BasicIDMessage,
+          receivedTimestamp: receivedTimestamp,
+          source: source,
+          rssi: rssi,
+        ),
       SelfIDMessage => selfIdMessage != null &&
               selfIdMessage!.containsEqualData(message as SelfIDMessage)
           ? null
@@ -178,4 +175,42 @@ class MessageContainer {
       locationMessage!.location!.longitude <= MAX_LON &&
       locationMessage!.location!.latitude >= MIN_LAT &&
       locationMessage!.location!.longitude >= MIN_LON;
+
+  /// Check if container contains basic id message with given uas id
+  bool containsUasId(String uasId) =>
+      basicIdMessages?.values
+          .any((element) => element.uasID.asString() == uasId) ??
+      false;
+
+  // preferably return message with SerialNumber uas id, which is the default
+  BasicIDMessage? get preferredBasicIdMessage {
+    if (basicIdMessages == null || basicIdMessages!.isEmpty) return null;
+
+    return basicIdMessages![IDType.serialNumber] ??
+        basicIdMessages!.values.first;
+  }
+
+  String? get serialNumberUasId =>
+      basicIdMessages?[IDType.serialNumber]?.uasID.asString();
+
+  MessageContainer? _updateBasicIDMessages({
+    required BasicIDMessage message,
+    required int receivedTimestamp,
+    required pigeon.MessageSource source,
+    int? rssi,
+  }) {
+    if (basicIdMessages != null &&
+        basicIdMessages![message.uasID.type] != null &&
+        basicIdMessages![message.uasID.type]!.containsEqualData(message))
+      return null;
+
+    final newEntry = {message.uasID.type: message};
+    return copyWith(
+      basicIdMessage: basicIdMessages == null ? newEntry : basicIdMessages!
+        ..addAll(newEntry),
+      lastMessageRssi: rssi,
+      lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
+      source: source,
+    );
+  }
 }
