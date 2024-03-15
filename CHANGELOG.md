@@ -1,3 +1,7 @@
+## 0.17.0
+
+* Allow multiple Basic ID messages in container
+
 ## 0.16.0
 
 * Gradle & dependencies updates
