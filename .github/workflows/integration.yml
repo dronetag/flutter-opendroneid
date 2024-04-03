@@ -19,6 +19,7 @@ jobs:
         uses: dronetag/gha-shared/.github/actions/flutter-install@master
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
+          enforce-lockfile: false
       - name: Run code analysis
         run: flutter analyze --no-fatal-infos
 

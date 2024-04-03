@@ -40,6 +40,7 @@ jobs:
         uses: dronetag/gha-shared/.github/actions/flutter-install@master
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
+          enforce-lockfile: false
       - uses: dronetag/gha-shared/.github/actions/update-pubspec-version@master
         with:
           version: ${{ needs.release-version.outputs.version }}
