@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release without 'v' prefix (e.g. "2.31.0")'
+        description: 'Version to release (e.g. "v2.31.0")'
         required: true
         type: string
 
@@ -14,6 +14,14 @@ env:
   FLUTTER_VERSION: "3.16.7"
 
 jobs:
+  check:
+    name: Check for previous release
+    uses: dronetag/gha-shared/.github/actions/check-previous@check-previous-custom-ref
+    with:
+      workflow-name: Create Github release
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+      ref: refs/tags/${{ inputs.version }}
+
   publish:
     name: Publish to pub.dev
     needs: release-version
@@ -24,7 +32,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ref: v${{ inputs.version }}
+          ref: ${{ inputs.version }}
       - name: Install the project
         uses: dronetag/gha-shared/.github/actions/flutter-install@master
         with:
