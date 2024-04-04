@@ -1,0 +1,29 @@
+name: Create Github release
+
+# Release workflow creates a new Github release
+# with new version and updates changelog
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  FLUTTER_VERSION: "3.16.7"
+
+jobs:
+  integration:
+    name: Run integration
+    uses: ./.github/workflows/integration.yml
+
+  release-version:
+    name: Release a new version
+    needs: integration
+    uses: dronetag/gha-shared/.github/workflows/create-release.yml@master
+    concurrency: release-version-${{ github.repository }}
+    with:
+      install-changelog-plugin: true
+      install-yq: true
+      must-release: true
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
