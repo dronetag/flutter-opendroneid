@@ -41,8 +41,5 @@ jobs:
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           enforce-lockfile: false
-      - uses: dronetag/gha-shared/.github/actions/update-pubspec-version@master
-        with:
-          version: ${{ needs.release-version.outputs.version }}
       - name: Publish to pub.dev
         run: flutter pub publish -f
