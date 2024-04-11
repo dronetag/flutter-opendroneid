@@ -108,6 +108,7 @@ class WifiNaNScanner (
     override fun cancel() {
         if (!wifiAwareSupported) return
         isScanning = false;
+        context.unregisterReceiver(adapterStateReceiver)
         stopScan()
     }
 

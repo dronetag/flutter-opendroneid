@@ -80,6 +80,7 @@ class WifiScanner (
 
     override fun cancel() {
         isScanning = false;
+        context.unregisterReceiver(broadcastReceiver)
         wifiStateHandler.send(false)
         if (countDownTimer != null) {
             countDownTimer!!.cancel();
