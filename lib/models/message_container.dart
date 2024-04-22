@@ -1,7 +1,9 @@
 import 'package:dart_opendroneid/dart_opendroneid.dart';
 import 'package:flutter_opendroneid/extensions/compare_extension.dart';
 import 'package:flutter_opendroneid/models/constants.dart';
+import 'package:flutter_opendroneid/models/message_container_authenticity_status.dart';
 import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
+import 'package:flutter_opendroneid/utils/message_container_authenticator.dart';
 import 'package:flutter_opendroneid/utils/conversions.dart';
 
 /// The [MessageContainer] groups together messages of different types
@@ -20,6 +22,8 @@ class MessageContainer {
   final AuthMessage? authenticationMessage;
   final SystemMessage? systemDataMessage;
 
+  final MessageContainerAuthenticityStatus authenticityStatus;
+
   MessageContainer({
     required this.macAddress,
     required this.lastUpdate,
@@ -31,6 +35,7 @@ class MessageContainer {
     this.selfIdMessage,
     this.authenticationMessage,
     this.systemDataMessage,
+    this.authenticityStatus = MessageContainerAuthenticityStatus.untrusted,
   });
 
   MessageContainer copyWith({
@@ -44,6 +49,7 @@ class MessageContainer {
     SelfIDMessage? selfIdMessage,
     AuthMessage? authenticationMessage,
     SystemMessage? systemDataMessage,
+    MessageContainerAuthenticityStatus? authenticityStatus,
   }) =>
       MessageContainer(
         macAddress: macAddress ?? this.macAddress,
@@ -57,11 +63,13 @@ class MessageContainer {
         authenticationMessage:
             authenticationMessage ?? this.authenticationMessage,
         systemDataMessage: systemDataMessage ?? this.systemDataMessage,
+        authenticityStatus: authenticityStatus ?? this.authenticityStatus,
       );
 
   /// Returns new MessageContainer updated with message.
   /// Null is returned if update is refused, because it contains duplicate or
   /// corrupted data.
+  /// Check data authenticity status using [MessageContainerAuthenticator].
   MessageContainer? update({
     required ODIDMessage message,
     required int receivedTimestamp,
@@ -83,7 +91,7 @@ class MessageContainer {
       return result;
     }
     // update pack only if new data differ from saved ones
-    return switch (message.runtimeType) {
+    final updatedPack = switch (message.runtimeType) {
       LocationMessage => locationMessage != null &&
               locationMessage!.containsEqualData(message as LocationMessage)
           ? null
@@ -142,6 +150,14 @@ class MessageContainer {
             ),
       _ => null
     };
+
+    if (updatedPack != null) {
+      final dataStatus =
+          MessageContainerAuthenticator.determineAuthenticityStatus(
+              updatedPack);
+      return updatedPack.copyWith(authenticityStatus: dataStatus);
+    }
+    return null;
   }
 
   pigeon.MessageSource get packSource => source;

@@ -1,5 +1,6 @@
 import 'package:dart_opendroneid/dart_opendroneid.dart';
 import 'package:flutter_opendroneid/extensions/list_extension.dart';
+import 'package:flutter_opendroneid/models/message_container_authenticity_status.dart';
 
 /// Conversions extensions
 // TODO move to dart-opendroneid in the future(?)
@@ -100,6 +101,14 @@ const Map<OperationalStatus, String> _operationalStatusConversionMap = {
   OperationalStatus.none: 'Unknown',
 };
 
+const Map<MessageContainerAuthenticityStatus, String>
+    _MessageContainerAuthenticityStatusConversionMap = {
+  MessageContainerAuthenticityStatus.verified: 'Verified',
+  MessageContainerAuthenticityStatus.untrusted: 'Untrusted',
+  MessageContainerAuthenticityStatus.suspicious: 'Suspicious',
+  MessageContainerAuthenticityStatus.counterfeit: 'Counterfeit',
+};
+
 extension HorizontalAccuracyConversion on HorizontalAccuracy {
   double? toMeters() => _horizontalAccuracyConversionMap[this];
 }
@@ -158,4 +167,9 @@ extension HeightTypeConversion on HeightType {
 
 extension OperationalStatusConversion on OperationalStatus {
   String? asString() => _operationalStatusConversionMap[this];
+}
+
+extension MessageContainerAuthenticityStatusConversion
+    on MessageContainerAuthenticityStatus {
+  String? asString() => _MessageContainerAuthenticityStatusConversionMap[this];
 }
