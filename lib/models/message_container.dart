@@ -76,6 +76,7 @@ class MessageContainer {
           message: packMessage,
           receivedTimestamp: receivedTimestamp,
           source: source,
+          rssi: rssi,
         );
         if (update != null) result = update;
       }
