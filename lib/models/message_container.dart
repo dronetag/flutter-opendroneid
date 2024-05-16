@@ -33,6 +33,29 @@ class MessageContainer {
     this.systemDataMessage,
   });
 
+  @override
+  String toString() {
+    final singleMessages = <dynamic>[
+      locationMessage,
+      operatorIdMessage,
+      selfIdMessage,
+      authenticationMessage,
+      systemDataMessage
+    ];
+
+    final descriptionString = singleMessages
+        .where((msg) => msg != null)
+        .map((msg) => msg.runtimeType)
+        .join(' + ');
+
+    return 'MessageContainer { '
+        '$descriptionString, '
+        '${basicIdMessages?.length} basic ID messages, '
+        'last update: $lastUpdate, '
+        'source: $source, '
+        'rssi: $lastMessageRssi }';
+  }
+
   MessageContainer copyWith({
     String? macAddress,
     int? lastMessageRssi,
