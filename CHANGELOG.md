@@ -1,3 +1,7 @@
+## 0.17.1
+
+* Added toString method for MessageContainer objects for debugging purposes
+
 ## 0.17.0
 
 * Allow multiple Basic ID messages in container
