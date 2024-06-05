@@ -24,6 +24,7 @@ jobs:
     with:
       install-changelog-plugin: true
       install-yq: true
-      must-release: true
+      must-release: false
+      create-github-release: false # Release performed by semantic-release
     secrets:
       github-token: ${{ secrets.GITHUB_TOKEN }}
