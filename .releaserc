@@ -50,11 +50,25 @@
       }
     ],
     [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "yq -i '.version = \"${nextRelease.version}\"' pubspec.yaml"
+      }
+    ],
+    [
       "@semantic-release/git",
       {
         "assets": [
-          "CHANGELOG.md"
-        ]
+          "CHANGELOG.md",
+          "pubspec.yaml"
+        ],
+        "message": "chore(release): Release ${nextRelease.version}\n\n${nextRelease.notes}"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "failComment": false
       }
     ]
   ]

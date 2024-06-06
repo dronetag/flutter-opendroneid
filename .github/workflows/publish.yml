@@ -1,35 +1,17 @@
 name: Publish to pub.dev
 
-# Publish workflow releases a new version, updates changelog
-# and publishes the library to pub.dev
-
+# Publish is triggered on new version tag push event
 on:
   push:
-    branches:
-      - master
+    tags:
+    - 'v[0-9]+.[0-9]+.[0-9]+*' # for tags like: 'v1.2.3'
 
 env:
   FLUTTER_VERSION: "3.16.7"
 
 jobs:
-  integration:
-    name: Run integration
-    uses: ./.github/workflows/integration.yml
-
-  release-version:
-    name: Release a new version
-    needs: integration
-    uses: dronetag/gha-shared/.github/workflows/create-release.yml@master
-    concurrency: release-version-${{ github.repository }}
-    with:
-      install-changelog-plugin: true
-      must-release: true
-    secrets:
-      github-token: ${{ secrets.GITHUB_TOKEN }}
-
   publish:
     name: Publish to pub.dev
-    needs: release-version
     permissions:
       id-token: write
     runs-on: ubuntu-latest
@@ -40,9 +22,7 @@ jobs:
         uses: dronetag/gha-shared/.github/actions/flutter-install@master
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
+          setup-java: false
           enforce-lockfile: false
-      - uses: dronetag/gha-shared/.github/actions/update-pubspec-version@master
-        with:
-          version: ${{ needs.release-version.outputs.version }}
       - name: Publish to pub.dev
         run: flutter pub publish -f
