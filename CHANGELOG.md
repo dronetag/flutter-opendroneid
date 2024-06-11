@@ -1,3 +1,18 @@
+# [0.18.0](https://github.com/dronetag/flutter-opendroneid/compare/v0.17.0...v0.18.0) (2024-06-11)
+
+
+### Bug Fixes
+
+* pass rssi to update method when receiving message pack ([5af8a37](https://github.com/dronetag/flutter-opendroneid/commit/5af8a37bd99ed2af053c64ee585a6a738af5d4ad))
+* rssi of messages in message pack ([#33](https://github.com/dronetag/flutter-opendroneid/issues/33)) ([845cac2](https://github.com/dronetag/flutter-opendroneid/commit/845cac28e205ac348b7ac05cefd8e8aba36d1fc4))
+* Unregister receiver on cancellation ([11bbc04](https://github.com/dronetag/flutter-opendroneid/commit/11bbc04d71a8bc0685528cba650fc49b16dfa7eb))
+
+
+### Features
+
+* Add missing wifi state receiver unregistration on cancel ([#32](https://github.com/dronetag/flutter-opendroneid/issues/32)) ([0e3c7db](https://github.com/dronetag/flutter-opendroneid/commit/0e3c7db7c7c25fbfffe17b2b0a01071e42c39859))
+* Add toString method for MessageContainer ([0174cfb](https://github.com/dronetag/flutter-opendroneid/commit/0174cfb475ee5857398dfe9acd86a8464cc300e5))
+
 ## 0.17.0
 
 * Allow multiple Basic ID messages in container
