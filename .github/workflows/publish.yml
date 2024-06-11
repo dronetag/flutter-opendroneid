@@ -24,5 +24,7 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           setup-java: false
           enforce-lockfile: false
+      # Sensitive step, check action script before each upgrade of flutter-actions/setup-pubdev-credentials
+      - uses: flutter-actions/setup-pubdev-credentials@2ffa6245d17992c9f0acf9dc2be626e3b0b888c1
       - name: Publish to pub.dev
         run: flutter pub publish -f
