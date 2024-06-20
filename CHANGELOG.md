@@ -1,3 +1,5 @@
+## [0.18.1](https://github.com/dronetag/flutter-opendroneid/compare/v0.18.0...v0.18.1) (2024-06-20)
+
 # [0.18.0](https://github.com/dronetag/flutter-opendroneid/compare/v0.17.0...v0.18.0) (2024-06-11)
 
 
