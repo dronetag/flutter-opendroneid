@@ -60,6 +60,7 @@ class BluetoothScanner(
                 result.device.address,
                 source,
                 result.rssi.toLong(),
+                result.device.name,
             )
         }
 

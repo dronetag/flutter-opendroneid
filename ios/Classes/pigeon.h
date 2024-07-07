@@ -54,12 +54,14 @@ typedef NS_ENUM(NSUInteger, DTGWifiState) {
     receivedTimestamp:(NSNumber *)receivedTimestamp
     macAddress:(NSString *)macAddress
     rssi:(nullable NSNumber *)rssi
-    source:(DTGMessageSource)source;
+    source:(DTGMessageSource)source
+    btName:(nullable NSString *)btName;
 @property(nonatomic, strong) FlutterStandardTypedData * rawData;
 @property(nonatomic, strong) NSNumber * receivedTimestamp;
 @property(nonatomic, copy) NSString * macAddress;
 @property(nonatomic, strong, nullable) NSNumber * rssi;
 @property(nonatomic, assign) DTGMessageSource source;
+@property(nonatomic, copy, nullable) NSString * btName;
 @end
 
 /// The codec used by DTGApi.
@@ -87,7 +89,7 @@ NSObject<FlutterMessageCodec> *DTGPayloadApiGetCodec(void);
 
 @protocol DTGPayloadApi
 /// @return `nil` only when `error != nil`.
-- (nullable DTGODIDPayload *)buildPayloadRawData:(FlutterStandardTypedData *)rawData source:(DTGMessageSource)source macAddress:(NSString *)macAddress rssi:(NSNumber *)rssi receivedTimestamp:(NSNumber *)receivedTimestamp error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable DTGODIDPayload *)buildPayloadRawData:(FlutterStandardTypedData *)rawData source:(DTGMessageSource)source macAddress:(NSString *)macAddress btName:(nullable NSString *)btName rssi:(NSNumber *)rssi receivedTimestamp:(NSNumber *)receivedTimestamp error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void DTGPayloadApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGPayloadApi> *_Nullable api);

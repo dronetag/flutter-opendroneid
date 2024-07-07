@@ -37,13 +37,15 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
     receivedTimestamp:(NSNumber *)receivedTimestamp
     macAddress:(NSString *)macAddress
     rssi:(nullable NSNumber *)rssi
-    source:(DTGMessageSource)source {
+    source:(DTGMessageSource)source
+    btName:(nullable NSString *)btName {
   DTGODIDPayload* pigeonResult = [[DTGODIDPayload alloc] init];
   pigeonResult.rawData = rawData;
   pigeonResult.receivedTimestamp = receivedTimestamp;
   pigeonResult.macAddress = macAddress;
   pigeonResult.rssi = rssi;
   pigeonResult.source = source;
+  pigeonResult.btName = btName;
   return pigeonResult;
 }
 + (DTGODIDPayload *)fromList:(NSArray *)list {
@@ -56,6 +58,7 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
   NSAssert(pigeonResult.macAddress != nil, @"");
   pigeonResult.rssi = GetNullableObjectAtIndex(list, 3);
   pigeonResult.source = [GetNullableObjectAtIndex(list, 4) integerValue];
+  pigeonResult.btName = GetNullableObjectAtIndex(list, 5);
   return pigeonResult;
 }
 + (nullable DTGODIDPayload *)nullableFromList:(NSArray *)list {
@@ -68,6 +71,7 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
     (self.macAddress ?: [NSNull null]),
     (self.rssi ?: [NSNull null]),
     @(self.source),
+    (self.btName ?: [NSNull null]),
   ];
 }
 @end
@@ -341,16 +345,17 @@ void DTGPayloadApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTG
         binaryMessenger:binaryMessenger
         codec:DTGPayloadApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(buildPayloadRawData:source:macAddress:rssi:receivedTimestamp:error:)], @"DTGPayloadApi api (%@) doesn't respond to @selector(buildPayloadRawData:source:macAddress:rssi:receivedTimestamp:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(buildPayloadRawData:source:macAddress:btName:rssi:receivedTimestamp:error:)], @"DTGPayloadApi api (%@) doesn't respond to @selector(buildPayloadRawData:source:macAddress:btName:rssi:receivedTimestamp:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         FlutterStandardTypedData *arg_rawData = GetNullableObjectAtIndex(args, 0);
         DTGMessageSource arg_source = [GetNullableObjectAtIndex(args, 1) integerValue];
         NSString *arg_macAddress = GetNullableObjectAtIndex(args, 2);
-        NSNumber *arg_rssi = GetNullableObjectAtIndex(args, 3);
-        NSNumber *arg_receivedTimestamp = GetNullableObjectAtIndex(args, 4);
+        NSString *arg_btName = GetNullableObjectAtIndex(args, 3);
+        NSNumber *arg_rssi = GetNullableObjectAtIndex(args, 4);
+        NSNumber *arg_receivedTimestamp = GetNullableObjectAtIndex(args, 5);
         FlutterError *error;
-        DTGODIDPayload *output = [api buildPayloadRawData:arg_rawData source:arg_source macAddress:arg_macAddress rssi:arg_rssi receivedTimestamp:arg_receivedTimestamp error:&error];
+        DTGODIDPayload *output = [api buildPayloadRawData:arg_rawData source:arg_source macAddress:arg_macAddress btName:arg_btName rssi:arg_rssi receivedTimestamp:arg_receivedTimestamp error:&error];
         callback(wrapResult(output, error));
       }];
     } else {

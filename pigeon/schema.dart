@@ -45,12 +45,15 @@ class ODIDPayload {
 
   final MessageSource source;
 
+  final String? btName;
+
   ODIDPayload(
     this.rawData,
     this.receivedTimestamp,
     this.macAddress,
     this.rssi,
     this.source,
+    this.btName,
   );
 }
 
@@ -86,5 +89,5 @@ abstract class Api {
 @HostApi()
 abstract class PayloadApi {
   ODIDPayload buildPayload(Uint8List rawData, MessageSource source,
-      String macAddress, int rssi, int receivedTimestamp);
+      String macAddress, String? btName, int rssi, int receivedTimestamp);
 }
