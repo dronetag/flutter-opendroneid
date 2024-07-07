@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dart_opendroneid/dart_opendroneid.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_opendroneid/exceptions/odid_message_parsing_exception.dart';
 import 'package:flutter_opendroneid/models/message_container.dart';
 import 'package:flutter_opendroneid/models/permissions_missing_exception.dart';
 
@@ -106,8 +107,22 @@ class FlutterOpenDroneId {
           lastUpdate:
               DateTime.fromMillisecondsSinceEpoch(payload.receivedTimestamp),
         );
-    final message = parseODIDMessage(payload.rawData);
+    ODIDMessage? message;
+    try {
+      message = parseODIDMessage(payload.rawData);
+    } catch (e) {
+      throw ODIDMessageParsingException(
+        relatedException: e,
+        macAddress: payload.macAddress,
+        rssi: payload.rssi,
+        receivedTimestamp: payload.receivedTimestamp,
+        source: payload.source,
+        btName: payload.btName,
+      );
+    }
+
     if (message == null) return;
+
     final updatedPack = storedPack.update(
       message: message,
       receivedTimestamp: payload.receivedTimestamp,
