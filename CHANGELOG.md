@@ -1,3 +1,12 @@
+# [0.19.0](https://github.com/dronetag/flutter-opendroneid/compare/v0.18.1...v0.19.0) (2024-07-19)
+
+
+### Features
+
+* add bt name to ODIDPayload ([4683e23](https://github.com/dronetag/flutter-opendroneid/commit/4683e23a6c665b8fff1842697ed8ef8b9a46ebbd))
+* add ODIDMessageParsingException ([715e231](https://github.com/dronetag/flutter-opendroneid/commit/715e231bb92aaba93fcc13b6bcdc1fb032e9ba4e))
+* include Bluetooth metadata to parsing exceptions ([#36](https://github.com/dronetag/flutter-opendroneid/issues/36)) ([89a29b6](https://github.com/dronetag/flutter-opendroneid/commit/89a29b6dcff676cc6598bf047ce37721438c51cc))
+
 ## [0.18.1](https://github.com/dronetag/flutter-opendroneid/compare/v0.18.0...v0.18.1) (2024-06-20)
 
 # [0.18.0](https://github.com/dronetag/flutter-opendroneid/compare/v0.17.0...v0.18.0) (2024-06-11)
