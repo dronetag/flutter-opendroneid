@@ -34,7 +34,7 @@ abstract class ODIDScanner(
 
     abstract fun onAdapterStateReceived()
 
-    override fun buildPayload(rawData: ByteArray, source: Pigeon.MessageSource, macAddress: String, rssi: Long, receivedTimestamp: Long): Pigeon.ODIDPayload {
+    override fun buildPayload(rawData: ByteArray, source: Pigeon.MessageSource, macAddress: String, btName: String?, rssi: Long, receivedTimestamp: Long): Pigeon.ODIDPayload {
         val builder = Pigeon.ODIDPayload.Builder()
 
         builder.setRawData(rawData)
@@ -42,19 +42,20 @@ abstract class ODIDScanner(
         builder.setMacAddress(macAddress)
         builder.setSource(source)
         builder.setRssi(rssi)
+        builder.setBtName(btName)
 
         return builder.build()
     }
     
     /// receive data and metadata, create [ODIDPayload] and sent to stream
     fun receiveData(
-        data: ByteArray, macAddress: String, source: Pigeon.MessageSource, rssi: Long = 0
+        data: ByteArray, macAddress: String, source: Pigeon.MessageSource, rssi: Long = 0, btName: String? = null,
     ) {
         val payload = buildPayload(
-            data, source, macAddress, rssi, System.currentTimeMillis()
+            data, source, macAddress, btName, rssi, System.currentTimeMillis()
         )
 
-        odidPayloadStreamHandler.send(payload?.toList() as Any)        
+        odidPayloadStreamHandler.send(payload.toList() as Any)        
     }
 
     /// returns ByteArray without first offset elements

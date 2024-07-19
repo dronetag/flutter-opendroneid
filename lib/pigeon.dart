@@ -49,6 +49,7 @@ class ODIDPayload {
     required this.macAddress,
     this.rssi,
     required this.source,
+    this.btName,
   });
 
   Uint8List rawData;
@@ -61,6 +62,8 @@ class ODIDPayload {
 
   MessageSource source;
 
+  String? btName;
+
   Object encode() {
     return <Object?>[
       rawData,
@@ -68,6 +71,7 @@ class ODIDPayload {
       macAddress,
       rssi,
       source.index,
+      btName,
     ];
   }
 
@@ -79,6 +83,7 @@ class ODIDPayload {
       macAddress: result[2]! as String,
       rssi: result[3] as int?,
       source: MessageSource.values[result[4]! as int],
+      btName: result[5] as String?,
     );
   }
 }
@@ -426,12 +431,12 @@ class PayloadApi {
 
   static const MessageCodec<Object?> codec = _PayloadApiCodec();
 
-  Future<ODIDPayload> buildPayload(Uint8List arg_rawData, MessageSource arg_source, String arg_macAddress, int arg_rssi, int arg_receivedTimestamp) async {
+  Future<ODIDPayload> buildPayload(Uint8List arg_rawData, MessageSource arg_source, String arg_macAddress, String? arg_btName, int arg_rssi, int arg_receivedTimestamp) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.flutter_opendroneid.PayloadApi.buildPayload', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_rawData, arg_source.index, arg_macAddress, arg_rssi, arg_receivedTimestamp]) as List<Object?>?;
+        await channel.send(<Object?>[arg_rawData, arg_source.index, arg_macAddress, arg_btName, arg_rssi, arg_receivedTimestamp]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',

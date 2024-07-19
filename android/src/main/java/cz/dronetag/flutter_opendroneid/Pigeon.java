@@ -182,6 +182,16 @@ public class Pigeon {
       this.source = setterArg;
     }
 
+    private @Nullable String btName;
+
+    public @Nullable String getBtName() {
+      return btName;
+    }
+
+    public void setBtName(@Nullable String setterArg) {
+      this.btName = setterArg;
+    }
+
     /** Constructor is non-public to enforce null safety; use Builder. */
     ODIDPayload() {}
 
@@ -222,6 +232,13 @@ public class Pigeon {
         return this;
       }
 
+      private @Nullable String btName;
+
+      public @NonNull Builder setBtName(@Nullable String setterArg) {
+        this.btName = setterArg;
+        return this;
+      }
+
       public @NonNull ODIDPayload build() {
         ODIDPayload pigeonReturn = new ODIDPayload();
         pigeonReturn.setRawData(rawData);
@@ -229,18 +246,20 @@ public class Pigeon {
         pigeonReturn.setMacAddress(macAddress);
         pigeonReturn.setRssi(rssi);
         pigeonReturn.setSource(source);
+        pigeonReturn.setBtName(btName);
         return pigeonReturn;
       }
     }
 
     @NonNull
     ArrayList<Object> toList() {
-      ArrayList<Object> toListResult = new ArrayList<Object>(5);
+      ArrayList<Object> toListResult = new ArrayList<Object>(6);
       toListResult.add(rawData);
       toListResult.add(receivedTimestamp);
       toListResult.add(macAddress);
       toListResult.add(rssi);
       toListResult.add(source == null ? null : source.index);
+      toListResult.add(btName);
       return toListResult;
     }
 
@@ -256,6 +275,8 @@ public class Pigeon {
       pigeonResult.setRssi((rssi == null) ? null : ((rssi instanceof Integer) ? (Integer) rssi : (Long) rssi));
       Object source = list.get(4);
       pigeonResult.setSource(source == null ? null : MessageSource.values()[(int) source]);
+      Object btName = list.get(5);
+      pigeonResult.setBtName((String) btName);
       return pigeonResult;
     }
   }
@@ -658,7 +679,7 @@ public class Pigeon {
   public interface PayloadApi {
 
     @NonNull 
-    ODIDPayload buildPayload(@NonNull byte[] rawData, @NonNull MessageSource source, @NonNull String macAddress, @NonNull Long rssi, @NonNull Long receivedTimestamp);
+    ODIDPayload buildPayload(@NonNull byte[] rawData, @NonNull MessageSource source, @NonNull String macAddress, @Nullable String btName, @NonNull Long rssi, @NonNull Long receivedTimestamp);
 
     /** The codec used by PayloadApi. */
     static @NonNull MessageCodec<Object> getCodec() {
@@ -678,10 +699,11 @@ public class Pigeon {
                 byte[] rawDataArg = (byte[]) args.get(0);
                 MessageSource sourceArg = args.get(1) == null ? null : MessageSource.values()[(int) args.get(1)];
                 String macAddressArg = (String) args.get(2);
-                Number rssiArg = (Number) args.get(3);
-                Number receivedTimestampArg = (Number) args.get(4);
+                String btNameArg = (String) args.get(3);
+                Number rssiArg = (Number) args.get(4);
+                Number receivedTimestampArg = (Number) args.get(5);
                 try {
-                  ODIDPayload output = api.buildPayload(rawDataArg, sourceArg, macAddressArg, (rssiArg == null) ? null : rssiArg.longValue(), (receivedTimestampArg == null) ? null : receivedTimestampArg.longValue());
+                  ODIDPayload output = api.buildPayload(rawDataArg, sourceArg, macAddressArg, btNameArg, (rssiArg == null) ? null : rssiArg.longValue(), (receivedTimestampArg == null) ? null : receivedTimestampArg.longValue());
                   wrapped.add(0, output);
                 }
  catch (Throwable exception) {
