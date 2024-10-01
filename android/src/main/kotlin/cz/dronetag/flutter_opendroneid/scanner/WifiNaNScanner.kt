@@ -92,14 +92,9 @@ class WifiNaNScanner (
     }
 
     override fun scan() {
+        if (!wifiAwareSupported) return
+        
         isScanning = true
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O ||
-            !context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_AWARE)) {
-            Log.i(TAG, "WiFi Aware is not supported.");
-            wifiAwareSupported = false
-            return;
-        }
-        wifiAwareSupported = true
         context.registerReceiver(adapterStateReceiver, IntentFilter(WifiAwareManager.ACTION_WIFI_AWARE_STATE_CHANGED))
         startScan();
     }
@@ -107,6 +102,7 @@ class WifiNaNScanner (
     @RequiresApi(Build.VERSION_CODES.O)
     override fun cancel() {
         if (!wifiAwareSupported) return
+        
         isScanning = false;
         context.unregisterReceiver(adapterStateReceiver)
         stopScan()
