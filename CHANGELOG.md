@@ -1,3 +1,11 @@
+## [0.19.1](https://github.com/dronetag/flutter-opendroneid/compare/v0.19.0...v0.19.1) (2024-10-02)
+
+
+### Bug Fixes
+
+* return from scan method if wifiAwareSupported is false ([f000816](https://github.com/dronetag/flutter-opendroneid/commit/f000816342e61a4a4f5c07c2416092466eb80733))
+* solve exception when stopping Wi-Fi scans ([#37](https://github.com/dronetag/flutter-opendroneid/issues/37)) ([3d3ff20](https://github.com/dronetag/flutter-opendroneid/commit/3d3ff20ae29aff5709898570f01854ae4fb82e8c))
+
 # [0.19.0](https://github.com/dronetag/flutter-opendroneid/compare/v0.18.1...v0.19.0) (2024-07-19)
 
 
