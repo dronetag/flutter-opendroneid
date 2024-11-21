@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dart_opendroneid/dart_opendroneid.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_opendroneid/exceptions/odid_message_parsing_exception.dart';
+import 'package:flutter_opendroneid/models/dri_source_type.dart';
 import 'package:flutter_opendroneid/models/message_container.dart';
 import 'package:flutter_opendroneid/models/permissions_missing_exception.dart';
 
@@ -13,27 +14,37 @@ import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
 
 export 'package:dart_opendroneid/src/types.dart';
 
-enum UsedTechnologies { Wifi, Bluetooth, Both, None }
-
 class FlutterOpenDroneId {
   static late pigeon.Api _api = pigeon.Api();
-  static const odidPayloadEventChannel =
-      const EventChannel('flutter_odid_data');
+  // event channels
+  static const bluetoothOdidPayloadEventChannel =
+      const EventChannel('flutter_odid_data_bt');
+  static const wifiOdidPayloadEventChannel =
+      const EventChannel('flutter_odid_data_wifi');
   static const _btStateEventChannel =
-      const EventChannel('flutter_odid_bt_state');
+      const EventChannel('flutter_odid_state_bt');
   static const _wifiStateEventChannel =
-      const EventChannel('flutter_odid_wifi_state');
+      const EventChannel('flutter_odid_state_wifi');
 
-  static StreamSubscription? _odidDataSubscription;
+  static StreamSubscription? _bluetoothOdidDataSubscription;
+  static StreamSubscription? _wifiOdidDataSubscription;
 
-  static final _packController = StreamController<MessageContainer>.broadcast();
+  static final _wifiMessagesController =
+      StreamController<MessageContainer>.broadcast();
+  static final _bluetoothMessagesController =
+      StreamController<MessageContainer>.broadcast();
+
   static Map<String, MessageContainer> _storedPacks = {};
 
   static Stream<bool> get bluetoothState => _btStateEventChannel
       .receiveBroadcastStream()
       .map((event) => event as bool);
 
-  static Stream<MessageContainer> get allMessages => _packController.stream;
+  static Stream<MessageContainer> get bluetoothMessages =>
+      _bluetoothMessagesController.stream;
+
+  static Stream<MessageContainer> get wifiMessages =>
+      _wifiMessagesController.stream;
 
   static Stream<bool> get wifiState => _wifiStateEventChannel
       .receiveBroadcastStream()
@@ -57,28 +68,38 @@ class FlutterOpenDroneId {
   ///
   /// To further receive data, listen to
   /// streams.
-  static Future<void> startScan(UsedTechnologies usedTechnologies) async {
-    _odidDataSubscription = odidPayloadEventChannel
-        .receiveBroadcastStream()
-        .listen((payload) => _updatePacks(pigeon.ODIDPayload.decode(payload)));
-
-    if (usedTechnologies == UsedTechnologies.Bluetooth ||
-        usedTechnologies == UsedTechnologies.Both) {
+  static Future<void> startScan(DriSourceType sourceType) async {
+    if (sourceType == DriSourceType.Bluetooth) {
       await _assertBluetoothPermissions();
+      _bluetoothOdidDataSubscription?.cancel();
+      _bluetoothOdidDataSubscription = bluetoothOdidPayloadEventChannel
+          .receiveBroadcastStream()
+          .listen((payload) => _updatePacks(
+              pigeon.ODIDPayload.decode(payload), DriSourceType.Bluetooth));
       await _api.startScanBluetooth();
-    }
-    if (usedTechnologies == UsedTechnologies.Wifi ||
-        usedTechnologies == UsedTechnologies.Both) {
+    } else if (sourceType == DriSourceType.Wifi) {
       await _assertWifiPermissions();
+      _wifiOdidDataSubscription?.cancel();
+
+      _wifiOdidDataSubscription = bluetoothOdidPayloadEventChannel
+          .receiveBroadcastStream()
+          .listen((payload) => _updatePacks(
+              pigeon.ODIDPayload.decode(payload), DriSourceType.Wifi));
       await _api.startScanWifi();
     }
   }
 
   /// Stops any currently running scan
-  static Future<void> stopScan() async {
-    if (await _api.isScanningBluetooth()) await _api.stopScanBluetooth();
-    if (await _api.isScanningWifi()) await _api.stopScanWifi();
-    _odidDataSubscription?.cancel();
+  static Future<void> stopScan(DriSourceType sourceType) async {
+    if (sourceType == DriSourceType.Bluetooth &&
+        (await _api.isScanningBluetooth())) {
+      await _api.stopScanBluetooth();
+      _bluetoothOdidDataSubscription?.cancel();
+    }
+    if (sourceType == DriSourceType.Wifi && await _api.isScanningWifi()) {
+      await _api.stopScanWifi();
+      _wifiOdidDataSubscription?.cancel();
+    }
   }
 
   static Future<void> setBtScanPriority(pigeon.ScanPriority priority) async {
@@ -99,7 +120,8 @@ class FlutterOpenDroneId {
 
   static Future<bool> get isScanningWifi async => await _api.isScanningWifi();
 
-  static void _updatePacks(pigeon.ODIDPayload payload) {
+  static void _updatePacks(
+      pigeon.ODIDPayload payload, DriSourceType sourceType) {
     final storedPack = _storedPacks[payload.macAddress] ??
         MessageContainer(
           macAddress: payload.macAddress,
@@ -132,7 +154,11 @@ class FlutterOpenDroneId {
     // update was refused if updatedPack is null
     if (updatedPack != null) {
       _storedPacks[payload.macAddress] = updatedPack;
-      _packController.add(updatedPack);
+      return switch (sourceType) {
+        DriSourceType.Bluetooth =>
+          _bluetoothMessagesController.add(updatedPack),
+        DriSourceType.Wifi => _wifiMessagesController.add(updatedPack),
+      };
     }
   }
 

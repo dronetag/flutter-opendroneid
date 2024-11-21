@@ -3,14 +3,15 @@ import UIKit
 
 @available(iOS 13.0.0, *)
 public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
+    private static let dataEventChannelName = "flutter_odid_data_bt"
+    private static let stateEventChannelName = "flutter_odid_state_bt"
     private static var eventChannels: [String: FlutterEventChannel] = [:]
 
     private var bluetoothScanner: BluetoothScanner!
 
     private let streamHandlers: [String: StreamHandler] = [
-        "flutter_odid_data": StreamHandler(),
-        "flutter_odid_bt_state": StreamHandler(),
-        "flutter_odid_wifi_state": StreamHandler()
+        dataEventChannelName: StreamHandler(),
+        stateEventChannelName: StreamHandler(),
     ]
     
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -20,9 +21,8 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
         
         // Register event channels
         eventChannels = [
-            "flutter_odid_data": FlutterEventChannel(name: "flutter_odid_data", binaryMessenger: registrar.messenger()),
-            "flutter_odid_bt_state": FlutterEventChannel(name: "flutter_odid_bt_state", binaryMessenger: registrar.messenger()),
-            "flutter_odid_wifi_state": FlutterEventChannel(name: "flutter_odid_wifi_state", binaryMessenger: registrar.messenger()),
+            dataEventChannelName: FlutterEventChannel(name: dataEventChannelName, binaryMessenger: registrar.messenger()),
+            stateEventChannelName: FlutterEventChannel(name: stateEventChannelName, binaryMessenger: registrar.messenger()),
         ]
         
         // Register stream handlers
@@ -34,8 +34,8 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
         
         // Register bluetooth scanner
         instance.bluetoothScanner = BluetoothScanner(
-            odidPayloadStreamHandler: instance.streamHandlers["flutter_odid_data"]!,
-            scanStateHandler: instance.streamHandlers["flutter_odid_bt_state"]!
+            odidPayloadStreamHandler: instance.streamHandlers[dataEventChannelName]!,
+            scanStateHandler: instance.streamHandlers[stateEventChannelName]!
         )
     
         registrar.addApplicationDelegate(instance)
