@@ -1,3 +1,10 @@
+## [0.19.4](https://github.com/dronetag/flutter-opendroneid/compare/v0.19.3...v0.19.4) (2024-11-27)
+
+
+### Bug Fixes
+
+* setting up wifi event channel ([71c8d8c](https://github.com/dronetag/flutter-opendroneid/commit/71c8d8cacfb3a5f8bc3e62ad3616e583788ca39c))
+
 ## [0.19.3](https://github.com/dronetag/flutter-opendroneid/compare/v0.19.2...v0.19.3) (2024-11-26)
 
 ## [0.19.2](https://github.com/dronetag/flutter-opendroneid/compare/v0.19.1...v0.19.2) (2024-11-26)
