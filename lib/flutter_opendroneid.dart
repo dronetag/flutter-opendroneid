@@ -81,7 +81,7 @@ class FlutterOpenDroneId {
       await _assertWifiPermissions();
       _wifiOdidDataSubscription?.cancel();
 
-      _wifiOdidDataSubscription = bluetoothOdidPayloadEventChannel
+      _wifiOdidDataSubscription = wifiOdidPayloadEventChannel
           .receiveBroadcastStream()
           .listen((payload) => _updatePacks(
               pigeon.ODIDPayload.decode(payload), DriSourceType.Wifi));
