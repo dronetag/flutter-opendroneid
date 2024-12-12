@@ -5,8 +5,8 @@ import 'package:dart_opendroneid/dart_opendroneid.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_opendroneid/exceptions/odid_message_parsing_exception.dart';
 import 'package:flutter_opendroneid/models/dri_source_type.dart';
-import 'package:flutter_opendroneid/models/message_container.dart';
 import 'package:flutter_opendroneid/models/permissions_missing_exception.dart';
+import 'package:flutter_opendroneid/models/received_odid_message.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -26,25 +26,18 @@ class FlutterOpenDroneId {
   static const _wifiStateEventChannel =
       const EventChannel('flutter_odid_state_wifi');
 
-  static StreamSubscription? _bluetoothOdidDataSubscription;
-  static StreamSubscription? _wifiOdidDataSubscription;
+  static StreamSubscription? _receivedBluetoothMessagesSubscription;
+  static StreamSubscription? _receivedWiFiMessagesSubscription;
 
-  static final _wifiMessagesController =
-      StreamController<MessageContainer>.broadcast();
-  static final _bluetoothMessagesController =
-      StreamController<MessageContainer>.broadcast();
+  static final _receivedMessagesController =
+      StreamController<ReceivedODIDMessage>.broadcast();
 
-  static Map<String, MessageContainer> _storedPacks = {};
+  static Stream<ReceivedODIDMessage> get receivedMessages =>
+      _receivedMessagesController.stream;
 
   static Stream<bool> get bluetoothState => _btStateEventChannel
       .receiveBroadcastStream()
       .map((event) => event as bool);
-
-  static Stream<MessageContainer> get bluetoothMessages =>
-      _bluetoothMessagesController.stream;
-
-  static Stream<MessageContainer> get wifiMessages =>
-      _wifiMessagesController.stream;
 
   static Stream<bool> get wifiState => _wifiStateEventChannel
       .receiveBroadcastStream()
@@ -59,32 +52,31 @@ class FlutterOpenDroneId {
       pigeon.WifiState.values.indexOf(pigeon.WifiState.Enabled);
 
   /// Starts scanning for nearby traffic
-  /// For Bluetooth scanning, bluetooth permissions are required on both platforms,
-  /// Android requires Bluetooth scan permission location permission on ver.  < 12
+  /// For Bluetooth scanning, bluetooth perm. are required on both platforms,
+  /// Android requires Bluetooth scan permission location permission on ver.< 12
   ///
-  /// For Wi-Fi scanning, location permission is required on Android
+  /// For Wi-Fi scanning, location permission is required on Android.
   ///
-  /// Throws PermissionMissingException if permissions were not granted
+  /// Throws [PermissionsMissingException] if permissions were not granted.
   ///
-  /// To further receive data, listen to
-  /// streams.
+  /// To further receive data, listen to [receivedMessages]
+  /// stream.
   static Future<void> startScan(DriSourceType sourceType) async {
     if (sourceType == DriSourceType.Bluetooth) {
       await _assertBluetoothPermissions();
-      _bluetoothOdidDataSubscription?.cancel();
-      _bluetoothOdidDataSubscription = bluetoothOdidPayloadEventChannel
+      _receivedBluetoothMessagesSubscription?.cancel();
+      _receivedBluetoothMessagesSubscription = bluetoothOdidPayloadEventChannel
           .receiveBroadcastStream()
-          .listen((payload) => _updatePacks(
-              pigeon.ODIDPayload.decode(payload), DriSourceType.Bluetooth));
+          .listen(
+              (payload) => _handlePayload(pigeon.ODIDPayload.decode(payload)));
       await _api.startScanBluetooth();
     } else if (sourceType == DriSourceType.Wifi) {
       await _assertWifiPermissions();
-      _wifiOdidDataSubscription?.cancel();
-
-      _wifiOdidDataSubscription = wifiOdidPayloadEventChannel
+      _receivedWiFiMessagesSubscription?.cancel();
+      _receivedWiFiMessagesSubscription = wifiOdidPayloadEventChannel
           .receiveBroadcastStream()
-          .listen((payload) => _updatePacks(
-              pigeon.ODIDPayload.decode(payload), DriSourceType.Wifi));
+          .listen(
+              (payload) => _handlePayload(pigeon.ODIDPayload.decode(payload)));
       await _api.startScanWifi();
     }
   }
@@ -94,11 +86,11 @@ class FlutterOpenDroneId {
     if (sourceType == DriSourceType.Bluetooth &&
         (await _api.isScanningBluetooth())) {
       await _api.stopScanBluetooth();
-      _bluetoothOdidDataSubscription?.cancel();
+      _receivedBluetoothMessagesSubscription?.cancel();
     }
     if (sourceType == DriSourceType.Wifi && await _api.isScanningWifi()) {
       await _api.stopScanWifi();
-      _wifiOdidDataSubscription?.cancel();
+      _receivedWiFiMessagesSubscription?.cancel();
     }
   }
 
@@ -120,14 +112,7 @@ class FlutterOpenDroneId {
 
   static Future<bool> get isScanningWifi async => await _api.isScanningWifi();
 
-  static void _updatePacks(
-      pigeon.ODIDPayload payload, DriSourceType sourceType) {
-    final storedPack = _storedPacks[payload.metadata.macAddress] ??
-        MessageContainer(
-          metadata: payload.metadata,
-          lastUpdate:
-              DateTime.fromMillisecondsSinceEpoch(payload.receivedTimestamp),
-        );
+  static void _handlePayload(pigeon.ODIDPayload payload) {
     ODIDMessage? message;
     try {
       message = parseODIDMessage(payload.rawData);
@@ -144,20 +129,13 @@ class FlutterOpenDroneId {
 
     if (message == null) return;
 
-    final updatedPack = storedPack.update(
-      message: message,
-      receivedTimestamp: payload.receivedTimestamp,
-      metadata: payload.metadata,
+    _receivedMessagesController.add(
+      ReceivedODIDMessage(
+          odidMessage: message,
+          metadata: payload.metadata,
+          receivedTimestamp:
+              DateTime.fromMillisecondsSinceEpoch(payload.receivedTimestamp)),
     );
-    // update was refused if updatedPack is null
-    if (updatedPack != null) {
-      _storedPacks[payload.metadata.macAddress] = updatedPack;
-      return switch (sourceType) {
-        DriSourceType.Bluetooth =>
-          _bluetoothMessagesController.add(updatedPack),
-        DriSourceType.Wifi => _wifiMessagesController.add(updatedPack),
-      };
-    }
   }
 
   /// Checks all required Bluetooth permissions and throws
