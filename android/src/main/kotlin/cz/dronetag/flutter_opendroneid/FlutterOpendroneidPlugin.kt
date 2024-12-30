@@ -43,37 +43,36 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         Pigeon.Api.setup(flutterPluginBinding.binaryMessenger, this)
 
         StreamHandler.bindMultipleHandlers(
-                flutterPluginBinding.binaryMessenger,
-                mapOf(
-                    "flutter_odid_data_bt" to bluetoothOdidPayloadStreamHandler,
-                    "flutter_odid_data_wifi" to wifiOdidPayloadStreamHandler,
-                    "flutter_odid_state_bt" to bluetoothStateStreamHandler,
-                    "flutter_odid_state_wifi" to wifiStateStreamHandler
-                )
+            flutterPluginBinding.binaryMessenger,
+            mapOf(
+                "flutter_odid_data_bt" to bluetoothOdidPayloadStreamHandler,
+                "flutter_odid_data_wifi" to wifiOdidPayloadStreamHandler,
+                "flutter_odid_state_bt" to bluetoothStateStreamHandler,
+                "flutter_odid_state_wifi" to wifiStateStreamHandler
+            )
         )
 
         context = flutterPluginBinding.applicationContext
 
         val wifiManager: WifiManager? =
-                context.getSystemService(Context.WIFI_SERVICE) as WifiManager?
+            context.getSystemService(Context.WIFI_SERVICE) as WifiManager?
         val wifiAwareManager: WifiAwareManager? =
-                context.getSystemService(Context.WIFI_AWARE_SERVICE) as WifiAwareManager?
-
+            context.getSystemService(Context.WIFI_AWARE_SERVICE) as WifiAwareManager?
 
         wifiScanner =
-                WifiScanner(
-                    wifiOdidPayloadStreamHandler, wifiStateStreamHandler, wifiManager, context
-                )
+            WifiScanner(
+                wifiOdidPayloadStreamHandler, wifiStateStreamHandler, wifiManager, context
+            )
         wifiNaNScanner =
-                WifiNaNScanner(
-                    wifiOdidPayloadStreamHandler, wifiStateStreamHandler, wifiAwareManager, context
-                )
+            WifiNaNScanner(
+                wifiOdidPayloadStreamHandler, wifiStateStreamHandler, wifiAwareManager, context
+            )
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         binding.activity.registerReceiver(
-                scanner.adapterStateReceiver,
-                IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+            scanner.adapterStateReceiver,
+            IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
         )
         binding.activity.registerReceiver(
             wifiScanner.adapterStateReceiver,
@@ -82,13 +81,14 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         boundActivity = binding.activity
     }
 
-    override fun onDetachedFromActivityForConfigChanges() {
-        boundActivity?.unregisterReceiver(scanner.adapterStateReceiver)
-    }
+    override fun onDetachedFromActivityForConfigChanges() {}
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {}
 
-    override fun onDetachedFromActivity() {}
+    override fun onDetachedFromActivity() {
+        boundActivity?.unregisterReceiver(scanner.adapterStateReceiver)
+        boundActivity?.unregisterReceiver(wifiScanner.adapterStateReceiver)
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
