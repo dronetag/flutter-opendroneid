@@ -93,9 +93,12 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         Pigeon.Api.setup(binding.binaryMessenger, null)
-        scanner.cancel()
-        wifiScanner.cancel()
-        wifiNaNScanner.cancel()
+        if(scanner.isScanning)
+            scanner.cancel()
+        if(wifiScanner.isScanning)
+            wifiScanner.cancel()
+        if(wifiNaNScanner.isScanning)
+            wifiNaNScanner.cancel()
         StreamHandler.clearMultipleHandlers(
             binding.binaryMessenger,
             listOf(
