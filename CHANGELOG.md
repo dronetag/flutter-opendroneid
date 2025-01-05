@@ -1,3 +1,11 @@
+## [0.19.5](https://github.com/dronetag/flutter-opendroneid/compare/v0.19.4...v0.19.5) (2025-01-05)
+
+
+### Bug Fixes
+
+* **and:** stop scans only if they are active in onDetachedFromEngine ([d00de4e](https://github.com/dronetag/flutter-opendroneid/commit/d00de4e41741189ae0dc2d7067a75a9ec6937528))
+* **and:** unregisterReceiver on onDetachedFromActivity ([c737347](https://github.com/dronetag/flutter-opendroneid/commit/c737347aa0ba9d81491bfc50f9764f2945a170e1))
+
 ## [0.19.4](https://github.com/dronetag/flutter-opendroneid/compare/v0.19.3...v0.19.4) (2024-11-27)
 
 
