@@ -18,6 +18,22 @@ class ReceivedODIDMessage {
     this.rssi,
   });
 
+  ReceivedODIDMessage copyWith({
+    ODIDMessage? odidMessage,
+    DateTime? receivedTimestamp,
+    MessageSource? source,
+    MacAddress? macAddress,
+    int? rssi,
+  }) {
+    return ReceivedODIDMessage(
+      odidMessage: odidMessage ?? this.odidMessage,
+      receivedTimestamp: receivedTimestamp ?? this.receivedTimestamp,
+      source: source ?? this.source,
+      macAddress: macAddress ?? this.macAddress,
+      rssi: rssi ?? this.rssi,
+    );
+  }
+
   @override
   String toString() => 'ReceivedODIDMessage{ '
       'odidMessage type: ${odidMessage.runtimeType}, '
