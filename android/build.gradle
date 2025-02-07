@@ -24,6 +24,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace = "cz.dronetag.flutter_opendroneid"
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
