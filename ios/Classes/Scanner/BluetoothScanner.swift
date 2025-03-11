@@ -19,7 +19,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
         self.scanStateHandler = scanStateHandler
         
         super.init()
-        centralManager = CBCentralManager(delegate: self, queue: dispatchQueue)
+        centralManager = CBCentralManager(delegate: self, queue: dispatchQueue, options: [CBCentralManagerOptionShowPowerAlertKey: false])
     }
     
     func scan() {
