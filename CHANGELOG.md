@@ -1,3 +1,10 @@
+## [0.21.1](https://github.com/dronetag/flutter-opendroneid/compare/v0.21.0...v0.21.1) (2025-03-16)
+
+
+### Bug Fixes
+
+* cancel scan when bt is turned off ([18ca59c](https://github.com/dronetag/flutter-opendroneid/commit/18ca59c1abe13de9efc8d2ef94ea49d129dd103b))
+
 ## [0.19.5](https://github.com/dronetag/flutter-opendroneid/compare/v0.19.4...v0.19.5) (2025-01-05)
 
 
