@@ -43,7 +43,41 @@ typedef NS_ENUM(NSUInteger, DTGWifiState) {
   DTGWifiStateEnabled = 3,
 };
 
+typedef NS_ENUM(NSUInteger, DTGBluetoothPhy) {
+  DTGBluetoothPhyNone = 0,
+  DTGBluetoothPhyPhy1M = 1,
+  DTGBluetoothPhyPhy2M = 2,
+  DTGBluetoothPhyPhyLECoded = 3,
+  DTGBluetoothPhyUnknown = 4,
+};
+
+@class DTGODIDMetadata;
 @class DTGODIDPayload;
+
+@interface DTGODIDMetadata : NSObject
+/// `init` unavailable to enforce nonnull fields, see the `make` class method.
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)makeWithMacAddress:(NSString *)macAddress
+    source:(DTGMessageSource)source
+    rssi:(nullable NSNumber *)rssi
+    btName:(nullable NSString *)btName
+    frequency:(nullable NSNumber *)frequency
+    centerFreq0:(nullable NSNumber *)centerFreq0
+    centerFreq1:(nullable NSNumber *)centerFreq1
+    channelWidthMhz:(nullable NSNumber *)channelWidthMhz
+    primaryPhy:(DTGBluetoothPhy)primaryPhy
+    secondaryPhy:(DTGBluetoothPhy)secondaryPhy;
+@property(nonatomic, copy) NSString * macAddress;
+@property(nonatomic, assign) DTGMessageSource source;
+@property(nonatomic, strong, nullable) NSNumber * rssi;
+@property(nonatomic, copy, nullable) NSString * btName;
+@property(nonatomic, strong, nullable) NSNumber * frequency;
+@property(nonatomic, strong, nullable) NSNumber * centerFreq0;
+@property(nonatomic, strong, nullable) NSNumber * centerFreq1;
+@property(nonatomic, strong, nullable) NSNumber * channelWidthMhz;
+@property(nonatomic, assign) DTGBluetoothPhy primaryPhy;
+@property(nonatomic, assign) DTGBluetoothPhy secondaryPhy;
+@end
 
 /// Payload send from native to dart contains raw data and metadata
 @interface DTGODIDPayload : NSObject
@@ -52,16 +86,10 @@ typedef NS_ENUM(NSUInteger, DTGWifiState) {
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)makeWithRawData:(FlutterStandardTypedData *)rawData
     receivedTimestamp:(NSNumber *)receivedTimestamp
-    macAddress:(NSString *)macAddress
-    rssi:(nullable NSNumber *)rssi
-    source:(DTGMessageSource)source
-    btName:(nullable NSString *)btName;
+    metadata:(DTGODIDMetadata *)metadata;
 @property(nonatomic, strong) FlutterStandardTypedData * rawData;
 @property(nonatomic, strong) NSNumber * receivedTimestamp;
-@property(nonatomic, copy) NSString * macAddress;
-@property(nonatomic, strong, nullable) NSNumber * rssi;
-@property(nonatomic, assign) DTGMessageSource source;
-@property(nonatomic, copy, nullable) NSString * btName;
+@property(nonatomic, strong) DTGODIDMetadata * metadata;
 @end
 
 /// The codec used by DTGApi.
@@ -89,7 +117,7 @@ NSObject<FlutterMessageCodec> *DTGPayloadApiGetCodec(void);
 
 @protocol DTGPayloadApi
 /// @return `nil` only when `error != nil`.
-- (nullable DTGODIDPayload *)buildPayloadRawData:(FlutterStandardTypedData *)rawData source:(DTGMessageSource)source macAddress:(NSString *)macAddress btName:(nullable NSString *)btName rssi:(NSNumber *)rssi receivedTimestamp:(NSNumber *)receivedTimestamp error:(FlutterError *_Nullable *_Nonnull)error;
+- (nullable DTGODIDPayload *)buildPayloadRawData:(FlutterStandardTypedData *)rawData receivedTimestamp:(NSNumber *)receivedTimestamp metadata:(DTGODIDMetadata *)metadata error:(FlutterError *_Nullable *_Nonnull)error;
 @end
 
 extern void DTGPayloadApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGPayloadApi> *_Nullable api);

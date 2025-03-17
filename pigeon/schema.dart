@@ -33,27 +33,61 @@ enum WifiState {
   Enabled,
 }
 
+enum BluetoothPhy {
+  None,
+  Phy1M,
+  Phy2M,
+  PhyLECoded,
+  Unknown,
+}
+
+class ODIDMetadata {
+  final String macAddress;
+
+  final MessageSource source;
+
+  final int? rssi;
+
+  final String? btName;
+
+  final int? frequency;
+
+  final int? centerFreq0;
+
+  final int? centerFreq1;
+
+  final int? channelWidthMhz;
+
+  final BluetoothPhy? primaryPhy;
+
+  final BluetoothPhy? secondaryPhy;
+
+  ODIDMetadata({
+    required this.macAddress,
+    required this.source,
+    this.rssi,
+    this.btName,
+    this.frequency,
+    this.channelWidthMhz,
+    this.centerFreq0,
+    this.centerFreq1,
+    this.primaryPhy,
+    this.secondaryPhy,
+  });
+}
+
 /// Payload send from native to dart contains raw data and metadata
 class ODIDPayload {
   final Uint8List rawData;
 
   final int receivedTimestamp;
 
-  final String macAddress;
-
-  final int? rssi;
-
-  final MessageSource source;
-
-  final String? btName;
+  final ODIDMetadata metadata;
 
   ODIDPayload(
     this.rawData,
     this.receivedTimestamp,
-    this.macAddress,
-    this.rssi,
-    this.source,
-    this.btName,
+    this.metadata,
   );
 }
 
@@ -88,6 +122,6 @@ abstract class Api {
 // ODIDPayload is not generated until used in API
 @HostApi()
 abstract class PayloadApi {
-  ODIDPayload buildPayload(Uint8List rawData, MessageSource source,
-      String macAddress, String? btName, int rssi, int receivedTimestamp);
+  ODIDPayload buildPayload(
+      Uint8List rawData, int receivedTimestamp, ODIDMetadata metadata);
 }
