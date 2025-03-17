@@ -26,26 +26,84 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
   return (result == [NSNull null]) ? nil : result;
 }
 
+@interface DTGODIDMetadata ()
++ (DTGODIDMetadata *)fromList:(NSArray *)list;
++ (nullable DTGODIDMetadata *)nullableFromList:(NSArray *)list;
+- (NSArray *)toList;
+@end
+
 @interface DTGODIDPayload ()
 + (DTGODIDPayload *)fromList:(NSArray *)list;
 + (nullable DTGODIDPayload *)nullableFromList:(NSArray *)list;
 - (NSArray *)toList;
 @end
 
+@implementation DTGODIDMetadata
++ (instancetype)makeWithMacAddress:(NSString *)macAddress
+    source:(DTGMessageSource)source
+    rssi:(nullable NSNumber *)rssi
+    btName:(nullable NSString *)btName
+    frequency:(nullable NSNumber *)frequency
+    centerFreq0:(nullable NSNumber *)centerFreq0
+    centerFreq1:(nullable NSNumber *)centerFreq1
+    channelWidthMhz:(nullable NSNumber *)channelWidthMhz
+    primaryPhy:(DTGBluetoothPhy)primaryPhy
+    secondaryPhy:(DTGBluetoothPhy)secondaryPhy {
+  DTGODIDMetadata* pigeonResult = [[DTGODIDMetadata alloc] init];
+  pigeonResult.macAddress = macAddress;
+  pigeonResult.source = source;
+  pigeonResult.rssi = rssi;
+  pigeonResult.btName = btName;
+  pigeonResult.frequency = frequency;
+  pigeonResult.centerFreq0 = centerFreq0;
+  pigeonResult.centerFreq1 = centerFreq1;
+  pigeonResult.channelWidthMhz = channelWidthMhz;
+  pigeonResult.primaryPhy = primaryPhy;
+  pigeonResult.secondaryPhy = secondaryPhy;
+  return pigeonResult;
+}
++ (DTGODIDMetadata *)fromList:(NSArray *)list {
+  DTGODIDMetadata *pigeonResult = [[DTGODIDMetadata alloc] init];
+  pigeonResult.macAddress = GetNullableObjectAtIndex(list, 0);
+  NSAssert(pigeonResult.macAddress != nil, @"");
+  pigeonResult.source = [GetNullableObjectAtIndex(list, 1) integerValue];
+  pigeonResult.rssi = GetNullableObjectAtIndex(list, 2);
+  pigeonResult.btName = GetNullableObjectAtIndex(list, 3);
+  pigeonResult.frequency = GetNullableObjectAtIndex(list, 4);
+  pigeonResult.centerFreq0 = GetNullableObjectAtIndex(list, 5);
+  pigeonResult.centerFreq1 = GetNullableObjectAtIndex(list, 6);
+  pigeonResult.channelWidthMhz = GetNullableObjectAtIndex(list, 7);
+  pigeonResult.primaryPhy = [GetNullableObjectAtIndex(list, 8) integerValue];
+  pigeonResult.secondaryPhy = [GetNullableObjectAtIndex(list, 9) integerValue];
+  return pigeonResult;
+}
++ (nullable DTGODIDMetadata *)nullableFromList:(NSArray *)list {
+  return (list) ? [DTGODIDMetadata fromList:list] : nil;
+}
+- (NSArray *)toList {
+  return @[
+    (self.macAddress ?: [NSNull null]),
+    @(self.source),
+    (self.rssi ?: [NSNull null]),
+    (self.btName ?: [NSNull null]),
+    (self.frequency ?: [NSNull null]),
+    (self.centerFreq0 ?: [NSNull null]),
+    (self.centerFreq1 ?: [NSNull null]),
+    (self.channelWidthMhz ?: [NSNull null]),
+    @(self.primaryPhy),
+    @(self.secondaryPhy),
+  ];
+}
+@end
+
 @implementation DTGODIDPayload
 + (instancetype)makeWithRawData:(FlutterStandardTypedData *)rawData
     receivedTimestamp:(NSNumber *)receivedTimestamp
-    macAddress:(NSString *)macAddress
-    rssi:(nullable NSNumber *)rssi
-    source:(DTGMessageSource)source
-    btName:(nullable NSString *)btName {
+    metadata:(DTGODIDMetadata *)metadata {
   DTGODIDPayload* pigeonResult = [[DTGODIDPayload alloc] init];
   pigeonResult.rawData = rawData;
   pigeonResult.receivedTimestamp = receivedTimestamp;
-  pigeonResult.macAddress = macAddress;
-  pigeonResult.rssi = rssi;
-  pigeonResult.source = source;
-  pigeonResult.btName = btName;
+  pigeonResult.metadata = metadata;
   return pigeonResult;
 }
 + (DTGODIDPayload *)fromList:(NSArray *)list {
@@ -54,11 +112,8 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
   NSAssert(pigeonResult.rawData != nil, @"");
   pigeonResult.receivedTimestamp = GetNullableObjectAtIndex(list, 1);
   NSAssert(pigeonResult.receivedTimestamp != nil, @"");
-  pigeonResult.macAddress = GetNullableObjectAtIndex(list, 2);
-  NSAssert(pigeonResult.macAddress != nil, @"");
-  pigeonResult.rssi = GetNullableObjectAtIndex(list, 3);
-  pigeonResult.source = [GetNullableObjectAtIndex(list, 4) integerValue];
-  pigeonResult.btName = GetNullableObjectAtIndex(list, 5);
+  pigeonResult.metadata = [DTGODIDMetadata nullableFromList:(GetNullableObjectAtIndex(list, 2))];
+  NSAssert(pigeonResult.metadata != nil, @"");
   return pigeonResult;
 }
 + (nullable DTGODIDPayload *)nullableFromList:(NSArray *)list {
@@ -68,10 +123,7 @@ static id GetNullableObjectAtIndex(NSArray *array, NSInteger key) {
   return @[
     (self.rawData ?: [NSNull null]),
     (self.receivedTimestamp ?: [NSNull null]),
-    (self.macAddress ?: [NSNull null]),
-    (self.rssi ?: [NSNull null]),
-    @(self.source),
-    (self.btName ?: [NSNull null]),
+    (self.metadata ? [self.metadata toList] : [NSNull null]),
   ];
 }
 @end
@@ -296,6 +348,8 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
 - (nullable id)readValueOfType:(UInt8)type {
   switch (type) {
     case 128: 
+      return [DTGODIDMetadata fromList:[self readValue]];
+    case 129: 
       return [DTGODIDPayload fromList:[self readValue]];
     default:
       return [super readValueOfType:type];
@@ -307,8 +361,11 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
 @end
 @implementation DTGPayloadApiCodecWriter
 - (void)writeValue:(id)value {
-  if ([value isKindOfClass:[DTGODIDPayload class]]) {
+  if ([value isKindOfClass:[DTGODIDMetadata class]]) {
     [self writeByte:128];
+    [self writeValue:[value toList]];
+  } else if ([value isKindOfClass:[DTGODIDPayload class]]) {
+    [self writeByte:129];
     [self writeValue:[value toList]];
   } else {
     [super writeValue:value];
@@ -345,17 +402,14 @@ void DTGPayloadApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTG
         binaryMessenger:binaryMessenger
         codec:DTGPayloadApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(buildPayloadRawData:source:macAddress:btName:rssi:receivedTimestamp:error:)], @"DTGPayloadApi api (%@) doesn't respond to @selector(buildPayloadRawData:source:macAddress:btName:rssi:receivedTimestamp:error:)", api);
+      NSCAssert([api respondsToSelector:@selector(buildPayloadRawData:receivedTimestamp:metadata:error:)], @"DTGPayloadApi api (%@) doesn't respond to @selector(buildPayloadRawData:receivedTimestamp:metadata:error:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         FlutterStandardTypedData *arg_rawData = GetNullableObjectAtIndex(args, 0);
-        DTGMessageSource arg_source = [GetNullableObjectAtIndex(args, 1) integerValue];
-        NSString *arg_macAddress = GetNullableObjectAtIndex(args, 2);
-        NSString *arg_btName = GetNullableObjectAtIndex(args, 3);
-        NSNumber *arg_rssi = GetNullableObjectAtIndex(args, 4);
-        NSNumber *arg_receivedTimestamp = GetNullableObjectAtIndex(args, 5);
+        NSNumber *arg_receivedTimestamp = GetNullableObjectAtIndex(args, 1);
+        DTGODIDMetadata *arg_metadata = GetNullableObjectAtIndex(args, 2);
         FlutterError *error;
-        DTGODIDPayload *output = [api buildPayloadRawData:arg_rawData source:arg_source macAddress:arg_macAddress btName:arg_btName rssi:arg_rssi receivedTimestamp:arg_receivedTimestamp error:&error];
+        DTGODIDPayload *output = [api buildPayloadRawData:arg_rawData receivedTimestamp:arg_receivedTimestamp metadata:arg_metadata error:&error];
         callback(wrapResult(output, error));
       }];
     } else {
