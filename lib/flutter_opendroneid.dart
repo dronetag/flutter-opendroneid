@@ -124,8 +124,7 @@ class FlutterOpenDroneId {
       pigeon.ODIDPayload payload, DriSourceType sourceType) {
     final storedPack = _storedPacks[payload.metadata.macAddress] ??
         MessageContainer(
-          macAddress: payload.metadata.macAddress,
-          source: payload.metadata.source,
+          metadata: payload.metadata,
           lastUpdate:
               DateTime.fromMillisecondsSinceEpoch(payload.receivedTimestamp),
         );
@@ -148,8 +147,7 @@ class FlutterOpenDroneId {
     final updatedPack = storedPack.update(
       message: message,
       receivedTimestamp: payload.receivedTimestamp,
-      rssi: payload.metadata.rssi,
-      source: payload.metadata.source,
+      metadata: payload.metadata,
     );
     // update was refused if updatedPack is null
     if (updatedPack != null) {

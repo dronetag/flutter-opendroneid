@@ -8,10 +8,8 @@ import 'package:flutter_opendroneid/utils/conversions.dart';
 /// from one device. It contains one instance of each message. The container is
 /// then sent using stream to client of the library.
 class MessageContainer {
-  final String macAddress;
+  final pigeon.ODIDMetadata metadata;
   final DateTime lastUpdate;
-  final pigeon.MessageSource source;
-  final int? lastMessageRssi;
 
   final Map<IDType, BasicIDMessage>? basicIdMessages;
   final LocationMessage? locationMessage;
@@ -21,10 +19,8 @@ class MessageContainer {
   final SystemMessage? systemDataMessage;
 
   MessageContainer({
-    required this.macAddress,
+    required this.metadata,
     required this.lastUpdate,
-    required this.source,
-    this.lastMessageRssi,
     this.basicIdMessages,
     this.locationMessage,
     this.operatorIdMessage,
@@ -52,15 +48,12 @@ class MessageContainer {
         '$descriptionString, '
         '${basicIdMessages?.length} basic ID messages, '
         'last update: $lastUpdate, '
-        'source: $source, '
-        'rssi: $lastMessageRssi }';
+        'metadata: $metadata }';
   }
 
   MessageContainer copyWith({
-    String? macAddress,
-    int? lastMessageRssi,
     DateTime? lastUpdate,
-    pigeon.MessageSource? source,
+    pigeon.ODIDMetadata? metadata,
     Map<IDType, BasicIDMessage>? basicIdMessage,
     LocationMessage? locationMessage,
     OperatorIDMessage? operatorIdMessage,
@@ -69,10 +62,8 @@ class MessageContainer {
     SystemMessage? systemDataMessage,
   }) =>
       MessageContainer(
-        macAddress: macAddress ?? this.macAddress,
-        lastMessageRssi: lastMessageRssi ?? this.lastMessageRssi,
+        metadata: metadata ?? this.metadata,
         lastUpdate: lastUpdate ?? DateTime.now(),
-        source: source ?? this.source,
         basicIdMessages: basicIdMessage ?? this.basicIdMessages,
         locationMessage: locationMessage ?? this.locationMessage,
         operatorIdMessage: operatorIdMessage ?? this.operatorIdMessage,
@@ -87,9 +78,8 @@ class MessageContainer {
   /// corrupted data.
   MessageContainer? update({
     required ODIDMessage message,
+    required pigeon.ODIDMetadata metadata,
     required int receivedTimestamp,
-    required pigeon.MessageSource source,
-    int? rssi,
   }) {
     if (message.runtimeType == MessagePack) {
       final messages = (message as MessagePack).messages;
@@ -97,9 +87,8 @@ class MessageContainer {
       for (var packMessage in messages) {
         final update = result.update(
           message: packMessage,
+          metadata: metadata,
           receivedTimestamp: receivedTimestamp,
-          source: source,
-          rssi: rssi,
         );
         if (update != null) result = update;
       }
@@ -112,62 +101,58 @@ class MessageContainer {
           ? null
           : copyWith(
               locationMessage: message as LocationMessage,
-              lastMessageRssi: rssi,
+              metadata: metadata,
               lastUpdate:
                   DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
-              source: source,
             ),
       BasicIDMessage => _updateBasicIDMessages(
           message: message as BasicIDMessage,
           receivedTimestamp: receivedTimestamp,
-          source: source,
-          rssi: rssi,
+          metadata: metadata,
         ),
       SelfIDMessage => selfIdMessage != null &&
               selfIdMessage!.containsEqualData(message as SelfIDMessage)
           ? null
           : copyWith(
               selfIdMessage: message as SelfIDMessage,
-              lastMessageRssi: rssi,
               lastUpdate:
                   DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
-              source: source,
+              metadata: metadata,
             ),
       OperatorIDMessage => operatorIdMessage != null &&
               operatorIdMessage!.containsEqualData(message as OperatorIDMessage)
           ? null
           : copyWith(
               operatorIdMessage: message as OperatorIDMessage,
-              lastMessageRssi: rssi,
               lastUpdate:
                   DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
-              source: source,
+              metadata: metadata,
             ),
       AuthMessage => authenticationMessage != null &&
               authenticationMessage!.containsEqualData(message as AuthMessage)
           ? null
           : copyWith(
               authenticationMessage: message as AuthMessage,
-              lastMessageRssi: rssi,
               lastUpdate:
                   DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
-              source: source,
+              metadata: metadata,
             ),
       SystemMessage => systemDataMessage != null &&
               systemDataMessage!.containsEqualData(message as SystemMessage)
           ? null
           : copyWith(
               systemDataMessage: message as SystemMessage,
-              lastMessageRssi: rssi,
+              metadata: metadata,
               lastUpdate:
                   DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
-              source: source,
             ),
       _ => null
     };
   }
 
-  pigeon.MessageSource get packSource => source;
+  String get macAddress => metadata.macAddress;
+
+  pigeon.MessageSource get packSource => metadata.source;
 
   bool get operatorIDSet =>
       operatorIdMessage != null &&
@@ -219,9 +204,8 @@ class MessageContainer {
 
   MessageContainer? _updateBasicIDMessages({
     required BasicIDMessage message,
+    required pigeon.ODIDMetadata metadata,
     required int receivedTimestamp,
-    required pigeon.MessageSource source,
-    int? rssi,
   }) {
     if (basicIdMessages != null &&
         basicIdMessages![message.uasID.type] != null &&
@@ -232,9 +216,8 @@ class MessageContainer {
     return copyWith(
       basicIdMessage: basicIdMessages == null ? newEntry : basicIdMessages!
         ..addAll(newEntry),
-      lastMessageRssi: rssi,
+      metadata: metadata,
       lastUpdate: DateTime.fromMillisecondsSinceEpoch(receivedTimestamp),
-      source: source,
     );
   }
 }
