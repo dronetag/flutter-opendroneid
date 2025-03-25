@@ -1,3 +1,14 @@
+# [0.22.0](https://github.com/dronetag/flutter-opendroneid/compare/v0.21.1...v0.22.0) (2025-03-25)
+
+
+### Features
+
+* add extended ODIDMetadata ([#42](https://github.com/dronetag/flutter-opendroneid/issues/42)) ([db2be75](https://github.com/dronetag/flutter-opendroneid/commit/db2be754e47167e880b47be0d5f7b653b926550e))
+* add ODIDMetadata to pigeon schema, regenerate files ([cdfe41c](https://github.com/dronetag/flutter-opendroneid/commit/cdfe41cd0c3b95f8ea8a04dd70658f3704abd13d))
+* use ODIDMetadata in main dart file ([c143f26](https://github.com/dronetag/flutter-opendroneid/commit/c143f26de4559d6b41ef9df7783c1d34c4a1b761))
+* use ODIDMetadata in message container ([b76a743](https://github.com/dronetag/flutter-opendroneid/commit/b76a7437cc93deaaa1452259817fef5df28e280e))
+* use ODIDMetadata in native ([41c83e1](https://github.com/dronetag/flutter-opendroneid/commit/41c83e1d6217a9ee8cb8cb8310ac1dc28d2f48bd))
+
 ## [0.21.1](https://github.com/dronetag/flutter-opendroneid/compare/v0.21.0...v0.21.1) (2025-03-16)
 
 
