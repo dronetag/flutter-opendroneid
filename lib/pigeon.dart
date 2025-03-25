@@ -41,37 +41,103 @@ enum WifiState {
   Enabled,
 }
 
+enum BluetoothPhy {
+  None,
+  Phy1M,
+  Phy2M,
+  PhyLECoded,
+  Unknown,
+}
+
+class ODIDMetadata {
+  ODIDMetadata({
+    required this.macAddress,
+    required this.source,
+    this.rssi,
+    this.btName,
+    this.frequency,
+    this.centerFreq0,
+    this.centerFreq1,
+    this.channelWidthMhz,
+    this.primaryPhy,
+    this.secondaryPhy,
+  });
+
+  String macAddress;
+
+  MessageSource source;
+
+  int? rssi;
+
+  String? btName;
+
+  int? frequency;
+
+  int? centerFreq0;
+
+  int? centerFreq1;
+
+  int? channelWidthMhz;
+
+  BluetoothPhy? primaryPhy;
+
+  BluetoothPhy? secondaryPhy;
+
+  Object encode() {
+    return <Object?>[
+      macAddress,
+      source.index,
+      rssi,
+      btName,
+      frequency,
+      centerFreq0,
+      centerFreq1,
+      channelWidthMhz,
+      primaryPhy?.index,
+      secondaryPhy?.index,
+    ];
+  }
+
+  static ODIDMetadata decode(Object result) {
+    result as List<Object?>;
+    return ODIDMetadata(
+      macAddress: result[0]! as String,
+      source: MessageSource.values[result[1]! as int],
+      rssi: result[2] as int?,
+      btName: result[3] as String?,
+      frequency: result[4] as int?,
+      centerFreq0: result[5] as int?,
+      centerFreq1: result[6] as int?,
+      channelWidthMhz: result[7] as int?,
+      primaryPhy: result[8] != null
+          ? BluetoothPhy.values[result[8]! as int]
+          : null,
+      secondaryPhy: result[9] != null
+          ? BluetoothPhy.values[result[9]! as int]
+          : null,
+    );
+  }
+}
+
 /// Payload send from native to dart contains raw data and metadata
 class ODIDPayload {
   ODIDPayload({
     required this.rawData,
     required this.receivedTimestamp,
-    required this.macAddress,
-    this.rssi,
-    required this.source,
-    this.btName,
+    required this.metadata,
   });
 
   Uint8List rawData;
 
   int receivedTimestamp;
 
-  String macAddress;
-
-  int? rssi;
-
-  MessageSource source;
-
-  String? btName;
+  ODIDMetadata metadata;
 
   Object encode() {
     return <Object?>[
       rawData,
       receivedTimestamp,
-      macAddress,
-      rssi,
-      source.index,
-      btName,
+      metadata.encode(),
     ];
   }
 
@@ -80,10 +146,7 @@ class ODIDPayload {
     return ODIDPayload(
       rawData: result[0]! as Uint8List,
       receivedTimestamp: result[1]! as int,
-      macAddress: result[2]! as String,
-      rssi: result[3] as int?,
-      source: MessageSource.values[result[4]! as int],
-      btName: result[5] as String?,
+      metadata: ODIDMetadata.decode(result[2]! as List<Object?>),
     );
   }
 }
@@ -402,8 +465,11 @@ class _PayloadApiCodec extends StandardMessageCodec {
   const _PayloadApiCodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is ODIDPayload) {
+    if (value is ODIDMetadata) {
       buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else if (value is ODIDPayload) {
+      buffer.putUint8(129);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -414,6 +480,8 @@ class _PayloadApiCodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128: 
+        return ODIDMetadata.decode(readValue(buffer)!);
+      case 129: 
         return ODIDPayload.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -431,12 +499,12 @@ class PayloadApi {
 
   static const MessageCodec<Object?> codec = _PayloadApiCodec();
 
-  Future<ODIDPayload> buildPayload(Uint8List arg_rawData, MessageSource arg_source, String arg_macAddress, String? arg_btName, int arg_rssi, int arg_receivedTimestamp) async {
+  Future<ODIDPayload> buildPayload(Uint8List arg_rawData, int arg_receivedTimestamp, ODIDMetadata arg_metadata) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.flutter_opendroneid.PayloadApi.buildPayload', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
-        await channel.send(<Object?>[arg_rawData, arg_source.index, arg_macAddress, arg_btName, arg_rssi, arg_receivedTimestamp]) as List<Object?>?;
+        await channel.send(<Object?>[arg_rawData, arg_receivedTimestamp, arg_metadata]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',

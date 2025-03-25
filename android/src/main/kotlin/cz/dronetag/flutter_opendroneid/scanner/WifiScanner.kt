@@ -143,11 +143,28 @@ class WifiScanner (
 
     private fun receiveBeaconData(scanResult: ScanResult, bytes: ByteArray) { 
         if(checkDRICID(bytes)){
+            val channelWidth = when(scanResult.channelWidth) {
+                ScanResult.CHANNEL_WIDTH_20MHZ -> 20
+                ScanResult.CHANNEL_WIDTH_40MHZ -> 40
+                ScanResult.CHANNEL_WIDTH_80MHZ -> 80
+                ScanResult.CHANNEL_WIDTH_160MHZ -> 160
+                ScanResult.CHANNEL_WIDTH_320MHZ -> 320
+                else -> null
+            }
+
+            val metadataBuilder = Pigeon.ODIDMetadata.Builder().apply {
+                setMacAddress(scanResult.BSSID)
+                setSource(Pigeon.MessageSource.WIFI_BEACON)
+                setRssi(scanResult.level.toLong())
+                setFrequency(scanResult.frequency.toLong())
+                setCenterFreq0(scanResult.centerFreq0.toLong())
+                setCenterFreq1(scanResult.centerFreq1.toLong())
+                setChannelWidthMhz(channelWidth?.toLong())
+            }
+
             receiveData(
                 offsetData(bytes, WIFI_BEACON_OFFSET),
-                scanResult.BSSID, 
-                Pigeon.MessageSource.WIFI_BEACON,
-                scanResult.level.toLong(),
+                metadataBuilder.build()
             )
         }
     }

@@ -114,6 +114,261 @@ public class Pigeon {
     }
   }
 
+  public enum BluetoothPhy {
+    NONE(0),
+    PHY1M(1),
+    PHY2M(2),
+    PHY_LECODED(3),
+    UNKNOWN(4);
+
+    final int index;
+
+    private BluetoothPhy(final int index) {
+      this.index = index;
+    }
+  }
+
+  /** Generated class from Pigeon that represents data sent in messages. */
+  public static final class ODIDMetadata {
+    private @NonNull String macAddress;
+
+    public @NonNull String getMacAddress() {
+      return macAddress;
+    }
+
+    public void setMacAddress(@NonNull String setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"macAddress\" is null.");
+      }
+      this.macAddress = setterArg;
+    }
+
+    private @NonNull MessageSource source;
+
+    public @NonNull MessageSource getSource() {
+      return source;
+    }
+
+    public void setSource(@NonNull MessageSource setterArg) {
+      if (setterArg == null) {
+        throw new IllegalStateException("Nonnull field \"source\" is null.");
+      }
+      this.source = setterArg;
+    }
+
+    private @Nullable Long rssi;
+
+    public @Nullable Long getRssi() {
+      return rssi;
+    }
+
+    public void setRssi(@Nullable Long setterArg) {
+      this.rssi = setterArg;
+    }
+
+    private @Nullable String btName;
+
+    public @Nullable String getBtName() {
+      return btName;
+    }
+
+    public void setBtName(@Nullable String setterArg) {
+      this.btName = setterArg;
+    }
+
+    private @Nullable Long frequency;
+
+    public @Nullable Long getFrequency() {
+      return frequency;
+    }
+
+    public void setFrequency(@Nullable Long setterArg) {
+      this.frequency = setterArg;
+    }
+
+    private @Nullable Long centerFreq0;
+
+    public @Nullable Long getCenterFreq0() {
+      return centerFreq0;
+    }
+
+    public void setCenterFreq0(@Nullable Long setterArg) {
+      this.centerFreq0 = setterArg;
+    }
+
+    private @Nullable Long centerFreq1;
+
+    public @Nullable Long getCenterFreq1() {
+      return centerFreq1;
+    }
+
+    public void setCenterFreq1(@Nullable Long setterArg) {
+      this.centerFreq1 = setterArg;
+    }
+
+    private @Nullable Long channelWidthMhz;
+
+    public @Nullable Long getChannelWidthMhz() {
+      return channelWidthMhz;
+    }
+
+    public void setChannelWidthMhz(@Nullable Long setterArg) {
+      this.channelWidthMhz = setterArg;
+    }
+
+    private @Nullable BluetoothPhy primaryPhy;
+
+    public @Nullable BluetoothPhy getPrimaryPhy() {
+      return primaryPhy;
+    }
+
+    public void setPrimaryPhy(@Nullable BluetoothPhy setterArg) {
+      this.primaryPhy = setterArg;
+    }
+
+    private @Nullable BluetoothPhy secondaryPhy;
+
+    public @Nullable BluetoothPhy getSecondaryPhy() {
+      return secondaryPhy;
+    }
+
+    public void setSecondaryPhy(@Nullable BluetoothPhy setterArg) {
+      this.secondaryPhy = setterArg;
+    }
+
+    /** Constructor is non-public to enforce null safety; use Builder. */
+    ODIDMetadata() {}
+
+    public static final class Builder {
+
+      private @Nullable String macAddress;
+
+      public @NonNull Builder setMacAddress(@NonNull String setterArg) {
+        this.macAddress = setterArg;
+        return this;
+      }
+
+      private @Nullable MessageSource source;
+
+      public @NonNull Builder setSource(@NonNull MessageSource setterArg) {
+        this.source = setterArg;
+        return this;
+      }
+
+      private @Nullable Long rssi;
+
+      public @NonNull Builder setRssi(@Nullable Long setterArg) {
+        this.rssi = setterArg;
+        return this;
+      }
+
+      private @Nullable String btName;
+
+      public @NonNull Builder setBtName(@Nullable String setterArg) {
+        this.btName = setterArg;
+        return this;
+      }
+
+      private @Nullable Long frequency;
+
+      public @NonNull Builder setFrequency(@Nullable Long setterArg) {
+        this.frequency = setterArg;
+        return this;
+      }
+
+      private @Nullable Long centerFreq0;
+
+      public @NonNull Builder setCenterFreq0(@Nullable Long setterArg) {
+        this.centerFreq0 = setterArg;
+        return this;
+      }
+
+      private @Nullable Long centerFreq1;
+
+      public @NonNull Builder setCenterFreq1(@Nullable Long setterArg) {
+        this.centerFreq1 = setterArg;
+        return this;
+      }
+
+      private @Nullable Long channelWidthMhz;
+
+      public @NonNull Builder setChannelWidthMhz(@Nullable Long setterArg) {
+        this.channelWidthMhz = setterArg;
+        return this;
+      }
+
+      private @Nullable BluetoothPhy primaryPhy;
+
+      public @NonNull Builder setPrimaryPhy(@Nullable BluetoothPhy setterArg) {
+        this.primaryPhy = setterArg;
+        return this;
+      }
+
+      private @Nullable BluetoothPhy secondaryPhy;
+
+      public @NonNull Builder setSecondaryPhy(@Nullable BluetoothPhy setterArg) {
+        this.secondaryPhy = setterArg;
+        return this;
+      }
+
+      public @NonNull ODIDMetadata build() {
+        ODIDMetadata pigeonReturn = new ODIDMetadata();
+        pigeonReturn.setMacAddress(macAddress);
+        pigeonReturn.setSource(source);
+        pigeonReturn.setRssi(rssi);
+        pigeonReturn.setBtName(btName);
+        pigeonReturn.setFrequency(frequency);
+        pigeonReturn.setCenterFreq0(centerFreq0);
+        pigeonReturn.setCenterFreq1(centerFreq1);
+        pigeonReturn.setChannelWidthMhz(channelWidthMhz);
+        pigeonReturn.setPrimaryPhy(primaryPhy);
+        pigeonReturn.setSecondaryPhy(secondaryPhy);
+        return pigeonReturn;
+      }
+    }
+
+    @NonNull
+    ArrayList<Object> toList() {
+      ArrayList<Object> toListResult = new ArrayList<Object>(10);
+      toListResult.add(macAddress);
+      toListResult.add(source == null ? null : source.index);
+      toListResult.add(rssi);
+      toListResult.add(btName);
+      toListResult.add(frequency);
+      toListResult.add(centerFreq0);
+      toListResult.add(centerFreq1);
+      toListResult.add(channelWidthMhz);
+      toListResult.add(primaryPhy == null ? null : primaryPhy.index);
+      toListResult.add(secondaryPhy == null ? null : secondaryPhy.index);
+      return toListResult;
+    }
+
+    static @NonNull ODIDMetadata fromList(@NonNull ArrayList<Object> list) {
+      ODIDMetadata pigeonResult = new ODIDMetadata();
+      Object macAddress = list.get(0);
+      pigeonResult.setMacAddress((String) macAddress);
+      Object source = list.get(1);
+      pigeonResult.setSource(source == null ? null : MessageSource.values()[(int) source]);
+      Object rssi = list.get(2);
+      pigeonResult.setRssi((rssi == null) ? null : ((rssi instanceof Integer) ? (Integer) rssi : (Long) rssi));
+      Object btName = list.get(3);
+      pigeonResult.setBtName((String) btName);
+      Object frequency = list.get(4);
+      pigeonResult.setFrequency((frequency == null) ? null : ((frequency instanceof Integer) ? (Integer) frequency : (Long) frequency));
+      Object centerFreq0 = list.get(5);
+      pigeonResult.setCenterFreq0((centerFreq0 == null) ? null : ((centerFreq0 instanceof Integer) ? (Integer) centerFreq0 : (Long) centerFreq0));
+      Object centerFreq1 = list.get(6);
+      pigeonResult.setCenterFreq1((centerFreq1 == null) ? null : ((centerFreq1 instanceof Integer) ? (Integer) centerFreq1 : (Long) centerFreq1));
+      Object channelWidthMhz = list.get(7);
+      pigeonResult.setChannelWidthMhz((channelWidthMhz == null) ? null : ((channelWidthMhz instanceof Integer) ? (Integer) channelWidthMhz : (Long) channelWidthMhz));
+      Object primaryPhy = list.get(8);
+      pigeonResult.setPrimaryPhy(primaryPhy == null ? null : BluetoothPhy.values()[(int) primaryPhy]);
+      Object secondaryPhy = list.get(9);
+      pigeonResult.setSecondaryPhy(secondaryPhy == null ? null : BluetoothPhy.values()[(int) secondaryPhy]);
+      return pigeonResult;
+    }
+  }
+
   /**
    * Payload send from native to dart contains raw data and metadata
    *
@@ -146,50 +401,17 @@ public class Pigeon {
       this.receivedTimestamp = setterArg;
     }
 
-    private @NonNull String macAddress;
+    private @NonNull ODIDMetadata metadata;
 
-    public @NonNull String getMacAddress() {
-      return macAddress;
+    public @NonNull ODIDMetadata getMetadata() {
+      return metadata;
     }
 
-    public void setMacAddress(@NonNull String setterArg) {
+    public void setMetadata(@NonNull ODIDMetadata setterArg) {
       if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"macAddress\" is null.");
+        throw new IllegalStateException("Nonnull field \"metadata\" is null.");
       }
-      this.macAddress = setterArg;
-    }
-
-    private @Nullable Long rssi;
-
-    public @Nullable Long getRssi() {
-      return rssi;
-    }
-
-    public void setRssi(@Nullable Long setterArg) {
-      this.rssi = setterArg;
-    }
-
-    private @NonNull MessageSource source;
-
-    public @NonNull MessageSource getSource() {
-      return source;
-    }
-
-    public void setSource(@NonNull MessageSource setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"source\" is null.");
-      }
-      this.source = setterArg;
-    }
-
-    private @Nullable String btName;
-
-    public @Nullable String getBtName() {
-      return btName;
-    }
-
-    public void setBtName(@Nullable String setterArg) {
-      this.btName = setterArg;
+      this.metadata = setterArg;
     }
 
     /** Constructor is non-public to enforce null safety; use Builder. */
@@ -211,31 +433,10 @@ public class Pigeon {
         return this;
       }
 
-      private @Nullable String macAddress;
+      private @Nullable ODIDMetadata metadata;
 
-      public @NonNull Builder setMacAddress(@NonNull String setterArg) {
-        this.macAddress = setterArg;
-        return this;
-      }
-
-      private @Nullable Long rssi;
-
-      public @NonNull Builder setRssi(@Nullable Long setterArg) {
-        this.rssi = setterArg;
-        return this;
-      }
-
-      private @Nullable MessageSource source;
-
-      public @NonNull Builder setSource(@NonNull MessageSource setterArg) {
-        this.source = setterArg;
-        return this;
-      }
-
-      private @Nullable String btName;
-
-      public @NonNull Builder setBtName(@Nullable String setterArg) {
-        this.btName = setterArg;
+      public @NonNull Builder setMetadata(@NonNull ODIDMetadata setterArg) {
+        this.metadata = setterArg;
         return this;
       }
 
@@ -243,23 +444,17 @@ public class Pigeon {
         ODIDPayload pigeonReturn = new ODIDPayload();
         pigeonReturn.setRawData(rawData);
         pigeonReturn.setReceivedTimestamp(receivedTimestamp);
-        pigeonReturn.setMacAddress(macAddress);
-        pigeonReturn.setRssi(rssi);
-        pigeonReturn.setSource(source);
-        pigeonReturn.setBtName(btName);
+        pigeonReturn.setMetadata(metadata);
         return pigeonReturn;
       }
     }
 
     @NonNull
     ArrayList<Object> toList() {
-      ArrayList<Object> toListResult = new ArrayList<Object>(6);
+      ArrayList<Object> toListResult = new ArrayList<Object>(3);
       toListResult.add(rawData);
       toListResult.add(receivedTimestamp);
-      toListResult.add(macAddress);
-      toListResult.add(rssi);
-      toListResult.add(source == null ? null : source.index);
-      toListResult.add(btName);
+      toListResult.add((metadata == null) ? null : metadata.toList());
       return toListResult;
     }
 
@@ -269,14 +464,8 @@ public class Pigeon {
       pigeonResult.setRawData((byte[]) rawData);
       Object receivedTimestamp = list.get(1);
       pigeonResult.setReceivedTimestamp((receivedTimestamp == null) ? null : ((receivedTimestamp instanceof Integer) ? (Integer) receivedTimestamp : (Long) receivedTimestamp));
-      Object macAddress = list.get(2);
-      pigeonResult.setMacAddress((String) macAddress);
-      Object rssi = list.get(3);
-      pigeonResult.setRssi((rssi == null) ? null : ((rssi instanceof Integer) ? (Integer) rssi : (Long) rssi));
-      Object source = list.get(4);
-      pigeonResult.setSource(source == null ? null : MessageSource.values()[(int) source]);
-      Object btName = list.get(5);
-      pigeonResult.setBtName((String) btName);
+      Object metadata = list.get(2);
+      pigeonResult.setMetadata((metadata == null) ? null : ODIDMetadata.fromList((ArrayList<Object>) metadata));
       return pigeonResult;
     }
   }
@@ -658,6 +847,8 @@ public class Pigeon {
     protected Object readValueOfType(byte type, @NonNull ByteBuffer buffer) {
       switch (type) {
         case (byte) 128:
+          return ODIDMetadata.fromList((ArrayList<Object>) readValue(buffer));
+        case (byte) 129:
           return ODIDPayload.fromList((ArrayList<Object>) readValue(buffer));
         default:
           return super.readValueOfType(type, buffer);
@@ -666,8 +857,11 @@ public class Pigeon {
 
     @Override
     protected void writeValue(@NonNull ByteArrayOutputStream stream, Object value) {
-      if (value instanceof ODIDPayload) {
+      if (value instanceof ODIDMetadata) {
         stream.write(128);
+        writeValue(stream, ((ODIDMetadata) value).toList());
+      } else if (value instanceof ODIDPayload) {
+        stream.write(129);
         writeValue(stream, ((ODIDPayload) value).toList());
       } else {
         super.writeValue(stream, value);
@@ -679,7 +873,7 @@ public class Pigeon {
   public interface PayloadApi {
 
     @NonNull 
-    ODIDPayload buildPayload(@NonNull byte[] rawData, @NonNull MessageSource source, @NonNull String macAddress, @Nullable String btName, @NonNull Long rssi, @NonNull Long receivedTimestamp);
+    ODIDPayload buildPayload(@NonNull byte[] rawData, @NonNull Long receivedTimestamp, @NonNull ODIDMetadata metadata);
 
     /** The codec used by PayloadApi. */
     static @NonNull MessageCodec<Object> getCodec() {
@@ -697,13 +891,10 @@ public class Pigeon {
                 ArrayList<Object> wrapped = new ArrayList<Object>();
                 ArrayList<Object> args = (ArrayList<Object>) message;
                 byte[] rawDataArg = (byte[]) args.get(0);
-                MessageSource sourceArg = args.get(1) == null ? null : MessageSource.values()[(int) args.get(1)];
-                String macAddressArg = (String) args.get(2);
-                String btNameArg = (String) args.get(3);
-                Number rssiArg = (Number) args.get(4);
-                Number receivedTimestampArg = (Number) args.get(5);
+                Number receivedTimestampArg = (Number) args.get(1);
+                ODIDMetadata metadataArg = (ODIDMetadata) args.get(2);
                 try {
-                  ODIDPayload output = api.buildPayload(rawDataArg, sourceArg, macAddressArg, btNameArg, (rssiArg == null) ? null : rssiArg.longValue(), (receivedTimestampArg == null) ? null : receivedTimestampArg.longValue());
+                  ODIDPayload output = api.buildPayload(rawDataArg, (receivedTimestampArg == null) ? null : receivedTimestampArg.longValue(), metadataArg);
                   wrapped.add(0, output);
                 }
  catch (Throwable exception) {

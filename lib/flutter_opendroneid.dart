@@ -122,10 +122,9 @@ class FlutterOpenDroneId {
 
   static void _updatePacks(
       pigeon.ODIDPayload payload, DriSourceType sourceType) {
-    final storedPack = _storedPacks[payload.macAddress] ??
+    final storedPack = _storedPacks[payload.metadata.macAddress] ??
         MessageContainer(
-          macAddress: payload.macAddress,
-          source: payload.source,
+          metadata: payload.metadata,
           lastUpdate:
               DateTime.fromMillisecondsSinceEpoch(payload.receivedTimestamp),
         );
@@ -135,11 +134,11 @@ class FlutterOpenDroneId {
     } catch (e) {
       throw ODIDMessageParsingException(
         relatedException: e,
-        macAddress: payload.macAddress,
-        rssi: payload.rssi,
+        macAddress: payload.metadata.macAddress,
+        rssi: payload.metadata.rssi,
         receivedTimestamp: payload.receivedTimestamp,
-        source: payload.source,
-        btName: payload.btName,
+        source: payload.metadata.source,
+        btName: payload.metadata.btName,
       );
     }
 
@@ -148,12 +147,11 @@ class FlutterOpenDroneId {
     final updatedPack = storedPack.update(
       message: message,
       receivedTimestamp: payload.receivedTimestamp,
-      rssi: payload.rssi,
-      source: payload.source,
+      metadata: payload.metadata,
     );
     // update was refused if updatedPack is null
     if (updatedPack != null) {
-      _storedPacks[payload.macAddress] = updatedPack;
+      _storedPacks[payload.metadata.macAddress] = updatedPack;
       return switch (sourceType) {
         DriSourceType.Bluetooth =>
           _bluetoothMessagesController.add(updatedPack),

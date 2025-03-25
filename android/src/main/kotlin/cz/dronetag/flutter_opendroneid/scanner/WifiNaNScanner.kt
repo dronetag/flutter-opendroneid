@@ -58,12 +58,16 @@ class WifiNaNScanner (
                     serviceSpecificInfo: ByteArray?,
                     matchFilter: MutableList<ByteArray>?
                 ) {
-                    if (serviceSpecificInfo != null)
+                    if (serviceSpecificInfo != null) {
+                        val metadataBuilder = Pigeon.ODIDMetadata.Builder().apply {
+                            setMacAddress(peerHandle.hashCode().toString())
+                            setSource(Pigeon.MessageSource.WIFI_NAN)
+                        }
                         receiveData(
                             offsetData(serviceSpecificInfo, WIFI_NAN_OFFSET),
-                            peerHandle.hashCode().toString(),
-                            Pigeon.MessageSource.WIFI_NAN,
+                            metadataBuilder.build()
                         )
+                    }
                 }
             }, null)
         }

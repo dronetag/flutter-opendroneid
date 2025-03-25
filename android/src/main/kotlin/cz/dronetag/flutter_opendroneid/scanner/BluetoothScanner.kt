@@ -52,15 +52,23 @@ class BluetoothScanner(
                 if (result.getPrimaryPhy() == BluetoothDevice.PHY_LE_CODED)
                     source = Pigeon.MessageSource.BLUETOOTH_LONG_RANGE;
             }
+
             // if using BLE, max size of data is MAX_BLE_ADV_SIZE
             // if using BT5, data can be longer up to 256 bytes
             val isBLE = maxAdvDataLen() <= MAX_BLE_ADV_SIZE
+
+            val metadataBuilder = Pigeon.ODIDMetadata.Builder().apply {
+                setMacAddress(result.device.address)
+                setSource(source)
+                setRssi(result.rssi.toLong())
+                setBtName(result.device.name)
+                setPrimaryPhy(phyFromInt(result.getPrimaryPhy()))
+                setSecondaryPhy(phyFromInt(result.getSecondaryPhy()))
+            }
+
             receiveData(
                 if(isBLE) getDataFromIndex(bytes, BT_OFFSET, MAX_BLE_ADV_SIZE) else offsetData(bytes, BT_OFFSET),
-                result.device.address,
-                source,
-                result.rssi.toLong(),
-                result.device.name,
+                metadataBuilder.build(),
             )
         }
 
@@ -168,4 +176,7 @@ class BluetoothScanner(
         }
         return scanSettings
     }
+
+    fun phyFromInt(value: Int): Pigeon.BluetoothPhy? =
+    Pigeon.BluetoothPhy.values().firstOrNull { it.index == value }
 }
