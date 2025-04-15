@@ -19,22 +19,17 @@ import io.flutter.plugin.common.MethodChannel.Result
 
 /** FlutterOpendroneidPlugin */
 class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
-    private var boundActivity: Activity? = null
-
-    private lateinit var context: Context
-    private lateinit var activity: Activity
-
     private val bluetoothOdidPayloadStreamHandler = StreamHandler()
     private val wifiOdidPayloadStreamHandler = StreamHandler()
     private val bluetoothStateStreamHandler = StreamHandler()
     private val wifiStateStreamHandler = StreamHandler()
 
-    private var scanner: BluetoothScanner =
-            BluetoothScanner(
-                bluetoothOdidPayloadStreamHandler, bluetoothStateStreamHandler,
-            )
-    private lateinit var wifiScanner: WifiScanner
-    private lateinit var wifiNaNScanner: WifiNaNScanner
+    private var boundActivity: Activity? = null
+    private var context: Context? = null
+
+    private var bluetoothScanner: BluetoothScanner? = null
+    private var wifiScanner: WifiScanner? = null
+    private var wifiNaNScanner: WifiNaNScanner? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onAttachedToEngine(
@@ -53,31 +48,9 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         )
 
         context = flutterPluginBinding.applicationContext
-
-        val wifiManager: WifiManager? =
-            context.getSystemService(Context.WIFI_SERVICE) as WifiManager?
-        val wifiAwareManager: WifiAwareManager? =
-            context.getSystemService(Context.WIFI_AWARE_SERVICE) as WifiAwareManager?
-
-        wifiScanner =
-            WifiScanner(
-                wifiOdidPayloadStreamHandler, wifiStateStreamHandler, wifiManager, context
-            )
-        wifiNaNScanner =
-            WifiNaNScanner(
-                wifiOdidPayloadStreamHandler, wifiStateStreamHandler, wifiAwareManager, context
-            )
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        binding.activity.registerReceiver(
-            scanner.adapterStateReceiver,
-            IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
-        )
-        binding.activity.registerReceiver(
-            wifiScanner.adapterStateReceiver,
-            IntentFilter(WifiManager.ACTION_WIFI_SCAN_AVAILABILITY_CHANGED)
-        )
         boundActivity = binding.activity
     }
 
@@ -86,19 +59,23 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {}
 
     override fun onDetachedFromActivity() {
-        boundActivity?.unregisterReceiver(scanner.adapterStateReceiver)
-        boundActivity?.unregisterReceiver(wifiScanner.adapterStateReceiver)
+        bluetoothScanner?.let{
+            boundActivity?.unregisterReceiver(it.adapterStateReceiver)
+        }
+        wifiScanner?.let{
+            boundActivity?.unregisterReceiver(it.adapterStateReceiver)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         Pigeon.Api.setup(binding.binaryMessenger, null)
-        if(scanner.isScanning)
-            scanner.cancel()
-        if(wifiScanner.isScanning)
-            wifiScanner.cancel()
-        if(wifiNaNScanner.isScanning)
-            wifiNaNScanner.cancel()
+        if(bluetoothScanner?.isScanning == true)
+            bluetoothScanner?.cancel()
+        if(wifiScanner?.isScanning == true)
+            wifiScanner?.cancel()
+        if(wifiNaNScanner?.isScanning == true)
+            wifiNaNScanner?.cancel()
         StreamHandler.clearMultipleHandlers(
             binding.binaryMessenger,
             listOf(
@@ -110,62 +87,137 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         )
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun startScanBluetooth(result: Pigeon.Result<Void>) {
-        scanner.scan()
+    override fun initialize(result: Pigeon.Result<Void>) {
+        if(context == null || boundActivity == null) {
+            return result.error(PluginNotAttachedException())
+        }
+        
+        val wifiManager: WifiManager? =
+            context!!.getSystemService(Context.WIFI_SERVICE) as WifiManager?
+        val wifiAwareManager: WifiAwareManager? =
+            context!!.getSystemService(Context.WIFI_AWARE_SERVICE) as WifiAwareManager?
+
+        wifiScanner =
+            WifiScanner(
+                wifiOdidPayloadStreamHandler, wifiStateStreamHandler, wifiManager, context!!
+            )
+        wifiNaNScanner =
+            WifiNaNScanner(
+                wifiOdidPayloadStreamHandler, wifiStateStreamHandler, wifiAwareManager, context!!
+            )
+
+        bluetoothScanner = BluetoothScanner(
+            bluetoothOdidPayloadStreamHandler, bluetoothStateStreamHandler,
+        )
+
+        boundActivity!!.registerReceiver(
+            bluetoothScanner!!.adapterStateReceiver,
+            IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+        )
+        boundActivity!!.registerReceiver(
+            wifiScanner!!.adapterStateReceiver,
+            IntentFilter(WifiManager.ACTION_WIFI_SCAN_AVAILABILITY_CHANGED)
+        )
+
         result.success(null)
     }
 
+    override fun isInitialized(result: Pigeon.Result<Boolean>) {
+        result.success(bluetoothScanner != null && wifiScanner != null && wifiNaNScanner != null)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun startScanBluetooth(result: Pigeon.Result<Void>) {
+        bluetoothScanner?.let {
+            it.scan()
+            return result.success(null)
+        }
+        return result.error(PluginNotInitializedException())
+    }
+
     override fun startScanWifi(result: Pigeon.Result<Void>) {
-        wifiScanner.scan()
-        wifiNaNScanner.scan()
+        if(wifiScanner == null || wifiNaNScanner == null) {
+            return result.error(PluginNotInitializedException())
+        }
+        wifiScanner!!.scan()
+        wifiNaNScanner!!.scan()
         result.success(null)
     }
 
     override fun stopScanBluetooth(result: Pigeon.Result<Void>) {
-        scanner.cancel()
-        result.success(null)
+        bluetoothScanner?.let {
+            it.cancel()
+            return result.success(null)
+        }
+        return result.error(PluginNotInitializedException())
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun stopScanWifi(result: Pigeon.Result<Void>) {
-        wifiScanner.cancel()
-        wifiNaNScanner.cancel()
-        result.success(null)
+        if(wifiScanner == null || wifiNaNScanner == null) {
+            return result.error(PluginNotInitializedException())
+        }
+        wifiScanner!!.cancel()
+        wifiNaNScanner!!.cancel()
+        return result.success(null)
     }
 
     override fun setBtScanPriority(priority: Pigeon.ScanPriority, result: Pigeon.Result<Void>) {
-        scanner.setScanPriority(priority)
-        result.success(null)
+        bluetoothScanner?.let {
+            it.setScanPriority(priority)
+            return result.success(null)   
+        }
+        return result.error(PluginNotInitializedException())
     }
 
     override fun isScanningBluetooth(result: Pigeon.Result<Boolean>){
-      result.success(scanner.isScanning)
+        bluetoothScanner?.let {
+            return result.success(it.isScanning)
+        }
+        return result.error(PluginNotInitializedException())
     }
 
     override fun isScanningWifi(result: Pigeon.Result<Boolean>){
-        result.success(wifiScanner.isScanning || wifiNaNScanner.isScanning)
+        if(wifiScanner == null || wifiNaNScanner == null) {
+            return result.error(PluginNotInitializedException())
+        }
+        return result.success(wifiScanner!!.isScanning || wifiNaNScanner!!.isScanning)
     }
 
     override fun bluetoothState(result: Pigeon.Result<Long>){
-        result.success(scanner.getAdapterState().toLong())
+        bluetoothScanner?.let {
+            return result.success(it.getAdapterState().toLong())
+        }
+        return result.error(PluginNotInitializedException())
     }
 
     override fun wifiState(result: Pigeon.Result<Long>){
-        result.success(wifiScanner.getAdapterState().toLong())
+        wifiScanner?.let {
+            return result.success(it.getAdapterState().toLong())
+        }
+        return result.error(PluginNotInitializedException())
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun btExtendedSupported(result: Pigeon.Result<Boolean>) {
-        result.success(scanner.isBtExtendedSupported());
+        bluetoothScanner?.let {
+            return result.success(it.isBtExtendedSupported());
+        }
+        return result.error(PluginNotInitializedException())
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun btMaxAdvDataLen(result: Pigeon.Result<Long>) {
-        result.success(scanner.maxAdvDataLen().toLong());
+        bluetoothScanner?.let {
+            return result.success(it.maxAdvDataLen().toLong());
+        }
+        return result.error(PluginNotInitializedException())
     }
 
     override fun wifiNaNSupported(result: Pigeon.Result<Boolean>) {
-        result.success(wifiNaNScanner.isWifiAwareSupported());
+        wifiNaNScanner?.let {
+            return result.success(it.isWifiAwareSupported());
+        }
+        return result.error(PluginNotInitializedException())
     }
 }
