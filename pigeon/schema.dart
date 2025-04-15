@@ -94,6 +94,10 @@ class ODIDPayload {
 @HostApi()
 abstract class Api {
   @async
+  void initialize();
+  @async
+  bool isInitialized();
+  @async
   void startScanBluetooth();
   @async
   void startScanWifi();
