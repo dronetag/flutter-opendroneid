@@ -102,13 +102,14 @@ class BluetoothScanner(
     override fun cancel() {
         isScanning = false
         bluetoothStateHandler.send(false)
+        if (!bluetoothAdapter.isEnabled) return
         bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onAdapterStateReceived() {
         val rawState = bluetoothAdapter.state
-        if (rawState == BluetoothAdapter.STATE_OFF || rawState == BluetoothAdapter.STATE_TURNING_OFF) {
+        if ((rawState == BluetoothAdapter.STATE_OFF || rawState == BluetoothAdapter.STATE_TURNING_OFF) && isScanning) {
             cancel()
         }
     }
