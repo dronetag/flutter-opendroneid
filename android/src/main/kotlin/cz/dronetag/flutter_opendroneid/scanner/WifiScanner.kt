@@ -95,7 +95,7 @@ class WifiScanner (
         if(wifiManager.isScanAlwaysAvailable())
             return
         val rawState = wifiManager.getWifiState()
-        if (rawState == WifiManager.WIFI_STATE_DISABLED || rawState == WifiManager.WIFI_STATE_DISABLING) {
+        if ((rawState == WifiManager.WIFI_STATE_DISABLED || rawState == WifiManager.WIFI_STATE_DISABLING) && isScanning) {
             cancel()
         }
     }
