@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_opendroneid/models/message_container.dart';
+import 'package:flutter_opendroneid_example/message_container_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_opendroneid/flutter_opendroneid.dart';
 import 'package:flutter_opendroneid/models/dri_source_type.dart';
@@ -22,18 +24,22 @@ class _HomePageState extends State<HomePage> {
   int _btMessagesCounter = 0;
   int _wifiMessagesCounter = 0;
 
+  MessageContainer? lastMessageContainer;
+
   StreamSubscription? btSubscription;
   StreamSubscription? wifiSubscription;
 
   @override
   void initState() {
     btSubscription =
-        FlutterOpenDroneId.bluetoothMessages.listen((_) => setState(() {
+        FlutterOpenDroneId.bluetoothMessages.listen((message) => setState(() {
               ++_btMessagesCounter;
+              lastMessageContainer = message;
             }));
     wifiSubscription =
-        FlutterOpenDroneId.wifiMessages.listen((_) => setState(() {
+        FlutterOpenDroneId.wifiMessages.listen((message) => setState(() {
               ++_wifiMessagesCounter;
+              lastMessageContainer = message;
             }));
     super.initState();
   }
@@ -58,7 +64,7 @@ class _HomePageState extends State<HomePage> {
       body: Padding(
         padding: const EdgeInsets.all(padding),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             DefaultTextStyle(
               style: Theme.of(context).textTheme.titleMedium!,
@@ -86,6 +92,20 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+            if (lastMessageContainer != null) ...[
+              Container(
+                margin: EdgeInsets.only(top: 8.0),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Last Message Container:',
+                  style: Theme.of(context).textTheme.titleMedium!,
+                ),
+              ),
+              Expanded(
+                child: MessageContainerView(
+                    messageContainer: lastMessageContainer!),
+              ),
+            ],
             Column(
               spacing: padding,
               crossAxisAlignment: CrossAxisAlignment.stretch,
