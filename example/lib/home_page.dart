@@ -61,85 +61,87 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(padding),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            DefaultTextStyle(
-              style: Theme.of(context).textTheme.titleMedium!,
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Received Bluetooth Messages:'),
-                      Text(
-                        '$_btMessagesCounter',
-                      ),
-                    ],
-                  ),
-                  if (isAndroid)
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(padding),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              DefaultTextStyle(
+                style: Theme.of(context).textTheme.titleMedium!,
+                child: Column(
+                  children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Received Wi-Fi Messages:'),
+                        const Text('Received Bluetooth Messages:'),
                         Text(
-                          '$_wifiMessagesCounter',
+                          '$_btMessagesCounter',
                         ),
                       ],
                     ),
-                ],
-              ),
-            ),
-            if (lastMessageContainer != null) ...[
-              Container(
-                margin: EdgeInsets.only(top: 8.0),
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Last Message Container:',
-                  style: Theme.of(context).textTheme.titleMedium!,
+                    if (isAndroid)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Received Wi-Fi Messages:'),
+                          Text(
+                            '$_wifiMessagesCounter',
+                          ),
+                        ],
+                      ),
+                  ],
                 ),
               ),
-              Expanded(
-                child: MessageContainerView(
-                    messageContainer: lastMessageContainer!),
-              ),
-            ],
-            Column(
-              spacing: padding,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                RequestPermissionButton(
-                  permissions: isAndroid
-                      ? [
-                          Permission.bluetooth,
-                          Permission.bluetoothConnect,
-                          Permission.bluetoothScan
-                        ]
-                      : [Permission.bluetooth],
-                  name: 'Bluetooth Permission',
+              if (lastMessageContainer != null) ...[
+                Container(
+                  margin: EdgeInsets.only(top: 8.0),
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Last Message Container:',
+                    style: Theme.of(context).textTheme.titleMedium!,
+                  ),
                 ),
-                if (isAndroid)
-                  RequestPermissionButton(
-                    permissions: [Permission.nearbyWifiDevices],
-                    name: 'Wi-Fi Permission',
-                  ),
-                if (isAndroid)
-                  RequestPermissionButton(
-                    permissions: [Permission.location],
-                    name: 'Location Permission',
-                  ),
-                ScanButton(
-                  sourceType: DriSourceType.Bluetooth,
+                Expanded(
+                  child: MessageContainerView(
+                      messageContainer: lastMessageContainer!),
                 ),
-                if (isAndroid)
-                  ScanButton(
-                    sourceType: DriSourceType.Wifi,
-                  ),
               ],
-            )
-          ],
+              Column(
+                spacing: padding,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  RequestPermissionButton(
+                    permissions: isAndroid
+                        ? [
+                            Permission.bluetooth,
+                            Permission.bluetoothConnect,
+                            Permission.bluetoothScan
+                          ]
+                        : [Permission.bluetooth],
+                    name: 'Bluetooth Permission',
+                  ),
+                  if (isAndroid)
+                    RequestPermissionButton(
+                      permissions: [Permission.nearbyWifiDevices],
+                      name: 'Wi-Fi Permission',
+                    ),
+                  if (isAndroid)
+                    RequestPermissionButton(
+                      permissions: [Permission.location],
+                      name: 'Location Permission',
+                    ),
+                  ScanButton(
+                    sourceType: DriSourceType.Bluetooth,
+                  ),
+                  if (isAndroid)
+                    ScanButton(
+                      sourceType: DriSourceType.Wifi,
+                    ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
