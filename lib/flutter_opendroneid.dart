@@ -51,6 +51,16 @@ class FlutterOpenDroneId {
       await _api.wifiState() ==
       pigeon.WifiState.values.indexOf(pigeon.WifiState.Enabled);
 
+  /// Initialize the plugin before using.
+  static Future<void> initialize() async {
+    await _api.initialize();
+  }
+
+  /// Check whether plugin was correctly initialized.
+  static Future<bool> isInitialized() async {
+    return await _api.isInitialized();
+  }
+
   /// Starts scanning for nearby traffic
   /// For Bluetooth scanning, bluetooth perm. are required on both platforms,
   /// Android requires Bluetooth scan permission location permission on ver.< 12
@@ -61,6 +71,8 @@ class FlutterOpenDroneId {
   ///
   /// To further receive data, listen to [receivedMessages]
   /// stream.
+  ///
+  /// Plugin must be initialized by calling [initialize] before using.
   static Future<void> startScan(DriSourceType sourceType) async {
     if (sourceType == DriSourceType.Bluetooth) {
       await _assertBluetoothPermissions();

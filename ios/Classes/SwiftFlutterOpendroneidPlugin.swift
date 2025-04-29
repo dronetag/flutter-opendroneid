@@ -7,7 +7,7 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
     private static let stateEventChannelName = "flutter_odid_state_bt"
     private static var eventChannels: [String: FlutterEventChannel] = [:]
 
-    private var bluetoothScanner: BluetoothScanner!
+    private var bluetoothScanner: BluetoothScanner?
 
     private let streamHandlers: [String: StreamHandler] = [
         dataEventChannelName: StreamHandler(),
@@ -31,12 +31,6 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
                 instance.streamHandlers[entry.key]
             )
         }
-        
-        // Register bluetooth scanner
-        instance.bluetoothScanner = BluetoothScanner(
-            odidPayloadStreamHandler: instance.streamHandlers[dataEventChannelName]!,
-            scanStateHandler: instance.streamHandlers[stateEventChannelName]!
-        )
     
         registrar.addApplicationDelegate(instance)
     }
@@ -49,6 +43,19 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
         for handler in streamHandlers.values {
             handler.onCancel(withArguments: nil)
         }
+    }
+
+    public func initialize(completion: @escaping (FlutterError?) -> Void) {
+        // Register bluetooth scanner
+        bluetoothScanner = BluetoothScanner(
+            odidPayloadStreamHandler: streamHandlers[SwiftFlutterOpendroneidPlugin.dataEventChannelName]!,
+            scanStateHandler: streamHandlers[SwiftFlutterOpendroneidPlugin.stateEventChannelName]!
+        )
+        completion(nil)
+    }
+    
+    public func isInitialized(completion: @escaping (NSNumber?, FlutterError?) -> Void) {
+        completion((bluetoothScanner != nil) as NSNumber?, nil)
     }
 
     public func btMaxAdvDataLen() async -> (NSNumber?, FlutterError?) {
@@ -64,7 +71,10 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
     }
 
     public func startScanBluetooth(completion: @escaping (FlutterError?) -> Void) {
-        bluetoothScanner?.scan()
+        guard let scanner = bluetoothScanner else {
+            return completion(PluginNotInitializedException.init())
+        }
+        scanner.scan()
         completion(nil)
     }
     
@@ -84,12 +94,18 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
     }
     
     public func setBtScanPriorityPriority(_ priority: DTGScanPriority) async -> FlutterError? {
-        bluetoothScanner.setScanPriority(priority: priority)
+        guard let scanner = bluetoothScanner else {
+            return PluginNotInitializedException.init()
+        }
+        scanner.setScanPriority(priority: priority)
         return nil
     }
     
     public func isScanningBluetooth() async -> (NSNumber?, FlutterError?) {
-        return ((bluetoothScanner?.isScanning()) as NSNumber?, nil)
+        guard let scanner = bluetoothScanner else {
+            return (nil, PluginNotInitializedException.init())
+        }
+        return ((scanner.isScanning()) as NSNumber?, nil)
     }
     
     public func isScanningWifi() async -> (NSNumber?, FlutterError?) {
@@ -97,7 +113,10 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
     }
     
     public func bluetoothState() async -> (NSNumber?, FlutterError?) {
-        return ((bluetoothScanner?.managerState()) as NSNumber?, nil)
+        guard let scanner = bluetoothScanner else {
+            return (nil, PluginNotInitializedException())
+        }
+        return ((scanner.managerState()) as NSNumber?, nil)
     }
 
     public func wifiState() async -> (NSNumber?, FlutterError?) {
