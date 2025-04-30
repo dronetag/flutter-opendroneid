@@ -1,3 +1,13 @@
+# [0.23.0](https://github.com/dronetag/flutter-opendroneid/compare/v0.22.1...v0.23.0) (2025-04-30)
+
+
+### Features
+
+* add example add for ios and android ([db28336](https://github.com/dronetag/flutter-opendroneid/commit/db283362a5142f6a999285dd322ab617e31de056))
+* add view of last received message container ([b75db75](https://github.com/dronetag/flutter-opendroneid/commit/b75db75a98fb653b2762b60ab038683dfa859088))
+* implement demo app ui ([5f34b64](https://github.com/dronetag/flutter-opendroneid/commit/5f34b6411045da4584865a98b2924d70b594c37e))
+* wrap app body in SafeArea ([0a4dbcb](https://github.com/dronetag/flutter-opendroneid/commit/0a4dbcbbbaa7479c43551a1df401a0a4dd007302))
+
 ## [0.22.1](https://github.com/dronetag/flutter-opendroneid/compare/v0.22.0...v0.22.1) (2025-03-26)
 
 # [0.22.0](https://github.com/dronetag/flutter-opendroneid/compare/v0.21.1...v0.22.0) (2025-03-25)
