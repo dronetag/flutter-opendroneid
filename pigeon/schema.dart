@@ -64,7 +64,7 @@ abstract class Api {
   @async
   bool isInitialized();
   @async
-  void startScanBluetooth();
+  void startScanBluetooth(String? serviceUuid);
   @async
   void startScanWifi();
   @async

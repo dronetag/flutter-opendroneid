@@ -147,12 +147,12 @@ class Api {
     }
   }
 
-  Future<void> startScanBluetooth() async {
+  Future<void> startScanBluetooth(String? arg_serviceUuid) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.flutter_opendroneid.Api.startScanBluetooth', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
-        await channel.send(null) as List<Object?>?;
+        await channel.send(<Object?>[arg_serviceUuid]) as List<Object?>?;
     if (replyList == null) {
       throw PlatformException(
         code: 'channel-error',
