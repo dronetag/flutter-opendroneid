@@ -124,9 +124,11 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
         binaryMessenger:binaryMessenger
         codec:DTGApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(startScanBluetoothWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(startScanBluetoothWithCompletion:)", api);
+      NSCAssert([api respondsToSelector:@selector(startScanBluetoothServiceUuid:completion:)], @"DTGApi api (%@) doesn't respond to @selector(startScanBluetoothServiceUuid:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        [api startScanBluetoothWithCompletion:^(FlutterError *_Nullable error) {
+        NSArray *args = message;
+        NSString *arg_serviceUuid = GetNullableObjectAtIndex(args, 0);
+        [api startScanBluetoothServiceUuid:arg_serviceUuid completion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];
