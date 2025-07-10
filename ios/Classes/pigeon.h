@@ -98,7 +98,7 @@ NSObject<FlutterMessageCodec> *DTGApiGetCodec(void);
 @protocol DTGApi
 - (void)initializeWithCompletion:(void (^)(FlutterError *_Nullable))completion;
 - (void)isInitializedWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
-- (void)startScanBluetoothWithCompletion:(void (^)(FlutterError *_Nullable))completion;
+- (void)startScanBluetoothServiceUuid:(nullable NSString *)serviceUuid completion:(void (^)(FlutterError *_Nullable))completion;
 - (void)startScanWifiWithCompletion:(void (^)(FlutterError *_Nullable))completion;
 - (void)stopScanBluetoothWithCompletion:(void (^)(FlutterError *_Nullable))completion;
 - (void)stopScanWifiWithCompletion:(void (^)(FlutterError *_Nullable))completion;
