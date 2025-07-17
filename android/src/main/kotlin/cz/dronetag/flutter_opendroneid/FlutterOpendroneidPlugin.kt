@@ -172,6 +172,14 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         return result.error(PluginNotInitializedException())
     }
 
+    override fun setBtServiceUuid(serviceUuid: String?, result: Pigeon.Result<Void>) {
+        bluetoothScanner?.let {
+            it.setServiceUuid(serviceUuid)
+            return result.success(null)
+        }
+        return result.error(PluginNotInitializedException())
+    }
+
     override fun isScanningBluetooth(result: Pigeon.Result<Boolean>){
         bluetoothScanner?.let {
             return result.success(it.isScanning)

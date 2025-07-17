@@ -116,6 +116,10 @@ class FlutterOpenDroneId {
     await _api.setBtScanPriority(priority);
   }
 
+  static Future<void> setBtServiceUuid(String? serviceUuid) async {
+    await _api.setBtServiceUuid(serviceUuid);
+  }
+
   static Future<bool> get isScanningBluetooth async {
     return _api.isScanningBluetooth();
   }

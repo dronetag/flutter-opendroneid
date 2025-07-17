@@ -74,6 +74,8 @@ abstract class Api {
   @async
   void setBtScanPriority(ScanPriority priority);
   @async
+  void setBtServiceUuid(String? serviceUuid);
+  @async
   bool isScanningBluetooth();
   @async
   bool isScanningWifi();
