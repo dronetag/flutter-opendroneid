@@ -127,9 +127,11 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun startScanBluetooth(result: Pigeon.Result<Void>) {
+    override fun startScanBluetooth(serviceUuid: String?, result: Pigeon.Result<Void>) {
         bluetoothScanner?.let {
+            it.setServiceUuid(serviceUuid)
             it.scan()
+
             return result.success(null)
         }
         return result.error(PluginNotInitializedException())
@@ -166,6 +168,14 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, Pigeon.Api {
         bluetoothScanner?.let {
             it.setScanPriority(priority)
             return result.success(null)   
+        }
+        return result.error(PluginNotInitializedException())
+    }
+
+    override fun setBtServiceUuid(serviceUuid: String?, result: Pigeon.Result<Void>) {
+        bluetoothScanner?.let {
+            it.setServiceUuid(serviceUuid)
+            return result.success(null)
         }
         return result.error(PluginNotInitializedException())
     }

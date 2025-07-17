@@ -70,10 +70,12 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
         return ((false) as NSNumber?, nil)
     }
 
-    public func startScanBluetooth(completion: @escaping (FlutterError?) -> Void) {
+    public func startScanBluetoothServiceUuid(_ serviceUuid: String?, completion: @escaping (FlutterError?) -> Void) {
         guard let scanner = bluetoothScanner else {
             return completion(PluginNotInitializedException.init())
         }
+
+        scanner.setServiceUuid(value: serviceUuid)
         scanner.scan()
         completion(nil)
     }
@@ -98,6 +100,14 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
             return PluginNotInitializedException.init()
         }
         scanner.setScanPriority(priority: priority)
+        return nil
+    }
+
+    public func setBtServiceUuidServiceUuid(_ serviceUuid: String?) async -> FlutterError? {
+        guard let scanner = bluetoothScanner else {
+            return PluginNotInitializedException.init()
+        }
+        scanner.setServiceUuid(value: serviceUuid)
         return nil
     }
     

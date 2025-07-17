@@ -22,6 +22,7 @@ class BluetoothScanner(
     companion object {
         const val BT_OFFSET = 6
         const val MAX_BLE_ADV_SIZE = 31
+        const val DEFAULT_SHORT_SERVICE_UUID = "fffa"
     }
 
     private val TAG: String = BluetoothScanner::class.java.getSimpleName()
@@ -29,14 +30,20 @@ class BluetoothScanner(
 
     private var scanMode = ScanSettings.SCAN_MODE_LOW_LATENCY
 
+    /// This field specifies the BT ODID service ID (by default 0xFFFA for ASTM RID), which can be
+    /// reconfigured to a different value if needed.
+    private var shortServiceUuid: String? = null
+
     /// OpenDroneID Bluetooth beacons identify themselves by setting the GAP AD Type to
     /// "Service Data - 16-bit UUID" and the value to 0xFFFA for ASTM International, ASTM Remote ID.
     /// https://www.bluetooth.com/specifications/assigned-numbers/ -> "Generic Access Profile"
     /// https://www.bluetooth.com/specifications/assigned-numbers/ -> "16-bit UUIDs"
     /// Vol 3, Part B, Section 2.5.1 of the Bluetooth 5.1 Core Specification
     /// The AD Application Code is set to 0x0D = Open Drone ID.
-    private val serviceUuid = UUID.fromString("0000fffa-0000-1000-8000-00805f9b34fb")
-    private val serviceParcelUuid = ParcelUuid(serviceUuid)
+    private val serviceUuid
+        get() = UUID.fromString("0000${shortServiceUuid?.lowercase() ?: DEFAULT_SHORT_SERVICE_UUID}-0000-1000-8000-00805f9b34fb")
+    private val serviceParcelUuid
+        get() = ParcelUuid(serviceUuid)
     private val odidAdCode = byteArrayOf(0x0D.toByte())
 
     /// Callback for receiving data: read data from ScanRecord and call receiveData
@@ -56,7 +63,10 @@ class BluetoothScanner(
             // if using BT5, data can be longer up to 256 bytes
             val isBLE = maxAdvDataLen() <= MAX_BLE_ADV_SIZE
             receiveData(
-                if(isBLE) getDataFromIndex(bytes, BT_OFFSET, MAX_BLE_ADV_SIZE) else offsetData(bytes, BT_OFFSET),
+                if (isBLE) getDataFromIndex(bytes, BT_OFFSET, MAX_BLE_ADV_SIZE) else offsetData(
+                    bytes,
+                    BT_OFFSET
+                ),
                 result.device.address,
                 source,
                 result.rssi.toLong(),
@@ -107,31 +117,43 @@ class BluetoothScanner(
     }
 
     fun setScanPriority(priority: Pigeon.ScanPriority) {
-        if(priority == Pigeon.ScanPriority.HIGH)
-        {
+        if (priority == Pigeon.ScanPriority.HIGH) {
             scanMode = ScanSettings.SCAN_MODE_LOW_LATENCY
-        }
-        else
-        {
-            scanMode =  ScanSettings.SCAN_MODE_LOW_POWER
+        } else {
+            scanMode = ScanSettings.SCAN_MODE_LOW_POWER
         }
         // if scan is running, restart with updated scanMode
-        if(isScanning){
+        if (isScanning) {
             bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
             scan()
         }
 
     }
 
+    fun setServiceUuid(value: String?) {
+        // TODO throw error on invalid service UUID
+        if (value != null && (value?.length != 4 || !value.matches(Regex("^[0-9a-fA-F]+$")))) {
+            // UUID must be 8 bytes => 4 hex chars
+            // Each character must be a valid hex number
+            return
+        }
+
+        shortServiceUuid = value
+
+        // if scan is running, restart with updated service UUID
+        if (isScanning) {
+            bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
+            scan()
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
-    fun isBtExtendedSupported(): Boolean
-    {
+    fun isBtExtendedSupported(): Boolean {
         return bluetoothAdapter.isLeExtendedAdvertisingSupported;
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun maxAdvDataLen() : Int
-    {
+    fun maxAdvDataLen(): Int {
         return bluetoothAdapter.leMaximumAdvertisingDataLength;
     }
 
@@ -146,13 +168,25 @@ class BluetoothScanner(
     }
 
     private fun logAdapterInfo(bluetoothAdapter: BluetoothAdapter) {
-        Log.i(TAG, "bluetooth LE extended supported: " + bluetoothAdapter.isLeExtendedAdvertisingSupported.toString())
-        Log.i(TAG, "bluetooth LE coded phy supported: " + bluetoothAdapter.isLeCodedPhySupported.toString())
-        Log.i(TAG, "bluetooth multiple advertisement supported: " + bluetoothAdapter.isMultipleAdvertisementSupported.toString())
-        Log.i(TAG, "bluetooth max adv data len:" + bluetoothAdapter.leMaximumAdvertisingDataLength.toString())
+        Log.i(
+            TAG,
+            "bluetooth LE extended supported: " + bluetoothAdapter.isLeExtendedAdvertisingSupported.toString()
+        )
+        Log.i(
+            TAG,
+            "bluetooth LE coded phy supported: " + bluetoothAdapter.isLeCodedPhySupported.toString()
+        )
+        Log.i(
+            TAG,
+            "bluetooth multiple advertisement supported: " + bluetoothAdapter.isMultipleAdvertisementSupported.toString()
+        )
+        Log.i(
+            TAG,
+            "bluetooth max adv data len:" + bluetoothAdapter.leMaximumAdvertisingDataLength.toString()
+        )
     }
 
-    private fun buildScanSettings() : ScanSettings {
+    private fun buildScanSettings(): ScanSettings {
         var scanSettings = ScanSettings.Builder()
             .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
             .build()
@@ -165,7 +199,7 @@ class BluetoothScanner(
                 .setScanMode(scanMode)
                 .setLegacy(false)
                 .setPhy(ScanSettings.PHY_LE_ALL_SUPPORTED)
-            .build()
+                .build()
         }
         return scanSettings
     }

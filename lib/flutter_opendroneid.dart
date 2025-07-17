@@ -16,6 +16,7 @@ export 'package:dart_opendroneid/src/types.dart';
 
 class FlutterOpenDroneId {
   static late pigeon.Api _api = pigeon.Api();
+
   // event channels
   static const bluetoothOdidPayloadEventChannel =
       const EventChannel('flutter_odid_data_bt');
@@ -67,13 +68,18 @@ class FlutterOpenDroneId {
   ///
   /// For Wi-Fi scanning, location permission is required on Android.
   ///
+  /// By specifying [bluetoothServiceUuid] the service UUID of ODID BT
+  /// packets will be changed to the desired value. Standard 8-byte value in
+  /// hexadecimal format is expected, default is the standardized value - FFFA.
+  ///
   /// Throws [PermissionsMissingException] if permissions were not granted.
   ///
   /// To further receive data, listen to [receivedMessages]
   /// stream.
   ///
   /// Plugin must be initialized by calling [initialize] before using.
-  static Future<void> startScan(DriSourceType sourceType) async {
+  static Future<void> startScan(DriSourceType sourceType,
+      {String? bluetoothServiceUuid = "fffa"}) async {
     if (sourceType == DriSourceType.Bluetooth) {
       await _assertBluetoothPermissions();
       _receivedBluetoothMessagesSubscription?.cancel();
@@ -81,7 +87,7 @@ class FlutterOpenDroneId {
           .receiveBroadcastStream()
           .listen(
               (payload) => _handlePayload(pigeon.ODIDPayload.decode(payload)));
-      await _api.startScanBluetooth();
+      await _api.startScanBluetooth(bluetoothServiceUuid);
     } else if (sourceType == DriSourceType.Wifi) {
       await _assertWifiPermissions();
       _receivedWiFiMessagesSubscription?.cancel();
@@ -108,6 +114,10 @@ class FlutterOpenDroneId {
 
   static Future<void> setBtScanPriority(pigeon.ScanPriority priority) async {
     await _api.setBtScanPriority(priority);
+  }
+
+  static Future<void> setBtServiceUuid(String? serviceUuid) async {
+    await _api.setBtServiceUuid(serviceUuid);
   }
 
   static Future<bool> get isScanningBluetooth async {

@@ -294,7 +294,7 @@ public class Pigeon {
 
     void isInitialized(@NonNull Result<Boolean> result);
 
-    void startScanBluetooth(@NonNull Result<Void> result);
+    void startScanBluetooth(@Nullable String serviceUuid, @NonNull Result<Void> result);
 
     void startScanWifi(@NonNull Result<Void> result);
 
@@ -303,6 +303,8 @@ public class Pigeon {
     void stopScanWifi(@NonNull Result<Void> result);
 
     void setBtScanPriority(@NonNull ScanPriority priority, @NonNull Result<Void> result);
+
+    void setBtServiceUuid(@Nullable String serviceUuid, @NonNull Result<Void> result);
 
     void isScanningBluetooth(@NonNull Result<Boolean> result);
 
@@ -386,6 +388,8 @@ public class Pigeon {
           channel.setMessageHandler(
               (message, reply) -> {
                 ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                String serviceUuidArg = (String) args.get(0);
                 Result<Void> resultCallback =
                     new Result<Void>() {
                       public void success(Void result) {
@@ -399,7 +403,7 @@ public class Pigeon {
                       }
                     };
 
-                api.startScanBluetooth(resultCallback);
+                api.startScanBluetooth(serviceUuidArg, resultCallback);
               });
         } else {
           channel.setMessageHandler(null);
@@ -510,6 +514,35 @@ public class Pigeon {
                     };
 
                 api.setBtScanPriority(priorityArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.flutter_opendroneid.Api.setBtServiceUuid", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                String serviceUuidArg = (String) args.get(0);
+                Result<Void> resultCallback =
+                    new Result<Void>() {
+                      public void success(Void result) {
+                        wrapped.add(0, null);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.setBtServiceUuid(serviceUuidArg, resultCallback);
               });
         } else {
           channel.setMessageHandler(null);
