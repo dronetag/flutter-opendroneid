@@ -103,6 +103,7 @@ NSObject<FlutterMessageCodec> *DTGApiGetCodec(void);
 - (void)stopScanBluetoothWithCompletion:(void (^)(FlutterError *_Nullable))completion;
 - (void)stopScanWifiWithCompletion:(void (^)(FlutterError *_Nullable))completion;
 - (void)setBtScanPriorityPriority:(DTGScanPriority)priority completion:(void (^)(FlutterError *_Nullable))completion;
+- (void)setBtServiceUuidServiceUuid:(nullable NSString *)serviceUuid completion:(void (^)(FlutterError *_Nullable))completion;
 - (void)isScanningBluetoothWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 - (void)isScanningWifiWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 - (void)bluetoothStateWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;

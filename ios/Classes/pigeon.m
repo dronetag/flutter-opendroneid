@@ -261,6 +261,25 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
   {
     FlutterBasicMessageChannel *channel =
       [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.flutter_opendroneid.Api.setBtServiceUuid"
+        binaryMessenger:binaryMessenger
+        codec:DTGApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(setBtServiceUuidServiceUuid:completion:)], @"DTGApi api (%@) doesn't respond to @selector(setBtServiceUuidServiceUuid:completion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSString *arg_serviceUuid = GetNullableObjectAtIndex(args, 0);
+        [api setBtServiceUuidServiceUuid:arg_serviceUuid completion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
         initWithName:@"dev.flutter.pigeon.flutter_opendroneid.Api.isScanningBluetooth"
         binaryMessenger:binaryMessenger
         codec:DTGApiGetCodec()];
