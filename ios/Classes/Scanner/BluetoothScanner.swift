@@ -37,16 +37,12 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
         }
         guard centralManager.state == .poweredOn else {
             updateScanState()
+            scanWhenPoweredOn()
             return
         }
         
         scanForPeripherals()
-        if scanPriority == .high {
-            restartTimer = Timer.scheduledTimer(withTimeInterval: restartIntervalSec, repeats: true) { timer in
-                self.centralManager.stopScan()
-                self.scanForPeripherals()
-            }
-        }
+        initRestartTimer()
         updateScanState()
     }
     
@@ -153,6 +149,29 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
             else {
                 centralManager.stopScan()
                 scan()
+            }
+        }
+    }
+
+    private func initRestartTimer() {
+        if scanPriority == .high {
+            restartTimer = Timer.scheduledTimer(withTimeInterval: restartIntervalSec, repeats: true) { timer in
+                self.centralManager.stopScan()
+                self.scanForPeripherals()
+            }
+        }
+    }
+    
+    /// Wait for 0.5 sec and then start scan if centralManager is in .poweredOn state.
+    private func scanWhenPoweredOn() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            
+            if self.centralManager.state == .poweredOn {
+                self.scanForPeripherals()
+                self.initRestartTimer()
+                self.updateScanState()
+                return
             }
         }
     }
