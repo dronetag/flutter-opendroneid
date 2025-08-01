@@ -102,9 +102,9 @@ class BluetoothScanner(
     }
 
     override fun cancel() {
+        if (!isScanning) return
         isScanning = false
         bluetoothStateHandler.send(false)
-        if (!bluetoothAdapter.isEnabled) return
         bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
     }
 
