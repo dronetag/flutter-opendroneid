@@ -10,7 +10,7 @@ dependencies:
     sdk: flutter
   permission_handler: ^11.2.0
   device_info_plus: ^9.1.2
-  dart_opendroneid: ^0.6.2
+  dart_opendroneid: ^0.7.3
 dev_dependencies:
   pigeon: ^10.1.6
 flutter:
