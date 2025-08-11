@@ -12,6 +12,8 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
     private var restartTimer: Timer?;
     private let restartIntervalSec: TimeInterval = 120.0
     private var shortServiceUuid: String? = nil
+    private var managerStateContinuation: CheckedContinuation<Int, Never>?
+
     let dispatchQueue: DispatchQueue = DispatchQueue(label: "BluetoothScanner")
     
     private var serviceUUID: CBUUID {
@@ -78,11 +80,22 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
         scanStateHandler.send(centralManager.isScanning)
     }
 
-    func managerState() -> Int{
-        return centralManager.state.rawValue
+    func managerState() async -> Int {
+        if centralManager.state != .unknown {
+            return centralManager.state.rawValue
+        }
+
+        // If state is .unknown, wait for update of CBCentralManager state
+        return await withCheckedContinuation { continuation in
+            self.managerStateContinuation = continuation
+        }
     }
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        if let continuation = managerStateContinuation {
+            managerStateContinuation = nil
+            continuation.resume(returning: central.state.rawValue)
+        }
         updateScanState()
     }
     
