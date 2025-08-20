@@ -5,7 +5,7 @@ on:
   workflow_call:
 
 env:
-  FLUTTER_VERSION: "3.29.2"
+  FLUTTER_VERSION: '3.35.1'
 
 jobs:
   lint:
