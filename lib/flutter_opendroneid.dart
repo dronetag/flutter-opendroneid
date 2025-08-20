@@ -137,7 +137,7 @@ class FlutterOpenDroneId {
   static void _handlePayload(pigeon.ODIDPayload payload) {
     ODIDMessage? message;
     try {
-      message = parseODIDMessage(payload.rawData);
+      message = parseODIDMessage(payload.rawData).message;
     } catch (e) {
       throw ODIDMessageParsingException(
         relatedException: e,
@@ -148,8 +148,6 @@ class FlutterOpenDroneId {
         btName: payload.btName,
       );
     }
-
-    if (message == null) return;
 
     _receivedMessagesController.add(
       ReceivedODIDMessage(
