@@ -4,7 +4,7 @@ version: 1.0.0-rc.7
 repository: https://github.com/dronetag/flutter-opendroneid
 environment:
   sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.16.7"
+  flutter: ">=3.35.1"
 dependencies:
   flutter:
     sdk: flutter
