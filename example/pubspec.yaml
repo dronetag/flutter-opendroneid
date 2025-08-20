@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  permission_handler: ^11.2.0
+  permission_handler: ^12.0.0
   flutter_opendroneid:
     path: ../
 
