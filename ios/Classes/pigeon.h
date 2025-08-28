@@ -96,11 +96,14 @@ typedef NS_ENUM(NSUInteger, DTGBluetoothPhy) {
 NSObject<FlutterMessageCodec> *DTGApiGetCodec(void);
 
 @protocol DTGApi
-- (void)startScanBluetoothWithCompletion:(void (^)(FlutterError *_Nullable))completion;
+- (void)initializeWithCompletion:(void (^)(FlutterError *_Nullable))completion;
+- (void)isInitializedWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
+- (void)startScanBluetoothServiceUuid:(nullable NSString *)serviceUuid completion:(void (^)(FlutterError *_Nullable))completion;
 - (void)startScanWifiWithCompletion:(void (^)(FlutterError *_Nullable))completion;
 - (void)stopScanBluetoothWithCompletion:(void (^)(FlutterError *_Nullable))completion;
 - (void)stopScanWifiWithCompletion:(void (^)(FlutterError *_Nullable))completion;
 - (void)setBtScanPriorityPriority:(DTGScanPriority)priority completion:(void (^)(FlutterError *_Nullable))completion;
+- (void)setBtServiceUuidServiceUuid:(nullable NSString *)serviceUuid completion:(void (^)(FlutterError *_Nullable))completion;
 - (void)isScanningBluetoothWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 - (void)isScanningWifiWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;
 - (void)bluetoothStateWithCompletion:(void (^)(NSNumber *_Nullable, FlutterError *_Nullable))completion;

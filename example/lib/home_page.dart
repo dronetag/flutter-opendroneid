@@ -2,8 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_opendroneid/models/message_container.dart';
-import 'package:flutter_opendroneid_example/message_container_view.dart';
+import 'package:flutter_opendroneid/models/received_odid_message.dart';
+import 'package:flutter_opendroneid/pigeon.dart';
+import 'package:flutter_opendroneid_example/received_odid_message_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_opendroneid/flutter_opendroneid.dart';
 import 'package:flutter_opendroneid/models/dri_source_type.dart';
@@ -24,30 +25,29 @@ class _HomePageState extends State<HomePage> {
   int _btMessagesCounter = 0;
   int _wifiMessagesCounter = 0;
 
-  MessageContainer? lastMessageContainer;
+  ReceivedODIDMessage? lastMessage;
 
-  StreamSubscription? btSubscription;
-  StreamSubscription? wifiSubscription;
+  StreamSubscription? messagesSubscription;
 
   @override
   void initState() {
-    btSubscription =
-        FlutterOpenDroneId.bluetoothMessages.listen((message) => setState(() {
-              ++_btMessagesCounter;
-              lastMessageContainer = message;
+    messagesSubscription =
+        FlutterOpenDroneId.receivedMessages.listen((message) => setState(() {
+              if (message.metadata.source == MessageSource.BluetoothLegacy ||
+                  message.metadata.source == MessageSource.BluetoothLongRange)
+                ++_btMessagesCounter;
+              else if (message.metadata.source == MessageSource.WifiBeacon ||
+                  message.metadata.source == MessageSource.WifiNan)
+                ++_wifiMessagesCounter;
+              lastMessage = message;
             }));
-    wifiSubscription =
-        FlutterOpenDroneId.wifiMessages.listen((message) => setState(() {
-              ++_wifiMessagesCounter;
-              lastMessageContainer = message;
-            }));
+
     super.initState();
   }
 
   @override
   void dispose() {
-    btSubscription?.cancel();
-    wifiSubscription?.cancel();
+    messagesSubscription?.cancel();
     super.dispose();
   }
 
@@ -93,18 +93,17 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              if (lastMessageContainer != null) ...[
+              if (lastMessage != null) ...[
                 Container(
                   margin: EdgeInsets.only(top: 8.0),
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Last Message Container:',
+                    'Last Message:',
                     style: Theme.of(context).textTheme.titleMedium!,
                   ),
                 ),
                 Expanded(
-                  child: MessageContainerView(
-                      messageContainer: lastMessageContainer!),
+                  child: ReceivedODIDMessageView(message: lastMessage!),
                 ),
               ],
               Column(

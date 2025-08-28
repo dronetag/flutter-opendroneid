@@ -12,7 +12,7 @@ The architecture of native code is inspired by [OpenDroneID Android receiver app
 
 ## Pre-requisities
 
-- Flutter 3.16.7 or newer
+- Flutter 3.35.1 or newer
 
 ## Getting Started
 
@@ -31,9 +31,9 @@ samples, guidance on mobile development, and a full API reference.
 1. Install the project using `flutter pub get`
 2. Generate Pigeon classes by running shell script in `scripts/pigeon_generate.sh`
 
-## Setting up permissions
+## Usage & Setting up permissions
 
-Enabling scanning the surroundings for Wi-Fi and Bluetooth Remote ID advertisements requires setting up permissions. App has to request required permissions, the plugin only checks that permissions are granted. If some permissions are missing, the plugin throws `PermissionsMissingException` when attempting to start the scan. Use for example the [permission handler package](https://pub.dev/packages/permission_handler) to request permissions.
+Plugin needs to be initialized before first use by calling `FlutterOpenDroneId.initialize()`. Moreover, enabling scanning the surroundings for Wi-Fi and Bluetooth Remote ID advertisements requires setting up permissions. App has to request required permissions, the plugin only checks that permissions are granted. If some permissions are missing, the plugin throws `PermissionsMissingException` when attempting to start the scan. Use for example the [permission handler package](https://pub.dev/packages/permission_handler) to request permissions.
 
 
 ### Android Setup

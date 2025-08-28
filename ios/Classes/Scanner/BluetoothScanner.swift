@@ -2,6 +2,8 @@ import Foundation
 import CoreBluetooth
 
 class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
+    static let defaultShortServiceUuid = "fffa"
+
     private let odidPayloadStreamHandler: StreamHandler
     private let scanStateHandler: StreamHandler
     
@@ -9,9 +11,17 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
     private var scanPriority: DTGScanPriority = .high
     private var restartTimer: Timer?;
     private let restartIntervalSec: TimeInterval = 120.0
+    private var shortServiceUuid: String? = nil
+    private var managerStateContinuation: CheckedContinuation<Int, Never>?
+
     let dispatchQueue: DispatchQueue = DispatchQueue(label: "BluetoothScanner")
     
-    static let serviceUUID = CBUUID(string: "0000fffa-0000-1000-8000-00805f9b34fb")
+    private var serviceUUID: CBUUID {
+        get {
+            let shortUuid = shortServiceUuid ?? BluetoothScanner.defaultShortServiceUuid
+            return CBUUID(string: "0000\(shortUuid.lowercased())-0000-1000-8000-00805f9b34fb")
+        }
+    }
     static let odidAdCode: [UInt8] = [ 0x0D ]
     
     init(odidPayloadStreamHandler: StreamHandler, scanStateHandler: StreamHandler) {
@@ -29,16 +39,12 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
         }
         guard centralManager.state == .poweredOn else {
             updateScanState()
+            scanWhenPoweredOn()
             return
         }
         
         scanForPeripherals()
-        if scanPriority == .high {
-            restartTimer = Timer.scheduledTimer(withTimeInterval: restartIntervalSec, repeats: true) { timer in
-                self.centralManager.stopScan()
-                self.scanForPeripherals()
-            }
-        }
+        initRestartTimer()
         updateScanState()
     }
     
@@ -57,28 +63,39 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
     func setScanPriority(priority: DTGScanPriority)
     {
         scanPriority = priority
-        // if scan is running when settting high prio, call scan to restart and set timer
-        // if scan is running when setting low prio, just cancel restart timer
-        if centralManager.isScanning {
-            if scanPriority == .low {
-                restartTimer?.invalidate()
-            }
-            else {
-                centralManager.stopScan()
-                scan()
-            }
+        restartScan()
+    }
+
+    func setServiceUuid(value: String?) {
+        if value != nil && (value!.count != 4 || !value!.isHexNumber) {
+            // TODO return error on invalid service UUID
+            return
         }
+
+        shortServiceUuid = value
+        restartScan()
     }
 
     func updateScanState() {
         scanStateHandler.send(centralManager.isScanning)
     }
 
-    func managerState() -> Int{
-        return centralManager.state.rawValue
+    func managerState() async -> Int {
+        if centralManager.state != .unknown {
+            return centralManager.state.rawValue
+        }
+
+        // If state is .unknown, wait for update of CBCentralManager state
+        return await withCheckedContinuation { continuation in
+            self.managerStateContinuation = continuation
+        }
     }
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        if let continuation = managerStateContinuation {
+            managerStateContinuation = nil
+            continuation.resume(returning: central.state.rawValue)
+        }
         updateScanState()
     }
     
@@ -88,7 +105,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
 
     private func scanForPeripherals(){
         centralManager.scanForPeripherals(
-            withServices: [BluetoothScanner.serviceUUID],
+            withServices: [serviceUUID],
             options: [
                 CBCentralManagerScanOptionAllowDuplicatesKey: true,
             ]
@@ -121,11 +138,11 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
         let serviceDataDict = serviceData as! Dictionary<CBUUID, Any>
         
         // Find the ODID service UUID
-        guard serviceDataDict.keys.contains(BluetoothScanner.serviceUUID) else {
+        guard serviceDataDict.keys.contains(serviceUUID) else {
             return nil
         }
         
-        let data = serviceDataDict[BluetoothScanner.serviceUUID] as! Data
+        let data = serviceDataDict[serviceUUID] as! Data
         // offset data
         let dataF = FlutterStandardTypedData(bytes: data.dropFirst(offset.intValue))
         // All data must start with 0x0D
@@ -133,5 +150,43 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
             return nil
         }
         return dataF
+    }
+
+    // Restarts scanning if it was running, depending on current priority
+    private func restartScan() {
+        // if scan is running when settting high prio, call scan to restart and set timer
+        // if scan is running when setting low prio, just cancel restart timer
+        if centralManager.isScanning {
+            if scanPriority == .low {
+                restartTimer?.invalidate()
+            }
+            else {
+                centralManager.stopScan()
+                scan()
+            }
+        }
+    }
+
+    private func initRestartTimer() {
+        if scanPriority == .high {
+            restartTimer = Timer.scheduledTimer(withTimeInterval: restartIntervalSec, repeats: true) { timer in
+                self.centralManager.stopScan()
+                self.scanForPeripherals()
+            }
+        }
+    }
+    
+    /// Wait for 0.5 sec and then start scan if centralManager is in .poweredOn state.
+    private func scanWhenPoweredOn() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            
+            if self.centralManager.state == .poweredOn {
+                self.scanForPeripherals()
+                self.initRestartTimer()
+                self.updateScanState()
+                return
+            }
+        }
     }
 }

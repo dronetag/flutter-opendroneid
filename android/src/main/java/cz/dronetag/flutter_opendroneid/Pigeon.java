@@ -479,7 +479,11 @@ public class Pigeon {
   /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
   public interface Api {
 
-    void startScanBluetooth(@NonNull Result<Void> result);
+    void initialize(@NonNull Result<Void> result);
+
+    void isInitialized(@NonNull Result<Boolean> result);
+
+    void startScanBluetooth(@Nullable String serviceUuid, @NonNull Result<Void> result);
 
     void startScanWifi(@NonNull Result<Void> result);
 
@@ -488,6 +492,8 @@ public class Pigeon {
     void stopScanWifi(@NonNull Result<Void> result);
 
     void setBtScanPriority(@NonNull ScanPriority priority, @NonNull Result<Void> result);
+
+    void setBtServiceUuid(@Nullable String serviceUuid, @NonNull Result<Void> result);
 
     void isScanningBluetooth(@NonNull Result<Boolean> result);
 
@@ -512,7 +518,7 @@ public class Pigeon {
       {
         BasicMessageChannel<Object> channel =
             new BasicMessageChannel<>(
-                binaryMessenger, "dev.flutter.pigeon.flutter_opendroneid.Api.startScanBluetooth", getCodec());
+                binaryMessenger, "dev.flutter.pigeon.flutter_opendroneid.Api.initialize", getCodec());
         if (api != null) {
           channel.setMessageHandler(
               (message, reply) -> {
@@ -530,7 +536,63 @@ public class Pigeon {
                       }
                     };
 
-                api.startScanBluetooth(resultCallback);
+                api.initialize(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.flutter_opendroneid.Api.isInitialized", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                Result<Boolean> resultCallback =
+                    new Result<Boolean>() {
+                      public void success(Boolean result) {
+                        wrapped.add(0, result);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.isInitialized(resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.flutter_opendroneid.Api.startScanBluetooth", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                String serviceUuidArg = (String) args.get(0);
+                Result<Void> resultCallback =
+                    new Result<Void>() {
+                      public void success(Void result) {
+                        wrapped.add(0, null);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.startScanBluetooth(serviceUuidArg, resultCallback);
               });
         } else {
           channel.setMessageHandler(null);
@@ -641,6 +703,35 @@ public class Pigeon {
                     };
 
                 api.setBtScanPriority(priorityArg, resultCallback);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.flutter_opendroneid.Api.setBtServiceUuid", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                ArrayList<Object> wrapped = new ArrayList<Object>();
+                ArrayList<Object> args = (ArrayList<Object>) message;
+                String serviceUuidArg = (String) args.get(0);
+                Result<Void> resultCallback =
+                    new Result<Void>() {
+                      public void success(Void result) {
+                        wrapped.add(0, null);
+                        reply.reply(wrapped);
+                      }
+
+                      public void error(Throwable error) {
+                        ArrayList<Object> wrappedError = wrapError(error);
+                        reply.reply(wrappedError);
+                      }
+                    };
+
+                api.setBtServiceUuid(serviceUuidArg, resultCallback);
               });
         } else {
           channel.setMessageHandler(null);

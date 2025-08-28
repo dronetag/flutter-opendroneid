@@ -138,13 +138,49 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
   {
     FlutterBasicMessageChannel *channel =
       [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.flutter_opendroneid.Api.initialize"
+        binaryMessenger:binaryMessenger
+        codec:DTGApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(initializeWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(initializeWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api initializeWithCompletion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.flutter_opendroneid.Api.isInitialized"
+        binaryMessenger:binaryMessenger
+        codec:DTGApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(isInitializedWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(isInitializedWithCompletion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        [api isInitializedWithCompletion:^(NSNumber *_Nullable output, FlutterError *_Nullable error) {
+          callback(wrapResult(output, error));
+        }];
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
         initWithName:@"dev.flutter.pigeon.flutter_opendroneid.Api.startScanBluetooth"
         binaryMessenger:binaryMessenger
         codec:DTGApiGetCodec()];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(startScanBluetoothWithCompletion:)], @"DTGApi api (%@) doesn't respond to @selector(startScanBluetoothWithCompletion:)", api);
+      NSCAssert([api respondsToSelector:@selector(startScanBluetoothServiceUuid:completion:)], @"DTGApi api (%@) doesn't respond to @selector(startScanBluetoothServiceUuid:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
-        [api startScanBluetoothWithCompletion:^(FlutterError *_Nullable error) {
+        NSArray *args = message;
+        NSString *arg_serviceUuid = GetNullableObjectAtIndex(args, 0);
+        [api startScanBluetoothServiceUuid:arg_serviceUuid completion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];
@@ -215,6 +251,25 @@ void DTGApiSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<DTGApi> *a
         NSArray *args = message;
         DTGScanPriority arg_priority = [GetNullableObjectAtIndex(args, 0) integerValue];
         [api setBtScanPriorityPriority:arg_priority completion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    } else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon.flutter_opendroneid.Api.setBtServiceUuid"
+        binaryMessenger:binaryMessenger
+        codec:DTGApiGetCodec()];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(setBtServiceUuidServiceUuid:completion:)], @"DTGApi api (%@) doesn't respond to @selector(setBtServiceUuidServiceUuid:completion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSString *arg_serviceUuid = GetNullableObjectAtIndex(args, 0);
+        [api setBtServiceUuidServiceUuid:arg_serviceUuid completion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];
