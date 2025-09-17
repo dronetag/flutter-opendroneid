@@ -113,7 +113,7 @@ class BluetoothScanner(
         if (!isScanning) return
         isScanning = false
         bluetoothStateHandler.send(false)
-        bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
+        bluetoothAdapter.bluetoothLeScanner?.stopScan(scanCallback)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
