@@ -113,7 +113,7 @@ class BluetoothScanner(
         if (!isScanning) return
         isScanning = false
         bluetoothStateHandler.send(false)
-        bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
+        bluetoothAdapter.bluetoothLeScanner?.stopScan(scanCallback)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -131,7 +131,7 @@ class BluetoothScanner(
             scanMode = ScanSettings.SCAN_MODE_LOW_POWER
         }
         // if scan is running, restart with updated scanMode
-        if (isScanning) {
+        if (isScanning && bluetoothAdapter.bluetoothLeScanner != null) {
             bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
             scan()
         }
@@ -149,7 +149,7 @@ class BluetoothScanner(
         shortServiceUuid = value
 
         // if scan is running, restart with updated service UUID
-        if (isScanning) {
+        if (isScanning && bluetoothAdapter.bluetoothLeScanner != null) {
             bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
             scan()
         }
