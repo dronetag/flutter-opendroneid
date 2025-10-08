@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/dronetag/flutter-opendroneid/compare/v1.0.0...v1.0.1) (2025-10-08)
+
+
+### Bug Fixes
+
+* check whether bluetoothAdapter.bluetoothLeScanner is null before using it ([f88e8d2](https://github.com/dronetag/flutter-opendroneid/commit/f88e8d21f4c34c733820b8344fe9c5e59b8b1545))
+* crashing BluetoothScanner.cancel (DT-4418) ([#53](https://github.com/dronetag/flutter-opendroneid/issues/53)) ([462eddd](https://github.com/dronetag/flutter-opendroneid/commit/462eddd3416c7903c5a0857018c899875743a5bd))
+
 # [0.23.0](https://github.com/dronetag/flutter-opendroneid/compare/v0.22.1...v0.23.0) (2025-04-30)
 
 
