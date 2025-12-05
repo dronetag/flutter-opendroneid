@@ -33,8 +33,14 @@ class FlutterOpenDroneId {
   static final _receivedMessagesController =
       StreamController<ReceivedODIDMessage>.broadcast();
 
+  static final _rawMessagesController =
+      StreamController<pigeon.ODIDPayload>.broadcast();
+
   static Stream<ReceivedODIDMessage> get receivedMessages =>
       _receivedMessagesController.stream;
+
+  static Stream<pigeon.ODIDPayload> get rawMessages =>
+      _rawMessagesController.stream;
 
   static Stream<bool> get bluetoothState => _btStateEventChannel
       .receiveBroadcastStream()
@@ -135,6 +141,8 @@ class FlutterOpenDroneId {
   static Future<bool> get isScanningWifi async => await _api.isScanningWifi();
 
   static void _handlePayload(pigeon.ODIDPayload payload) {
+    _rawMessagesController.add(payload);
+
     ODIDMessage? message;
     try {
       message = parseODIDMessage(payload.rawData).message;
