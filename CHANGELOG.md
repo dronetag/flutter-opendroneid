@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/dronetag/flutter-opendroneid/compare/v1.0.1...v1.1.0) (2025-12-05)
+
+
+### Features
+
+* Add raw ODID payload output ([0f00181](https://github.com/dronetag/flutter-opendroneid/commit/0f0018107824729f46a1ebfe45df25f520bd5b50))
+
 ## [1.0.1](https://github.com/dronetag/flutter-opendroneid/compare/v1.0.0...v1.0.1) (2025-10-08)
 
 
