@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/dronetag/flutter-opendroneid/compare/v1.1.0...v1.2.0) (2026-01-13)
+
+
+### Features
+
+* Bump `dart_opendroneid` to v1.0.0 ([3149cd2](https://github.com/dronetag/flutter-opendroneid/commit/3149cd2fe7feec9bc936f300d64e0ae43a30dfea))
+
 # [1.1.0](https://github.com/dronetag/flutter-opendroneid/compare/v1.0.1...v1.1.0) (2025-12-05)
 
 
