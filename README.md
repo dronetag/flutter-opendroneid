@@ -89,5 +89,5 @@ end
 
 ---
 
-&copy; [Dronetag 2025](https://www.dronetag.cz)  
-<a href="https://www.dronetag.cz"><img src="http://dronetag-media.s3.eu-north-1.amazonaws.com/d69bc916-7137-469c-88c4-22b7ad0cdf33.png" width="100" /></a>
+&copy; [Dronetag 2026](https://www.dronetag.com)
+<a href="https://www.dronetag.com"><img src="http://dronetag-media.s3.eu-north-1.amazonaws.com/d69bc916-7137-469c-88c4-22b7ad0cdf33.png" width="100" /></a>
