@@ -1,5 +1,5 @@
 group 'cz.dronetag.flutter_opendroneid'
-version '1.0-SNAPSHOT'
+version '1.1-SNAPSHOT'
 
 buildscript {
     repositories {
@@ -30,16 +30,16 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
     defaultConfig {
-        compileSdk 33
-        minSdkVersion 21
-        targetSdkVersion 33
+        compileSdk 36
+        minSdkVersion 26
+        targetSdkVersion 37
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 }
 

@@ -9,8 +9,8 @@ import android.content.Intent
 /// and sends it to stream
 /// Creates [ODIDPayload] instances implementing Pigeon PayloadAPI
 abstract class ODIDScanner(
-    private val odidPayloadStreamHandler: StreamHandler
-) : Pigeon.PayloadApi {
+    private val odidPayloadStreamHandler: OdidPayloadSink
+) : PayloadApi {
 
     companion object {
         const val MAX_MESSAGE_SIZE = 25
@@ -34,25 +34,19 @@ abstract class ODIDScanner(
 
     abstract fun onAdapterStateReceived()
 
-    override fun buildPayload(rawData: ByteArray, receivedTimestamp: Long, metadata: Pigeon.ODIDMetadata): Pigeon.ODIDPayload {
-        val builder = Pigeon.ODIDPayload.Builder().apply {
-            setRawData(rawData)
-            setReceivedTimestamp(receivedTimestamp)
-            setMetadata(metadata)
-        }
-
-        return builder.build()
+    override fun buildPayload(rawData: ByteArray, receivedTimestamp: Long, metadata: ODIDMetadata): ODIDPayload {
+        return ODIDPayload(rawData, receivedTimestamp, metadata)
     }
     
     /// receive data and metadata, create [ODIDPayload] and sent to stream
     fun receiveData(
-        data: ByteArray, metadata: Pigeon.ODIDMetadata,
+        data: ByteArray, metadata: ODIDMetadata,
     ) {
         val payload = buildPayload(
             data, System.currentTimeMillis(), metadata,
         )
 
-        odidPayloadStreamHandler.send(payload.toList() as Any)        
+        odidPayloadStreamHandler.send(payload)
     }
 
     /// returns ByteArray without first offset elements

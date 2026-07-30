@@ -20,8 +20,8 @@ import java.util.*
 /// But if scan throttling is turned on on the phone (default setting on the phone), then scan throttling kick in.
 /// In case of throttling, startScan() fails. We need timer thread to periodically kick off scanning.
 class WifiScanner (
-    odidPayloadStreamHandler: StreamHandler,
-    private val wifiStateHandler: StreamHandler,
+    odidPayloadStreamHandler: OdidPayloadSink,
+    private val wifiStateHandler: BooleanStateSink,
     private val wifiManager: WifiManager?,
     private val context: Context
 ) : ODIDScanner(odidPayloadStreamHandler) {
@@ -67,9 +67,12 @@ class WifiScanner (
     }
 
     override fun scan() {
+        val wasScanning = isScanning
         isScanning = true
         wifiStateHandler.send(true)
-        context.registerReceiver(broadcastReceiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
+        if (!wasScanning) {
+            context.registerReceiver(broadcastReceiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
+        }
         val ret = wifiManager!!.startScan()
         if (ret) {
             scanSuccess++
@@ -79,6 +82,7 @@ class WifiScanner (
     }
 
     override fun cancel() {
+        if (!isScanning) return
         isScanning = false;
         context.unregisterReceiver(broadcastReceiver)
         wifiStateHandler.send(false)
@@ -152,19 +156,19 @@ class WifiScanner (
                 else -> null
             }
 
-            val metadataBuilder = Pigeon.ODIDMetadata.Builder().apply {
-                setMacAddress(scanResult.BSSID)
-                setSource(Pigeon.MessageSource.WIFI_BEACON)
-                setRssi(scanResult.level.toLong())
-                setFrequency(scanResult.frequency.toLong())
-                setCenterFreq0(scanResult.centerFreq0.toLong())
-                setCenterFreq1(scanResult.centerFreq1.toLong())
-                setChannelWidthMhz(channelWidth?.toLong())
-            }
+            val metadata = ODIDMetadata(
+                macAddress = scanResult.BSSID,
+                source = MessageSource.WIFI_BEACON,
+                rssi = scanResult.level.toLong(),
+                frequency = scanResult.frequency.toLong(),
+                centerFreq0 = scanResult.centerFreq0.toLong(),
+                centerFreq1 = scanResult.centerFreq1.toLong(),
+                channelWidthMhz = channelWidth?.toLong(),
+            )
 
             receiveData(
                 offsetData(bytes, WIFI_BEACON_OFFSET),
-                metadataBuilder.build()
+                metadata
             )
         }
     }

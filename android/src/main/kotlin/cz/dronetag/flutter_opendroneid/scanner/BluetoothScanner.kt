@@ -15,8 +15,8 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 class BluetoothScanner(
-    odidPayloadStreamHandler: StreamHandler,
-    private val bluetoothStateHandler: StreamHandler,
+    odidPayloadStreamHandler: OdidPayloadSink,
+    private val bluetoothStateHandler: BooleanStateSink,
 ) : ODIDScanner(odidPayloadStreamHandler) {
 
     companion object {
@@ -51,34 +51,34 @@ class BluetoothScanner(
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             val scanRecord: ScanRecord = result.scanRecord ?: return
             val bytes = scanRecord.bytes ?: return
-            var source = Pigeon.MessageSource.BLUETOOTH_LEGACY;
+            var source = MessageSource.BLUETOOTH_LEGACY;
 
             if (bytes.size < BT_OFFSET + MAX_MESSAGE_SIZE) return
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bluetoothAdapter.isLeCodedPhySupported()) {
                 if (result.getPrimaryPhy() == BluetoothDevice.PHY_LE_CODED)
-                    source = Pigeon.MessageSource.BLUETOOTH_LONG_RANGE;
+                    source = MessageSource.BLUETOOTH_LONG_RANGE;
             }
 
             // if using BLE, max size of data is MAX_BLE_ADV_SIZE
             // if using BT5, data can be longer up to 256 bytes
             val isBLE = maxAdvDataLen() <= MAX_BLE_ADV_SIZE
 
-            val metadataBuilder = Pigeon.ODIDMetadata.Builder().apply {
-                setMacAddress(result.device.address)
-                setSource(source)
-                setRssi(result.rssi.toLong())
-                setBtName(result.device.name)
-                setPrimaryPhy(phyFromInt(result.getPrimaryPhy()))
-                setSecondaryPhy(phyFromInt(result.getSecondaryPhy()))
-            }
+            val metadata = ODIDMetadata(
+                macAddress = result.device.address,
+                source = source,
+                rssi = result.rssi.toLong(),
+                btName = result.device.name,
+                primaryPhy = phyFromInt(result.getPrimaryPhy()),
+                secondaryPhy = phyFromInt(result.getSecondaryPhy()),
+            )
 
             receiveData(
                 if (isBLE) getDataFromIndex(bytes, BT_OFFSET, MAX_BLE_ADV_SIZE) else offsetData(
                     bytes,
                     BT_OFFSET
                 ),
-                metadataBuilder.build(),
+                metadata,
             )
         }
 
@@ -124,8 +124,8 @@ class BluetoothScanner(
         }
     }
 
-    fun setScanPriority(priority: Pigeon.ScanPriority) {
-        if (priority == Pigeon.ScanPriority.HIGH) {
+    fun setScanPriority(priority: ScanPriority) {
+        if (priority == ScanPriority.HIGH) {
             scanMode = ScanSettings.SCAN_MODE_LOW_LATENCY
         } else {
             scanMode = ScanSettings.SCAN_MODE_LOW_POWER
@@ -196,7 +196,7 @@ class BluetoothScanner(
 
     private fun buildScanSettings(): ScanSettings {
         var scanSettings = ScanSettings.Builder()
-            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .setScanMode(scanMode)
             .build()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
@@ -212,6 +212,5 @@ class BluetoothScanner(
         return scanSettings
     }
 
-    fun phyFromInt(value: Int): Pigeon.BluetoothPhy? =
-    Pigeon.BluetoothPhy.values().firstOrNull { it.index == value }
+    fun phyFromInt(value: Int): BluetoothPhy? = BluetoothPhy.ofRaw(value)
 }

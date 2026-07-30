@@ -131,3 +131,11 @@ abstract class PayloadApi {
   ODIDPayload buildPayload(
       Uint8List rawData, int receivedTimestamp, ODIDMetadata metadata);
 }
+
+@EventChannelApi()
+abstract class StreamApi {
+  ODIDPayload streamOdidPayloadBt();
+  ODIDPayload streamOdidPayloadWifi();
+  bool streamBluetoothState();
+  bool streamWifiState();
+}

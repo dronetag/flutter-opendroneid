@@ -1,22 +1,74 @@
 import Foundation
 import Flutter
 
-class StreamHandler: NSObject, FlutterStreamHandler {
-    var eventSink: FlutterEventSink?
-    
-    func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
-        self.eventSink = events
-        return nil
+protocol OdidPayloadSink {
+    func send(_ payload: ODIDPayload)
+}
+
+protocol BooleanStateSink {
+    func send(_ state: Bool)
+}
+
+class BluetoothOdidPayloadStreamHandler: StreamOdidPayloadBtStreamHandler, OdidPayloadSink {
+    private var sink: PigeonEventSink<ODIDPayload>?
+
+    override func onListen(withArguments arguments: Any?, sink: PigeonEventSink<ODIDPayload>) {
+        self.sink = sink
     }
-    
-    func onCancel(withArguments arguments: Any?) -> FlutterError? {
-        self.eventSink = nil
-        return nil
+
+    override func onCancel(withArguments arguments: Any?) {
+        self.sink = nil
     }
-    
-    func send(_ data: Any) {
-        if let eventSink = self.eventSink {
-            eventSink(data)
-        }
+
+    func send(_ payload: ODIDPayload) {
+        sink?.success(payload)
+    }
+}
+
+class WifiOdidPayloadStreamHandler: StreamOdidPayloadWifiStreamHandler, OdidPayloadSink {
+    private var sink: PigeonEventSink<ODIDPayload>?
+
+    override func onListen(withArguments arguments: Any?, sink: PigeonEventSink<ODIDPayload>) {
+        self.sink = sink
+    }
+
+    override func onCancel(withArguments arguments: Any?) {
+        self.sink = nil
+    }
+
+    func send(_ payload: ODIDPayload) {
+        sink?.success(payload)
+    }
+}
+
+class BluetoothStateStreamHandler: StreamBluetoothStateStreamHandler, BooleanStateSink {
+    private var sink: PigeonEventSink<Bool>?
+
+    override func onListen(withArguments arguments: Any?, sink: PigeonEventSink<Bool>) {
+        self.sink = sink
+    }
+
+    override func onCancel(withArguments arguments: Any?) {
+        self.sink = nil
+    }
+
+    func send(_ state: Bool) {
+        sink?.success(state)
+    }
+}
+
+class WifiStateStreamHandler: StreamWifiStateStreamHandler, BooleanStateSink {
+    private var sink: PigeonEventSink<Bool>?
+
+    override func onListen(withArguments arguments: Any?, sink: PigeonEventSink<Bool>) {
+        self.sink = sink
+    }
+
+    override func onCancel(withArguments arguments: Any?) {
+        self.sink = nil
+    }
+
+    func send(_ state: Bool) {
+        sink?.success(state)
     }
 }

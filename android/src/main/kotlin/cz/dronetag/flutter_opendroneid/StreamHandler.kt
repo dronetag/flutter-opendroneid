@@ -1,35 +1,78 @@
 package cz.dronetag.flutter_opendroneid
 
-import io.flutter.plugin.common.BinaryMessenger
-import io.flutter.plugin.common.EventChannel
+import android.os.Handler
+import android.os.Looper
 
-open class StreamHandler : EventChannel.StreamHandler {
-    private var eventSink: EventChannel.EventSink? = null
+interface OdidPayloadSink {
+    fun send(payload: ODIDPayload)
+}
 
-    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-        if (events != null) {
-            eventSink = events
-        }
+interface BooleanStateSink {
+    fun send(state: Boolean)
+}
+
+private val mainHandler = Handler(Looper.getMainLooper())
+
+class BluetoothOdidPayloadStreamHandler : StreamOdidPayloadBtStreamHandler(), OdidPayloadSink {
+    private var sink: PigeonEventSink<ODIDPayload>? = null
+
+    override fun onListen(p0: Any?, sink: PigeonEventSink<ODIDPayload>) {
+        this.sink = sink
     }
 
-    override fun onCancel(arguments: Any?) {
-        eventSink = null
+    override fun onCancel(p0: Any?) {
+        sink = null
     }
 
-    fun send(data: Any) {
-        eventSink?.success(data)
+    override fun send(payload: ODIDPayload) {
+        mainHandler.post { sink?.success(payload) }
+    }
+}
+
+class WifiOdidPayloadStreamHandler : StreamOdidPayloadWifiStreamHandler(), OdidPayloadSink {
+    private var sink: PigeonEventSink<ODIDPayload>? = null
+
+    override fun onListen(p0: Any?, sink: PigeonEventSink<ODIDPayload>) {
+        this.sink = sink
     }
 
-    companion object {
-        fun bindMultipleHandlers(messenger: BinaryMessenger, bindings: Map<String, StreamHandler>) {
-            for (binding in bindings) {
-                EventChannel(messenger, binding.key).setStreamHandler(binding.value)
-            }
-        }
-        fun clearMultipleHandlers(messenger: BinaryMessenger, names: List<String>) {
-            for (name in names) {
-                EventChannel(messenger, name).setStreamHandler(null)
-            }
-        }
+    override fun onCancel(p0: Any?) {
+        sink = null
+    }
+
+    override fun send(payload: ODIDPayload) {
+        mainHandler.post { sink?.success(payload) }
+    }
+}
+
+class BluetoothStateStreamHandler : StreamBluetoothStateStreamHandler(), BooleanStateSink {
+    private var sink: PigeonEventSink<Boolean>? = null
+
+    override fun onListen(p0: Any?, sink: PigeonEventSink<Boolean>) {
+        this.sink = sink
+    }
+
+    override fun onCancel(p0: Any?) {
+        sink = null
+    }
+
+    override fun send(state: Boolean) {
+        mainHandler.post { sink?.success(state) }
+    }
+}
+
+class WifiStateStreamHandler : StreamWifiStateStreamHandler(), BooleanStateSink {
+    private var sink: PigeonEventSink<Boolean>? = null
+
+    override fun onListen(p0: Any?, sink: PigeonEventSink<Boolean>) {
+        this.sink = sink
+    }
+
+    override fun onCancel(p0: Any?) {
+        sink = null
+    }
+
+    override fun send(state: Boolean) {
+        mainHandler.post { sink?.success(state) }
     }
 }

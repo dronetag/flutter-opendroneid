@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dart_opendroneid/dart_opendroneid.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_opendroneid/exceptions/odid_message_parsing_exception.dart';
 import 'package:flutter_opendroneid/models/dri_source_type.dart';
 import 'package:flutter_opendroneid/models/permissions_missing_exception.dart';
@@ -17,15 +16,9 @@ export 'package:dart_opendroneid/src/types.dart';
 class FlutterOpenDroneId {
   static late pigeon.Api _api = pigeon.Api();
 
-  // event channels
-  static const bluetoothOdidPayloadEventChannel =
-      const EventChannel('flutter_odid_data_bt');
-  static const wifiOdidPayloadEventChannel =
-      const EventChannel('flutter_odid_data_wifi');
-  static const _btStateEventChannel =
-      const EventChannel('flutter_odid_state_bt');
-  static const _wifiStateEventChannel =
-      const EventChannel('flutter_odid_state_wifi');
+  // event streams
+  static final _bluetoothOdidPayloadStream = pigeon.streamOdidPayloadBt();
+  static final _wifiOdidPayloadStream = pigeon.streamOdidPayloadWifi();
 
   static StreamSubscription? _receivedBluetoothMessagesSubscription;
   static StreamSubscription? _receivedWiFiMessagesSubscription;
@@ -42,13 +35,9 @@ class FlutterOpenDroneId {
   static Stream<pigeon.ODIDPayload> get rawMessages =>
       _rawMessagesController.stream;
 
-  static Stream<bool> get bluetoothState => _btStateEventChannel
-      .receiveBroadcastStream()
-      .map((event) => event as bool);
+  static Stream<bool> get bluetoothState => pigeon.streamBluetoothState();
 
-  static Stream<bool> get wifiState => _wifiStateEventChannel
-      .receiveBroadcastStream()
-      .map((event) => event as bool);
+  static Stream<bool> get wifiState => pigeon.streamWifiState();
 
   static Future<bool> get btTurnedOn async =>
       await _api.bluetoothState() ==
@@ -89,18 +78,14 @@ class FlutterOpenDroneId {
     if (sourceType == DriSourceType.Bluetooth) {
       await _assertBluetoothPermissions();
       _receivedBluetoothMessagesSubscription?.cancel();
-      _receivedBluetoothMessagesSubscription = bluetoothOdidPayloadEventChannel
-          .receiveBroadcastStream()
-          .listen(
-              (payload) => _handlePayload(pigeon.ODIDPayload.decode(payload)));
+      _receivedBluetoothMessagesSubscription = _bluetoothOdidPayloadStream
+          .listen(_handlePayload);
       await _api.startScanBluetooth(bluetoothServiceUuid);
     } else if (sourceType == DriSourceType.Wifi) {
       await _assertWifiPermissions();
       _receivedWiFiMessagesSubscription?.cancel();
-      _receivedWiFiMessagesSubscription = wifiOdidPayloadEventChannel
-          .receiveBroadcastStream()
-          .listen(
-              (payload) => _handlePayload(pigeon.ODIDPayload.decode(payload)));
+      _receivedWiFiMessagesSubscription = _wifiOdidPayloadStream
+          .listen(_handlePayload);
       await _api.startScanWifi();
     }
   }
