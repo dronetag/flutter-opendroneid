@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  FLUTTER_VERSION: '3.35.1'
+  FLUTTER_VERSION: '3.44.8'
 
 jobs:
   integration:
