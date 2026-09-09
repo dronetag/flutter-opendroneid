@@ -26,4 +26,4 @@ flutter:
         package: cz.dronetag.flutter_opendroneid
         pluginClass: FlutterOpendroneidPlugin
       ios:
-        pluginClass: FlutterOpendroneidPlugin
+        pluginClass: SwiftFlutterOpendroneidPlugin
