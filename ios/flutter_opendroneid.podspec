@@ -10,8 +10,8 @@ Pod::Spec.new do |s|
   s.license          = {}
   s.homepage         = 'https://github.com/dronetag/flutter-opendroneid'
   s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
-  s.platform         = :ios, '8.0'
+  s.source_files     = 'flutter_opendroneid/Sources/flutter_opendroneid/**/*.swift'
+  s.platform         = :ios, '13.0'
   
   s.dependency 'Flutter'
 

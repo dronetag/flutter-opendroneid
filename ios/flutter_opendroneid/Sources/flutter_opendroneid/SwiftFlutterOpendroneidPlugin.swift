@@ -2,7 +2,7 @@ import Flutter
 import UIKit
 
 @available(iOS 13.0.0, *)
-public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
+public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, Api {
     private static let dataEventChannelName = "flutter_odid_data_bt"
     private static let stateEventChannelName = "flutter_odid_state_bt"
     private static var eventChannels: [String: FlutterEventChannel] = [:]
@@ -16,8 +16,8 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let messenger : FlutterBinaryMessenger = registrar.messenger()
-        let instance : SwiftFlutterOpendroneidPlugin & DTGApi & NSObjectProtocol = SwiftFlutterOpendroneidPlugin.init()
-        DTGApiSetup(messenger, instance);
+        let instance = SwiftFlutterOpendroneidPlugin()
+        ApiSetup.setUp(binaryMessenger: messenger, api: instance)
         
         // Register event channels
         eventChannels = [
@@ -45,91 +45,93 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, DTGApi{
         }
     }
 
-    public func initialize(completion: @escaping (FlutterError?) -> Void) {
+    func initialize(completion: @escaping (Result<Void, Error>) -> Void) {
         // Register bluetooth scanner
         bluetoothScanner = BluetoothScanner(
             odidPayloadStreamHandler: streamHandlers[SwiftFlutterOpendroneidPlugin.dataEventChannelName]!,
             scanStateHandler: streamHandlers[SwiftFlutterOpendroneidPlugin.stateEventChannelName]!
         )
-        completion(nil)
+        completion(.success(()))
     }
     
-    public func isInitialized(completion: @escaping (NSNumber?, FlutterError?) -> Void) {
-        completion((bluetoothScanner != nil) as NSNumber?, nil)
+    func isInitialized(completion: @escaping (Result<Bool, Error>) -> Void) {
+        completion(.success(bluetoothScanner != nil))
     }
 
-    public func btMaxAdvDataLen() async -> (NSNumber?, FlutterError?) {
-        return (0, nil)
+    func btMaxAdvDataLen(completion: @escaping (Result<Int64, Error>) -> Void) {
+        completion(.success(0))
     }
     
-    public func btExtendedSupported() async -> (NSNumber?, FlutterError?) {
-        return ((false) as NSNumber?, nil)
+    func btExtendedSupported(completion: @escaping (Result<Bool, Error>) -> Void) {
+        completion(.success(false))
     }
     
-    public func wifiNaNSupported() async -> (NSNumber?, FlutterError?) {
-        return ((false) as NSNumber?, nil)
+    func wifiNaNSupported(completion: @escaping (Result<Bool, Error>) -> Void) {
+        completion(.success(false))
     }
 
-    public func startScanBluetoothServiceUuid(_ serviceUuid: String?, completion: @escaping (FlutterError?) -> Void) {
+    func startScanBluetooth(serviceUuid: String?, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let scanner = bluetoothScanner else {
-            return completion(PluginNotInitializedException.init())
+            return completion(.failure(PluginNotInitializedException()))
         }
 
         scanner.setServiceUuid(value: serviceUuid)
         scanner.scan()
-        completion(nil)
+        completion(.success(()))
     }
     
-    public func startScanWifi(completion: @escaping (FlutterError?) -> Void) {
+    func startScanWifi(completion: @escaping (Result<Void, Error>) -> Void) {
         // wifi not used on ios so far
-        completion(FlutterError.init(code: "unimplemented", message: "Wi-Fi is not available on iOS", details: nil))
+        completion(.failure(FlutterError(code: "unimplemented", message: "Wi-Fi is not available on iOS", details: nil)))
     }
     
-    public func stopScanBluetooth(completion: @escaping (FlutterError?) -> Void) {
+    func stopScanBluetooth(completion: @escaping (Result<Void, Error>) -> Void) {
         bluetoothScanner?.cancel()
-        completion(nil)
+        completion(.success(()))
     }
     
-    public func stopScanWifi(completion: @escaping (FlutterError?) -> Void) {
+    func stopScanWifi(completion: @escaping (Result<Void, Error>) -> Void) {
         // wifi not used on ios so far
-        completion(FlutterError.init(code: "unimplemented", message: "Wi-Fi is not available on iOS", details: nil))
+        completion(.failure(FlutterError(code: "unimplemented", message: "Wi-Fi is not available on iOS", details: nil)))
     }
     
-    public func setBtScanPriorityPriority(_ priority: DTGScanPriority) async -> FlutterError? {
+    func setBtScanPriority(priority: ScanPriority, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let scanner = bluetoothScanner else {
-            return PluginNotInitializedException.init()
+            return completion(.failure(PluginNotInitializedException()))
         }
         scanner.setScanPriority(priority: priority)
-        return nil
+        completion(.success(()))
     }
 
-    public func setBtServiceUuidServiceUuid(_ serviceUuid: String?) async -> FlutterError? {
+    func setBtServiceUuid(serviceUuid: String?, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let scanner = bluetoothScanner else {
-            return PluginNotInitializedException.init()
+            return completion(.failure(PluginNotInitializedException()))
         }
         scanner.setServiceUuid(value: serviceUuid)
-        return nil
+        completion(.success(()))
     }
     
-    public func isScanningBluetooth() async -> (NSNumber?, FlutterError?) {
+    func isScanningBluetooth(completion: @escaping (Result<Bool, Error>) -> Void) {
         guard let scanner = bluetoothScanner else {
-            return (nil, PluginNotInitializedException.init())
+            return completion(.failure(PluginNotInitializedException()))
         }
-        return ((scanner.isScanning()) as NSNumber?, nil)
+        completion(.success(scanner.isScanning()))
     }
     
-    public func isScanningWifi() async -> (NSNumber?, FlutterError?) {
-        return (false as NSNumber?, nil)
+    func isScanningWifi(completion: @escaping (Result<Bool, Error>) -> Void) {
+        completion(.success(false))
     }
     
-    public func bluetoothState() async -> (NSNumber?, FlutterError?) {
+    func bluetoothState(completion: @escaping (Result<Int64, Error>) -> Void) {
         guard let scanner = bluetoothScanner else {
-            return (nil, PluginNotInitializedException())
+            return completion(.failure(PluginNotInitializedException()))
         }
-        return ((await scanner.managerState()) as NSNumber?, nil)
+        Task {
+            completion(.success(Int64(await scanner.managerState())))
+        }
     }
 
-    public func wifiState() async -> (NSNumber?, FlutterError?) {
-        return ((DTGWifiState.disabled.rawValue) as NSNumber?, nil)
+    func wifiState(completion: @escaping (Result<Int64, Error>) -> Void) {
+        completion(.success(Int64(WifiState.disabled.rawValue)))
     }
 }
