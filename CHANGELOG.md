@@ -18,6 +18,7 @@ See [MIGRATION.md](MIGRATION.md) for the full upgrade guide.
 * Hot restart re-registers the Dart callback when `initialize()` runs again; no full app restart is required.
 * Parse failures are delivered to the root zone; use `PlatformDispatcher.onError` when guarding zones.
 * `FlutterOpenDroneId.droppedPayloadCount` exposes queue overflow diagnostics.
+* Android Wi-Fi scan receivers are registered once per session; starting a scan with the radio off now throws `bluetooth-disabled` / `wifi-disabled`.
 
 # [1.2.0](https://github.com/dronetag/flutter-opendroneid/compare/v1.1.0...v1.2.0) (2026-01-13)
 

@@ -40,17 +40,16 @@ class WifiScanner (
     private val scanTimerInterval = 2
 
     private var countDownTimer: CountDownTimer? = null
+    private var receiverRegistered = false
 
     // callback for receiving Wi-Fi scan results
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(contxt: Context?, intent: Intent?) {
-            if (wifiManager == null) {
-                return
-            }
+            val manager = wifiManager ?: return
             val freshScanResult = intent!!.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false)
             val action = intent.action
             if (freshScanResult && WifiManager.SCAN_RESULTS_AVAILABLE_ACTION == action) {
-                val wifiList = wifiManager.scanResults
+                val wifiList = manager.scanResults
                 for (scanResult in wifiList) {
                     try {
                         handleResult(scanResult)
@@ -60,56 +59,85 @@ class WifiScanner (
                         e.printStackTrace()
                     }
                 }
-                if(isScanning)
-                    scan()
+                if (isScanning)
+                    triggerScan()
             }
         }
     }
 
     override fun scan() {
+        val manager = wifiManager
+            ?: throw FlutterError("wifi-unavailable", "Wi-Fi is not available on this device", null)
+        if (!manager.isWifiEnabled && !manager.isScanAlwaysAvailable()) {
+            throw FlutterError(
+                "wifi-disabled",
+                "Wi-Fi is disabled",
+                "Enable Wi-Fi before starting a Wi-Fi scan",
+            )
+        }
+        if (isScanning) return
+
         isScanning = true
         sink.onWifiScanActive(true)
-        context.registerReceiver(broadcastReceiver, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
-        val ret = wifiManager!!.startScan()
-        if (ret) {
-            scanSuccess++
-        } else {
-            scanFailed++
-        }
+        registerScanReceiver()
+        triggerScan()
     }
 
     override fun cancel() {
-        isScanning = false;
-        context.unregisterReceiver(broadcastReceiver)
-        sink.onWifiScanActive(false)
-        if (countDownTimer != null) {
-            countDownTimer!!.cancel();
+        if (!isScanning && !receiverRegistered) return
+
+        isScanning = false
+        if (receiverRegistered) {
+            context.unregisterReceiver(broadcastReceiver)
+            receiverRegistered = false
         }
+        sink.onWifiScanActive(false)
+        countDownTimer?.cancel()
     }
 
     override fun onAdapterStateReceived() {
-        if (wifiManager == null) {
+        val manager = wifiManager ?: return
+        // wifi can be available even if it is turned off
+        if (manager.isScanAlwaysAvailable())
             return
-        }
-        // wifi can be available even if it is turned of
-        if(wifiManager.isScanAlwaysAvailable())
-            return
-        val rawState = wifiManager.getWifiState()
+        val rawState = manager.getWifiState()
         if ((rawState == WifiManager.WIFI_STATE_DISABLED || rawState == WifiManager.WIFI_STATE_DISABLING) && isScanning) {
             cancel()
         }
     }
 
     fun getAdapterState(): Int {
-        if (wifiManager == null) {
-            return 1
-        }
+        val manager = wifiManager ?: return 1
          // wifi can be available even if it is turned of
-        if(wifiManager.isScanAlwaysAvailable())
+        if (manager.isScanAlwaysAvailable())
             return 3
-        return when (wifiManager.getWifiState()) {
+        return when (manager.getWifiState()) {
             WifiManager.WIFI_STATE_ENABLED -> 3
             else -> 1
+        }
+    }
+
+    /// Registers the scan-result receiver once per scan session.
+    private fun registerScanReceiver() {
+        if (receiverRegistered) return
+        val filter = IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(broadcastReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            context.registerReceiver(broadcastReceiver, filter)
+        }
+        receiverRegistered = true
+    }
+
+    /// Requests one Wi-Fi scan without touching receiver registration.
+    private fun triggerScan() {
+        val manager = wifiManager ?: return
+        if (!manager.isWifiEnabled && !manager.isScanAlwaysAvailable()) return
+        val ret = manager.startScan()
+        if (ret) {
+            scanSuccess++
+        } else {
+            scanFailed++
         }
     }
 
@@ -120,7 +148,7 @@ class WifiScanner (
             // Use reflection to access it.
             val value =
                 ScanResult::class.java.getField("informationElements")[scanResult]
-            val elements = value as Array<InformationElement>
+            val elements = value as Array<InformationElement>?
                 ?: return
             for (element in elements) {
                 val valueId = element.javaClass.getField("id")[element] ?: continue
@@ -141,7 +169,7 @@ class WifiScanner (
         }
     }
 
-    private fun receiveBeaconData(scanResult: ScanResult, bytes: ByteArray) { 
+    private fun receiveBeaconData(scanResult: ScanResult, bytes: ByteArray) {
         if(checkDRICID(bytes)){
             val channelWidth = when(scanResult.channelWidth) {
                 ScanResult.CHANNEL_WIDTH_20MHZ -> 20
@@ -179,7 +207,7 @@ class WifiScanner (
 
         val vendorType = ByteArray(vendorTypeLen)
         buf.get(vendorType, 0, vendorTypeLen)
-        
+
         return (dri_CID[0] and 0xFF.toByte()) == DRICID.get(0).toByte()
                 && ((dri_CID[1] and 0xFF.toByte()) == DRICID.get(1).toByte())
                 && ((dri_CID[2] and 0xFF.toByte()) == DRICID.get(2).toByte())
@@ -194,7 +222,7 @@ class WifiScanner (
             // This is called after every ScanTimerInterval sec.
             override fun onTick(millisUntilFinished: Long) {
                 if(isScanning)
-                    scan()
+                    triggerScan()
             }
 
             override fun onFinish() {}

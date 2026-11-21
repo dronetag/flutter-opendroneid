@@ -45,6 +45,7 @@ class WifiNaNScanner (
     private val TAG: String = WifiNaNScanner::class.java.getSimpleName()
     private val wifiScanEnabled = true
     private var wifiAwareSupported = true
+    private var receiverRegistered = false
 
     private var wifiAwareSession: WifiAwareSession? = null
 
@@ -102,40 +103,57 @@ class WifiNaNScanner (
 
     override fun scan() {
         if (!wifiAwareSupported) return
-        
+        val manager = wifiAwareManager ?: return
+        if (isScanning) return
+
         isScanning = true
-        context.registerReceiver(adapterStateReceiver, IntentFilter(WifiAwareManager.ACTION_WIFI_AWARE_STATE_CHANGED))
-        startScan();
+        registerStateReceiver()
+        startScan()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun cancel() {
         if (!wifiAwareSupported) return
-        
-        isScanning = false;
-        context.unregisterReceiver(adapterStateReceiver)
+
+        isScanning = false
+        if (receiverRegistered) {
+            context.unregisterReceiver(adapterStateReceiver)
+            receiverRegistered = false
+        }
         stopScan()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onAdapterStateReceived() {
-        if (wifiAwareManager!!.isAvailable) {
+        val manager = wifiAwareManager ?: return
+        if (manager.isAvailable) {
             Log.i(TAG, "WiFi Aware became available.")
             startScan()
         }
     }
 
-    fun isWifiAwareSupported(): Boolean
-    {
-        return wifiAwareSupported;
+    fun isWifiAwareSupported(): Boolean {
+        return wifiAwareSupported && wifiAwareManager != null
+    }
+
+    private fun registerStateReceiver() {
+        if (receiverRegistered) return
+        val filter = IntentFilter(WifiAwareManager.ACTION_WIFI_AWARE_STATE_CHANGED)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(adapterStateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            context.registerReceiver(adapterStateReceiver, filter)
+        }
+        receiverRegistered = true
     }
 
     @TargetApi(Build.VERSION_CODES.O)
     private fun startScan() {
         if (!wifiAwareSupported) return
-        if (wifiAwareManager!!.isAvailable)
+        val manager = wifiAwareManager ?: return
+        if (manager.isAvailable)
         {
-            wifiAwareManager.attach(
+            manager.attach(
                 attachCallback,
                 identityChangedListener,
                 null
@@ -147,9 +165,11 @@ class WifiNaNScanner (
     @TargetApi(Build.VERSION_CODES.O)
     private fun stopScan() {
         if (!wifiAwareSupported) return
-        if (wifiAwareManager != null && wifiAwareManager!!.isAvailable && wifiAwareSession != null)
+        val manager = wifiAwareManager ?: return
+        if (manager.isAvailable && wifiAwareSession != null)
         {
             wifiAwareSession!!.close()
+            wifiAwareSession = null
             sink.onWifiScanActive(false)
         }
     }

@@ -42,6 +42,10 @@ whether a **scan is active**, not adapter power.
   exposes the total.
 - Native error codes are `uninitialized` and `unimplemented` (the latter for
   Wi-Fi on iOS), matching iOS and Android.
+- Starting a scan while the radio is off now throws a `PlatformException` with
+  code `bluetooth-disabled` / `wifi-disabled` instead of silently doing nothing.
+- Android Wi-Fi scan receivers are registered once per scan session; duplicate
+  registrations and the associated `system_server` warning are gone.
 
 ## For plugin contributors
 

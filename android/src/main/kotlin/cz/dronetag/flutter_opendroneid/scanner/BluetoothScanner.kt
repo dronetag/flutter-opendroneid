@@ -31,7 +31,7 @@ class BluetoothScanner(
     }
 
     private val TAG: String = BluetoothScanner::class.java.getSimpleName()
-    private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+    private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
 
     private var scanMode = ScanSettings.SCAN_MODE_LOW_LATENCY
 
@@ -60,7 +60,7 @@ class BluetoothScanner(
 
             if (bytes.size < BT_OFFSET + MAX_MESSAGE_SIZE) return
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bluetoothAdapter.isLeCodedPhySupported()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bluetoothAdapter?.isLeCodedPhySupported() == true) {
                 if (result.getPrimaryPhy() == BluetoothDevice.PHY_LE_CODED)
                     source = MessageSource.BLUETOOTH_LONG_RANGE;
             }
@@ -98,16 +98,24 @@ class BluetoothScanner(
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun scan() {
-        if (!bluetoothAdapter.isEnabled) return
-        val bluetoothLeScanner: BluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner ?: return
+        val adapter = bluetoothAdapter
+            ?: throw FlutterError("bluetooth-unavailable", "Bluetooth is not available on this device", null)
+        if (!adapter.isEnabled) {
+            throw FlutterError(
+                "bluetooth-disabled",
+                "Bluetooth is disabled",
+                "Enable Bluetooth before starting a Bluetooth scan",
+            )
+        }
+        val bluetoothLeScanner: BluetoothLeScanner = adapter.bluetoothLeScanner ?: return
         val builder: ScanFilter.Builder = ScanFilter.Builder()
         builder.setServiceData(serviceParcelUuid, odidAdCode)
         val scanFilters: MutableList<ScanFilter> = ArrayList()
         scanFilters.add(builder.build())
 
-        logAdapterInfo(bluetoothAdapter)
+        logAdapterInfo(adapter)
 
-        var scanSettings = buildScanSettings()
+        val scanSettings = buildScanSettings()
 
         bluetoothLeScanner.startScan(scanFilters, scanSettings, scanCallback)
         isScanning = true
@@ -118,12 +126,13 @@ class BluetoothScanner(
         if (!isScanning) return
         isScanning = false
         sink.onBluetoothScanActive(false)
-        bluetoothAdapter.bluetoothLeScanner?.stopScan(scanCallback)
+        bluetoothAdapter?.bluetoothLeScanner?.stopScan(scanCallback)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onAdapterStateReceived() {
-        val rawState = bluetoothAdapter.state
+        val adapter = bluetoothAdapter ?: return
+        val rawState = adapter.state
         if ((rawState == BluetoothAdapter.STATE_OFF || rawState == BluetoothAdapter.STATE_TURNING_OFF) && isScanning) {
             cancel()
         }
@@ -137,7 +146,7 @@ class BluetoothScanner(
         }
         // if scan is running, restart with updated scanMode
         if (isScanning) {
-            bluetoothAdapter.bluetoothLeScanner?.stopScan(scanCallback)
+            bluetoothAdapter?.bluetoothLeScanner?.stopScan(scanCallback)
             scan()
         }
 
@@ -155,23 +164,24 @@ class BluetoothScanner(
 
         // if scan is running, restart with updated service UUID
         if (isScanning) {
-            bluetoothAdapter.bluetoothLeScanner?.stopScan(scanCallback)
+            bluetoothAdapter?.bluetoothLeScanner?.stopScan(scanCallback)
             scan()
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun isBtExtendedSupported(): Boolean {
-        return bluetoothAdapter.isLeExtendedAdvertisingSupported;
+        return bluetoothAdapter?.isLeExtendedAdvertisingSupported ?: false
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun maxAdvDataLen(): Int {
-        return bluetoothAdapter.leMaximumAdvertisingDataLength;
+        return bluetoothAdapter?.leMaximumAdvertisingDataLength ?: 0
     }
 
     fun getAdapterState(): Int {
-        return when (bluetoothAdapter.state) {
+        val adapter = bluetoothAdapter ?: return 2
+        return when (adapter.state) {
             BluetoothAdapter.STATE_OFF -> 4
             BluetoothAdapter.STATE_ON -> 5
             BluetoothAdapter.STATE_TURNING_OFF -> 1
@@ -204,9 +214,10 @@ class BluetoothScanner(
             .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
             .build()
 
+        val adapter = bluetoothAdapter ?: return scanSettings
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-            bluetoothAdapter.isLeCodedPhySupported &&
-            bluetoothAdapter.isLeExtendedAdvertisingSupported
+            adapter.isLeCodedPhySupported &&
+            adapter.isLeExtendedAdvertisingSupported
         ) {
             scanSettings = ScanSettings.Builder()
                 .setScanMode(scanMode)
