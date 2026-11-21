@@ -19,6 +19,8 @@ dependencies:
     path: ../
 
 dev_dependencies:
+  integration_test:
+    sdk: flutter
   ffigen: ^22.0.0
   jnigen: ^1.0.0
   pub_semver: ^2.2.1

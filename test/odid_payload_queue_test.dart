@@ -65,18 +65,22 @@ void main() {
   test('drops the oldest payload when the queue is full', () {
     final scheduled = <void Function()>[];
     final delivered = <int>[];
+    var overflowCalls = 0;
     final queue = OdidPayloadQueue<int>(
       maxPending: 2,
       onPayload: delivered.add,
+      onOverflow: () => overflowCalls++,
       schedule: scheduled.add,
     );
 
     queue.add(1);
     queue.add(2);
     queue.add(3);
+    queue.add(4);
     scheduled.removeAt(0)();
 
-    expect(delivered, <int>[2, 3]);
-    expect(queue.droppedPayloadCount, 1);
+    expect(delivered, <int>[3, 4]);
+    expect(queue.droppedPayloadCount, 2);
+    expect(overflowCalls, 1);
   });
 }

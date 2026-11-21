@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dart_opendroneid/dart_opendroneid.dart';
-import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:flutter/foundation.dart' show debugPrint, visibleForTesting;
+import 'package:flutter/widgets.dart' show WidgetsFlutterBinding;
 import 'package:flutter_opendroneid/exceptions/odid_message_parsing_exception.dart';
 import 'package:flutter_opendroneid/models/dri_source_type.dart';
 import 'package:flutter_opendroneid/models/permissions_missing_exception.dart';
@@ -44,14 +45,24 @@ class FlutterOpenDroneId {
   static final _rawMessagesController =
       StreamController<pigeon.ODIDPayload>.broadcast();
 
-  static final OdidPayloadQueue<pigeon.ODIDPayload> _payloadQueue =
-      OdidPayloadQueue<pigeon.ODIDPayload>(
-        onPayload: _handlePayload,
-        onError: (Object error, StackTrace stack) =>
-            Zone.current.handleUncaughtError(error, stack),
-      );
+  static final OdidPayloadQueue<pigeon.ODIDPayload>
+  _payloadQueue = OdidPayloadQueue<pigeon.ODIDPayload>(
+    onPayload: _handlePayload,
+    onError: (Object error, StackTrace stack) =>
+        Zone.current.handleUncaughtError(error, stack),
+    onOverflow: () => debugPrint(
+      'flutter_opendroneid: payload queue overflow; dropping oldest payloads',
+    ),
+  );
 
   static bool _flutterApiRegistered = false;
+
+  /// Number of payloads dropped because the bounded queue was full.
+  static int get droppedPayloadCount => _payloadQueue.droppedPayloadCount;
+
+  /// Drives the generated Flutter API callbacks from tests without native code.
+  @visibleForTesting
+  static pigeon.OdidScannerFlutterApi get debugFlutterApi => _FlutterApiImpl();
 
   static Stream<ReceivedODIDMessage> get receivedMessages =>
       _receivedMessagesController.stream;
@@ -75,7 +86,11 @@ class FlutterOpenDroneId {
       pigeon.WifiState.values.indexOf(pigeon.WifiState.Enabled);
 
   /// Initialize the plugin before using.
+  ///
+  /// Must be called from the root isolate. Registration is repeated on every
+  /// isolate start (including hot restart) because this method runs again.
   static Future<void> initialize() async {
+    WidgetsFlutterBinding.ensureInitialized();
     _registerFlutterApi();
     await _api.initialize();
   }
@@ -151,8 +166,8 @@ class FlutterOpenDroneId {
     if (_flutterApiRegistered) {
       return;
     }
-    _flutterApiRegistered = true;
     pigeon.OdidScannerFlutterApi.setUp(_FlutterApiImpl());
+    _flutterApiRegistered = true;
   }
 
   static void _handlePayload(pigeon.ODIDPayload payload) {
@@ -249,9 +264,4 @@ class _FlutterApiImpl implements pigeon.OdidScannerFlutterApi {
   @override
   void onWifiScanActive(bool isActive) =>
       FlutterOpenDroneId._wifiScanActiveController.add(isActive);
-}
-
-/// Registered by Flutter as the plugin's `dartPluginClass`, including on hot restart.
-class FlutterOpenDroneIdPlugin {
-  static void registerWith() => FlutterOpenDroneId._registerFlutterApi();
 }

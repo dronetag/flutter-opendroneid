@@ -31,7 +31,5 @@ flutter:
       android:
         package: cz.dronetag.flutter_opendroneid
         pluginClass: FlutterOpendroneidPlugin
-        dartPluginClass: FlutterOpenDroneIdPlugin
       ios:
         pluginClass: FlutterOpendroneidPlugin
-        dartPluginClass: FlutterOpenDroneIdPlugin

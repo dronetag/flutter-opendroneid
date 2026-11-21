@@ -13,7 +13,7 @@ The architecture of native code is inspired by [OpenDroneID Android receiver app
 ## Pre-requisities
 
 - Flutter 3.50 or newer (Dart 3.14)
-- Android Gradle Plugin 9+ with built-in Kotlin for Android builds
+- Android Gradle Plugin 9+ with built-in Kotlin; `minSdk` 24 and `compileSdk` 37 for Android builds
 - For code generation: Android SDK + JDK 17-21 and Xcode command line tools
 
 ## Getting Started
@@ -34,6 +34,13 @@ samples, guidance on mobile development, and a full API reference.
 2. Generate Pigeon bindings with `./scripts/pigeon_generate.sh`. The script runs Pigeon twice: the first pass emits the Kotlin/Swift bridges, the example plugin is compiled, and the second pass generates the JNI/FFI Dart bindings.
 
 > Pigeon native interop is a preview feature in Flutter 3.50. Generated files are committed, so consumers do not need the generator toolchain.
+
+### Runtime notes
+
+- Call `FlutterOpenDroneId.initialize()` from the root isolate, after the Flutter binding is available (it is initialized by this method if needed). Background isolates may call stateless getters, but not `initialize()`.
+- The plugin assumes a single attached `Activity`; multi-engine `ActivityAware` state is not isolated per engine.
+- Parse failures are reported through `Zone.current.handleUncaughtError` at drain time (the isolate's root zone). Apps that use `runZonedGuarded` should also observe `FlutterError.onError` / `PlatformDispatcher.instance.onError`.
+- `FlutterOpenDroneId.droppedPayloadCount` reports payloads dropped by the bounded queue under burst load.
 
 ## Usage & Setting up permissions
 
