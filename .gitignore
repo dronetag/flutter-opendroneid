@@ -56,3 +56,7 @@ build/
 
 # Pigeon FFIgen temporary object files
 *_objc_gen/**/*.o
+
+# Maestro E2E screenshots
+example/*.png
+example/maestro-artifacts/

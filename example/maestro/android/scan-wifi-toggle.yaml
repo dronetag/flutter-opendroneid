@@ -1,0 +1,33 @@
+appId: com.example.flutter_opendroneid_example
+name: "Android: Wi-Fi scan start/stop"
+tags:
+  - android
+  - scan
+---
+# Prerequisite: Wi-Fi must be enabled on the device.
+- launchApp:
+    permissions:
+      all: allow
+
+- runFlow:
+    file: ../flows/grant-permissions.yaml
+
+- extendedWaitUntil:
+    visible:
+      id: "scan-wifi-start"
+    timeout: 15000
+
+- tapOn:
+    id: "scan-wifi-start"
+- extendedWaitUntil:
+    visible:
+      id: "scan-wifi-stop"
+    timeout: 10000
+- takeScreenshot: wifi-scanning
+
+- tapOn:
+    id: "scan-wifi-stop"
+- extendedWaitUntil:
+    visible:
+      id: "scan-wifi-start"
+    timeout: 10000

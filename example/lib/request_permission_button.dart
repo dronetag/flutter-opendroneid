@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class RequestPermissionButton extends StatefulWidget {
+  final String identifier;
   final List<Permission> permissions;
   final String name;
 
   const RequestPermissionButton({
     super.key,
+    required this.identifier,
     required this.permissions,
     required this.name,
   });
@@ -53,16 +55,24 @@ class _RequestPermissionButtonState extends State<RequestPermissionButton>
   Widget build(BuildContext context) {
     final granted = _statuses.isNotEmpty && _statuses.every((e) => e.isGranted);
 
-    return ElevatedButton(
-      onPressed: granted
-          ? null
-          : () async {
-              await widget.permissions.request();
-              if (!mounted) return;
-              _checkStatuses();
-            },
-      child: Text(
-        granted ? '${widget.name} Granted' : 'Request ${widget.name}',
+    final identifier =
+        '${widget.identifier}-${granted ? 'granted' : 'request'}';
+
+    return Semantics(
+      key: ValueKey(identifier),
+      identifier: identifier,
+      button: true,
+      child: ElevatedButton(
+        onPressed: granted
+            ? null
+            : () async {
+                await widget.permissions.request();
+                if (!mounted) return;
+                _checkStatuses();
+              },
+        child: Text(
+          granted ? '${widget.name} Granted' : 'Request ${widget.name}',
+        ),
       ),
     );
   }

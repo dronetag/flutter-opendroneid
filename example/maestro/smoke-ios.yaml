@@ -1,0 +1,23 @@
+appId: com.example.flutterOpendroneidExample
+name: "Smoke: home screen (iOS)"
+tags:
+  - smoke
+  - ios
+---
+- launchApp
+
+# Avoid the XCTest cold-boot accessibility race on iOS.
+- swipe:
+    direction: DOWN
+    duration: 100
+
+- assertVisible:
+    id: "app-title"
+- assertVisible:
+    id: "bt-message-count"
+- assertNotVisible:
+    id: "wifi-message-count"
+- assertVisible:
+    id: "scan-bluetooth-start"
+
+- takeScreenshot: smoke-ios-home

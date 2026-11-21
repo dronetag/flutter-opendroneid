@@ -1,0 +1,25 @@
+appId: com.example.flutter_opendroneid_example
+name: "Android: permissions are granted on launch"
+tags:
+  - android
+  - permissions
+---
+- launchApp:
+    permissions:
+      all: allow
+
+- runFlow:
+    file: ../flows/grant-permissions.yaml
+
+- extendedWaitUntil:
+    visible:
+      id: "bluetooth-permission-granted"
+    timeout: 15000
+
+# Granted permission buttons are disabled.
+- assertVisible:
+    id: "bluetooth-permission-granted"
+- assertVisible:
+    id: "wifi-permission-granted"
+- assertVisible:
+    id: "location-permission-granted"

@@ -1,0 +1,67 @@
+appId: com.example.flutter_opendroneid_example
+---
+# Grants runtime permissions through the system dialogs when they were not
+# pre-granted with `adb shell pm grant` (for example on MIUI/HyperOS, where
+# adb cannot grant runtime permissions).
+- runFlow:
+    when:
+      visible:
+        id: "bluetooth-permission-request"
+    commands:
+      - tapOn:
+          id: "bluetooth-permission-request"
+      - tapOn:
+          text: "^(While using the app|Při používání aplikace)$"
+          optional: true
+      - tapOn:
+          text: "^(Allow|Povolit)$"
+          optional: true
+      - tapOn:
+          text: "^(OK|Budiž|Rozumím)$"
+          optional: true
+      - extendedWaitUntil:
+          visible:
+            id: "bluetooth-permission-granted"
+          timeout: 15000
+
+- runFlow:
+    when:
+      visible:
+        id: "wifi-permission-request"
+    commands:
+      - tapOn:
+          id: "wifi-permission-request"
+      - tapOn:
+          text: "^(While using the app|Při používání aplikace)$"
+          optional: true
+      - tapOn:
+          text: "^(Allow|Povolit)$"
+          optional: true
+      - tapOn:
+          text: "^(OK|Budiž|Rozumím)$"
+          optional: true
+      - extendedWaitUntil:
+          visible:
+            id: "wifi-permission-granted"
+          timeout: 15000
+
+- runFlow:
+    when:
+      visible:
+        id: "location-permission-request"
+    commands:
+      - tapOn:
+          id: "location-permission-request"
+      - tapOn:
+          text: "^(While using the app|Při používání aplikace)$"
+          optional: true
+      - tapOn:
+          text: "^(Allow|Povolit)$"
+          optional: true
+      - tapOn:
+          text: "^(OK|Budiž|Rozumím)$"
+          optional: true
+      - extendedWaitUntil:
+          visible:
+            id: "location-permission-granted"
+          timeout: 15000

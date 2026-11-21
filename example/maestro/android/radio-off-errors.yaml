@@ -1,0 +1,39 @@
+appId: com.example.flutter_opendroneid_example
+name: "Android: disabled radios produce a clear error"
+tags:
+  - android
+  - manual
+---
+# Manual flows: disable the radio before running.
+#   adb shell svc bluetooth disable
+#   adb shell svc wifi disable
+#   maestro test example/maestro/android/radio-off-errors.yaml --include-tags manual
+- launchApp:
+    permissions:
+      all: allow
+
+- runFlow:
+    file: ../flows/grant-permissions.yaml
+
+- extendedWaitUntil:
+    visible:
+      id: "scan-bluetooth-start"
+    timeout: 15000
+
+- tapOn:
+    id: "scan-bluetooth-start"
+- extendedWaitUntil:
+    visible:
+      id: "scan-error"
+    timeout: 5000
+- assertVisible:
+    id: "scan-bluetooth-start"
+
+- tapOn:
+    id: "scan-wifi-start"
+- extendedWaitUntil:
+    visible:
+      id: "scan-error"
+    timeout: 5000
+- assertVisible:
+    id: "scan-wifi-start"

@@ -1,0 +1,37 @@
+appId: com.example.flutter_opendroneid_example
+name: "Smoke: home screen (Android)"
+tags:
+  - smoke
+  - android
+---
+- launchApp:
+    permissions:
+      all: allow
+
+- assertVisible:
+    id: "app-title"
+- assertVisible:
+    id: "bt-message-count"
+- assertVisible:
+    id: "wifi-message-count"
+
+- runFlow:
+    file: flows/grant-permissions.yaml
+
+- extendedWaitUntil:
+    visible:
+      id: "bluetooth-permission-granted"
+    timeout: 15000
+- assertVisible:
+    id: "bluetooth-permission-granted"
+- assertVisible:
+    id: "wifi-permission-granted"
+- assertVisible:
+    id: "location-permission-granted"
+
+- assertVisible:
+    id: "scan-bluetooth-start"
+- assertVisible:
+    id: "scan-wifi-start"
+
+- takeScreenshot: smoke-android-home

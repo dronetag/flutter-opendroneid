@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_opendroneid/flutter_opendroneid.dart';
 
 import 'home_page.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Keep the semantics tree available for UI automation (Maestro) in the demo.
+  SemanticsBinding.instance.ensureSemantics();
   runApp(const MyApp());
 }
 

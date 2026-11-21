@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Semantics(identifier: 'app-title', child: Text(widget.title)),
       ),
       body: SafeArea(
         child: Padding(
@@ -75,7 +75,10 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Received Bluetooth Messages:'),
-                        Text('$_btMessagesCounter'),
+                        Semantics(
+                          identifier: 'bt-message-count',
+                          child: Text('$_btMessagesCounter'),
+                        ),
                       ],
                     ),
                     if (isAndroid)
@@ -83,7 +86,10 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Received Wi-Fi Messages:'),
-                          Text('$_wifiMessagesCounter'),
+                          Semantics(
+                            identifier: 'wifi-message-count',
+                            child: Text('$_wifiMessagesCounter'),
+                          ),
                         ],
                       ),
                   ],
@@ -105,6 +111,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   RequestPermissionButton(
+                    identifier: 'bluetooth-permission',
                     permissions: isAndroid
                         ? [
                             Permission.bluetooth,
@@ -116,11 +123,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                   if (isAndroid)
                     RequestPermissionButton(
+                      identifier: 'wifi-permission',
                       permissions: [Permission.nearbyWifiDevices],
                       name: 'Wi-Fi Permission',
                     ),
                   if (isAndroid)
                     RequestPermissionButton(
+                      identifier: 'location-permission',
                       permissions: [Permission.location],
                       name: 'Location Permission',
                     ),
