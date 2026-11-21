@@ -27,11 +27,10 @@ import java.util.List;
 
 
 class WifiNaNScanner (
-    odidPayloadStreamHandler: StreamHandler,
-    private val wifiStateHandler: StreamHandler,
+    private val sink: OdidSink,
     private val wifiAwareManager: WifiAwareManager?,
     private val context: Context
-)  : ODIDScanner(odidPayloadStreamHandler) {
+)  : ODIDScanner(sink) {
 
     companion object {
         const val WIFI_NAN_OFFSET = 1
@@ -59,13 +58,13 @@ class WifiNaNScanner (
                     matchFilter: MutableList<ByteArray>?
                 ) {
                     if (serviceSpecificInfo != null) {
-                        val metadataBuilder = Pigeon.ODIDMetadata.Builder().apply {
-                            setMacAddress(peerHandle.hashCode().toString())
-                            setSource(Pigeon.MessageSource.WIFI_NAN)
-                        }
+                        val metadata = ODIDMetadata(
+                            macAddress = peerHandle.hashCode().toString(),
+                            source = MessageSource.WIFI_NAN,
+                        )
                         receiveData(
                             offsetData(serviceSpecificInfo, WIFI_NAN_OFFSET),
-                            metadataBuilder.build()
+                            metadata
                         )
                     }
                 }
@@ -135,7 +134,7 @@ class WifiNaNScanner (
                 identityChangedListener,
                 null
             )
-            wifiStateHandler.send(true)
+            sink.onWifiScanActive(true)
         }
     }
 
@@ -145,7 +144,7 @@ class WifiNaNScanner (
         if (wifiAwareManager != null && wifiAwareManager!!.isAvailable && wifiAwareSession != null)
         {
             wifiAwareSession!!.close()
-            wifiStateHandler.send(false)
+            sink.onWifiScanActive(false)
         }
     }
 }

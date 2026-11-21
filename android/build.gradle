@@ -8,7 +8,7 @@ version '1.0-SNAPSHOT'
 android {
     namespace = "cz.dronetag.flutter_opendroneid"
 
-    compileSdk 36
+    compileSdk 37
 
     defaultConfig {
         minSdk 24

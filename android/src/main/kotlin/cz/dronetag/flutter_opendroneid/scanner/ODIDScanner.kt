@@ -4,13 +4,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 
-/// Contains common functinality for ODID scanners.
+/// Contains common functionality for ODID scanners.
 /// Derived scanners should use receiveData method that takes raw data and metadata
-/// and sends it to stream
-/// Creates [ODIDPayload] instances implementing Pigeon PayloadAPI
+/// and sends it to the Flutter API sink.
 abstract class ODIDScanner(
-    private val odidPayloadStreamHandler: StreamHandler
-) : Pigeon.PayloadApi {
+    private val sink: OdidSink,
+) {
 
     companion object {
         const val MAX_MESSAGE_SIZE = 25
@@ -21,7 +20,7 @@ abstract class ODIDScanner(
     set(value) {
         field = value
     }
-    
+
     val adapterStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             onAdapterStateReceived()
@@ -34,30 +33,28 @@ abstract class ODIDScanner(
 
     abstract fun onAdapterStateReceived()
 
-    override fun buildPayload(rawData: ByteArray, receivedTimestamp: Long, metadata: Pigeon.ODIDMetadata): Pigeon.ODIDPayload {
-        val builder = Pigeon.ODIDPayload.Builder().apply {
-            setRawData(rawData)
-            setReceivedTimestamp(receivedTimestamp)
-            setMetadata(metadata)
-        }
+    fun buildPayload(
+        rawData: ByteArray,
+        receivedTimestamp: Long,
+        metadata: ODIDMetadata,
+    ): ODIDPayload = ODIDPayload(rawData, receivedTimestamp, metadata)
 
-        return builder.build()
-    }
-    
-    /// receive data and metadata, create [ODIDPayload] and sent to stream
+    /// receive data and metadata, create [ODIDPayload] and send it to Dart
     fun receiveData(
-        data: ByteArray, metadata: Pigeon.ODIDMetadata,
+        data: ByteArray, metadata: ODIDMetadata,
     ) {
         val payload = buildPayload(
             data, System.currentTimeMillis(), metadata,
         )
 
-        odidPayloadStreamHandler.send(payload.toList() as Any)        
+        sink.onPayload(payload)
     }
 
     /// returns ByteArray without first offset elements
-    inline fun offsetData(data: ByteArray, offset: Int) : ByteArray = data.copyOfRange(offset, data.size)
+    inline fun offsetData(data: ByteArray, offset: Int): ByteArray =
+        data.copyOfRange(offset, data.size)
 
     /// returns ByteArray with bytes from start to end
-    inline fun getDataFromIndex(data: ByteArray, start: Int, end: Int) : ByteArray = data.copyOfRange(start, end)
+    inline fun getDataFromIndex(data: ByteArray, start: Int, end: Int): ByteArray =
+        data.copyOfRange(start, end)
 }

@@ -15,9 +15,8 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 class BluetoothScanner(
-    odidPayloadStreamHandler: StreamHandler,
-    private val bluetoothStateHandler: StreamHandler,
-) : ODIDScanner(odidPayloadStreamHandler) {
+    private val sink: OdidSink,
+) : ODIDScanner(sink) {
 
     companion object {
         const val BT_OFFSET = 6
@@ -51,34 +50,34 @@ class BluetoothScanner(
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             val scanRecord: ScanRecord = result.scanRecord ?: return
             val bytes = scanRecord.bytes ?: return
-            var source = Pigeon.MessageSource.BLUETOOTH_LEGACY;
+            var source = MessageSource.BLUETOOTH_LEGACY;
 
             if (bytes.size < BT_OFFSET + MAX_MESSAGE_SIZE) return
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && bluetoothAdapter.isLeCodedPhySupported()) {
                 if (result.getPrimaryPhy() == BluetoothDevice.PHY_LE_CODED)
-                    source = Pigeon.MessageSource.BLUETOOTH_LONG_RANGE;
+                    source = MessageSource.BLUETOOTH_LONG_RANGE;
             }
 
             // if using BLE, max size of data is MAX_BLE_ADV_SIZE
             // if using BT5, data can be longer up to 256 bytes
             val isBLE = maxAdvDataLen() <= MAX_BLE_ADV_SIZE
 
-            val metadataBuilder = Pigeon.ODIDMetadata.Builder().apply {
-                setMacAddress(result.device.address)
-                setSource(source)
-                setRssi(result.rssi.toLong())
-                setBtName(result.device.name)
-                setPrimaryPhy(phyFromInt(result.getPrimaryPhy()))
-                setSecondaryPhy(phyFromInt(result.getSecondaryPhy()))
-            }
+            val metadata = ODIDMetadata(
+                macAddress = result.device.address,
+                source = source,
+                rssi = result.rssi.toLong(),
+                btName = result.device.name,
+                primaryPhy = phyFromInt(result.getPrimaryPhy()),
+                secondaryPhy = phyFromInt(result.getSecondaryPhy()),
+            )
 
             receiveData(
                 if (isBLE) getDataFromIndex(bytes, BT_OFFSET, MAX_BLE_ADV_SIZE) else offsetData(
                     bytes,
                     BT_OFFSET
                 ),
-                metadataBuilder.build(),
+                metadata,
             )
         }
 
@@ -94,7 +93,7 @@ class BluetoothScanner(
     @RequiresApi(Build.VERSION_CODES.O)
     override fun scan() {
         if (!bluetoothAdapter.isEnabled) return
-        val bluetoothLeScanner: BluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
+        val bluetoothLeScanner: BluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner ?: return
         val builder: ScanFilter.Builder = ScanFilter.Builder()
         builder.setServiceData(serviceParcelUuid, odidAdCode)
         val scanFilters: MutableList<ScanFilter> = ArrayList()
@@ -106,13 +105,13 @@ class BluetoothScanner(
 
         bluetoothLeScanner.startScan(scanFilters, scanSettings, scanCallback)
         isScanning = true
-        bluetoothStateHandler.send(true)
+        sink.onBluetoothScanActive(true)
     }
 
     override fun cancel() {
         if (!isScanning) return
         isScanning = false
-        bluetoothStateHandler.send(false)
+        sink.onBluetoothScanActive(false)
         bluetoothAdapter.bluetoothLeScanner?.stopScan(scanCallback)
     }
 
@@ -124,15 +123,15 @@ class BluetoothScanner(
         }
     }
 
-    fun setScanPriority(priority: Pigeon.ScanPriority) {
-        if (priority == Pigeon.ScanPriority.HIGH) {
+    fun setScanPriority(priority: ScanPriority) {
+        if (priority == ScanPriority.HIGH) {
             scanMode = ScanSettings.SCAN_MODE_LOW_LATENCY
         } else {
             scanMode = ScanSettings.SCAN_MODE_LOW_POWER
         }
         // if scan is running, restart with updated scanMode
-        if (isScanning && bluetoothAdapter.bluetoothLeScanner != null) {
-            bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
+        if (isScanning) {
+            bluetoothAdapter.bluetoothLeScanner?.stopScan(scanCallback)
             scan()
         }
 
@@ -149,8 +148,8 @@ class BluetoothScanner(
         shortServiceUuid = value
 
         // if scan is running, restart with updated service UUID
-        if (isScanning && bluetoothAdapter.bluetoothLeScanner != null) {
-            bluetoothAdapter.bluetoothLeScanner.stopScan(scanCallback)
+        if (isScanning) {
+            bluetoothAdapter.bluetoothLeScanner?.stopScan(scanCallback)
             scan()
         }
     }
@@ -212,6 +211,6 @@ class BluetoothScanner(
         return scanSettings
     }
 
-    fun phyFromInt(value: Int): Pigeon.BluetoothPhy? =
-    Pigeon.BluetoothPhy.values().firstOrNull { it.index == value }
+    fun phyFromInt(value: Int): BluetoothPhy? =
+    BluetoothPhy.values().firstOrNull { it.raw == value }
 }
