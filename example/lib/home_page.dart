@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_opendroneid/models/received_odid_message.dart';
-import 'package:flutter_opendroneid/pigeon.dart';
 import 'package:flutter_opendroneid_example/received_odid_message_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_opendroneid/flutter_opendroneid.dart';
@@ -31,16 +30,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    messagesSubscription =
-        FlutterOpenDroneId.receivedMessages.listen((message) => setState(() {
-              if (message.metadata.source == MessageSource.BluetoothLegacy ||
-                  message.metadata.source == MessageSource.BluetoothLongRange)
-                ++_btMessagesCounter;
-              else if (message.metadata.source == MessageSource.WifiBeacon ||
-                  message.metadata.source == MessageSource.WifiNan)
-                ++_wifiMessagesCounter;
-              lastMessage = message;
-            }));
+    messagesSubscription = FlutterOpenDroneId.receivedMessages.listen(
+      (message) => setState(() {
+        if (message.metadata.source == MessageSource.BluetoothLegacy ||
+            message.metadata.source == MessageSource.BluetoothLongRange)
+          ++_btMessagesCounter;
+        else if (message.metadata.source == MessageSource.WifiBeacon ||
+            message.metadata.source == MessageSource.WifiNan)
+          ++_wifiMessagesCounter;
+        lastMessage = message;
+      }),
+    );
 
     super.initState();
   }
@@ -75,9 +75,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Received Bluetooth Messages:'),
-                        Text(
-                          '$_btMessagesCounter',
-                        ),
+                        Text('$_btMessagesCounter'),
                       ],
                     ),
                     if (isAndroid)
@@ -85,9 +83,7 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Received Wi-Fi Messages:'),
-                          Text(
-                            '$_wifiMessagesCounter',
-                          ),
+                          Text('$_wifiMessagesCounter'),
                         ],
                       ),
                   ],
@@ -102,9 +98,7 @@ class _HomePageState extends State<HomePage> {
                     style: Theme.of(context).textTheme.titleMedium!,
                   ),
                 ),
-                Expanded(
-                  child: ReceivedODIDMessageView(message: lastMessage!),
-                ),
+                Expanded(child: ReceivedODIDMessageView(message: lastMessage!)),
               ],
               Column(
                 spacing: padding,
@@ -115,7 +109,7 @@ class _HomePageState extends State<HomePage> {
                         ? [
                             Permission.bluetooth,
                             Permission.bluetoothConnect,
-                            Permission.bluetoothScan
+                            Permission.bluetoothScan,
                           ]
                         : [Permission.bluetooth],
                     name: 'Bluetooth Permission',
@@ -130,15 +124,10 @@ class _HomePageState extends State<HomePage> {
                       permissions: [Permission.location],
                       name: 'Location Permission',
                     ),
-                  ScanButton(
-                    sourceType: DriSourceType.Bluetooth,
-                  ),
-                  if (isAndroid)
-                    ScanButton(
-                      sourceType: DriSourceType.Wifi,
-                    ),
+                  ScanButton(sourceType: DriSourceType.Bluetooth),
+                  if (isAndroid) ScanButton(sourceType: DriSourceType.Wifi),
                 ],
-              )
+              ),
             ],
           ),
         ),

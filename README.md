@@ -4,15 +4,17 @@
 
 A flutter plugin for reading Wi-Fi and Bluetooth Remote ID advertisements using native Android and iOS platform-specific implementation. The format of data is defined in the [ASTM F3411](https://www.astm.org/f3411-22a.html) Remote ID and the [ASD-STAN prEN 4709-002](http://asd-stan.org/downloads/asd-stan-pren-4709-002-p1/) Direct Remote ID specifications.
 
-The platform-specific implementation reads raw message bytes from Wi-Fi and Bluetooth Remote ID advertisements. Then the raw payload with metadata is passed using event channels to the Dart side. Raw data are parsed to Remote ID messages using [Dart-opendroneid library](https://github.com/dronetag/dart-opendroneid).
+The platform-specific implementation reads raw message bytes from Wi-Fi and Bluetooth Remote ID advertisements. Payloads and scan state are delivered to Dart through a direct Pigeon `@FlutterApi` callback (FFI on iOS, JNI on Android), without platform channels. Raw data are parsed to Remote ID messages using [Dart-opendroneid library](https://github.com/dronetag/dart-opendroneid).
 
-[The pigeon library](https://pub.dev/packages/pigeon) is used to define the messaging protocol between the platform host and the Flutter client. The messaging protocol is defined in [schema.dart](pigeon/schema.dart).
+[The pigeon library](https://pub.dev/packages/pigeon) defines the messaging protocol between the platform host and the Flutter client. The protocol is defined in [messages.dart](pigeon/messages.dart) and uses Pigeon's native interop mode (`useFfi` / `useJni`).
 
 The architecture of native code is inspired by [OpenDroneID Android receiver application](https://github.com/opendroneid/receiver-android).
 
 ## Pre-requisities
 
-- Flutter 3.35.1 or newer
+- Flutter 3.50 or newer (Dart 3.14)
+- Android Gradle Plugin 9+ with built-in Kotlin for Android builds
+- For code generation: Android SDK + JDK 17-21 and Xcode command line tools
 
 ## Getting Started
 
@@ -29,7 +31,9 @@ samples, guidance on mobile development, and a full API reference.
 ## Installing
 
 1. Install the project using `flutter pub get`
-2. Generate Pigeon classes by running shell script in `scripts/pigeon_generate.sh`
+2. Generate Pigeon bindings with `./scripts/pigeon_generate.sh`. The script runs Pigeon twice: the first pass emits the Kotlin/Swift bridges, the example plugin is compiled, and the second pass generates the JNI/FFI Dart bindings.
+
+> Pigeon native interop is a preview feature in Flutter 3.50. Generated files are committed, so consumers do not need the generator toolchain.
 
 ## Usage & Setting up permissions
 

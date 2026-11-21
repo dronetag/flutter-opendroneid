@@ -5,18 +5,13 @@ import 'package:flutter_opendroneid/models/received_odid_message.dart';
 class ReceivedODIDMessageView extends StatelessWidget {
   final ReceivedODIDMessage message;
 
-  const ReceivedODIDMessageView({
-    super.key,
-    required this.message,
-  });
+  const ReceivedODIDMessageView({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       shrinkWrap: true,
-      children: [
-        _buildMessage(message.odidMessage),
-      ],
+      children: [_buildMessage(message.odidMessage)],
     );
   }
 

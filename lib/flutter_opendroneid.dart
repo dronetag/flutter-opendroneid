@@ -15,6 +15,16 @@ import 'package:permission_handler/permission_handler.dart';
 
 export 'package:dart_opendroneid/src/types.dart';
 
+export 'src/pigeon/messages.g.dart'
+    show
+        BluetoothPhy,
+        BluetoothState,
+        MessageSource,
+        ODIDMetadata,
+        ODIDPayload,
+        ScanPriority,
+        WifiState;
+
 class FlutterOpenDroneId {
   static pigeon.OdidScannerHostApi? _apiOverride;
 

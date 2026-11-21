@@ -61,8 +61,9 @@ class _RequestPermissionButtonState extends State<RequestPermissionButton>
               if (!mounted) return;
               _checkStatuses();
             },
-      child:
-          Text(granted ? '${widget.name} Granted' : 'Request ${widget.name}'),
+      child: Text(
+        granted ? '${widget.name} Granted' : 'Request ${widget.name}',
+      ),
     );
   }
 }

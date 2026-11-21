@@ -1,3 +1,18 @@
+# 2.0.0
+
+### Breaking changes
+
+* Requires Flutter 3.50 / Dart 3.14 and Android Gradle Plugin 9+ with built-in Kotlin.
+* Replaces all platform channels and event channels with Pigeon 30 native interop (FFI on iOS, JNI on Android). Pigeon native interop is a preview feature.
+* Removes `Api`, `PayloadApi`, `bluetoothOdidPayloadEventChannel`, and `wifiOdidPayloadEventChannel` from the public `pigeon.dart` library.
+* `package:flutter_opendroneid/pigeon.dart` now re-exports the generated models and is deprecated; it will be removed in 3.0.0.
+* `bluetoothState` and `wifiState` streams keep their existing scan-active semantics.
+
+### Features
+
+* Direct `@FlutterApi` callbacks for ODID payloads and scan state.
+* Hot restart re-registers the Dart callback without a full app restart.
+
 # [1.2.0](https://github.com/dronetag/flutter-opendroneid/compare/v1.1.0...v1.2.0) (2026-01-13)
 
 

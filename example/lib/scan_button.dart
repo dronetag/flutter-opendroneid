@@ -5,10 +5,7 @@ import 'package:flutter_opendroneid/models/dri_source_type.dart';
 class ScanButton extends StatefulWidget {
   final DriSourceType sourceType;
 
-  const ScanButton({
-    super.key,
-    required this.sourceType,
-  });
+  const ScanButton({super.key, required this.sourceType});
 
   @override
   State<ScanButton> createState() => _ScanButtonState();
@@ -50,7 +47,7 @@ class _ScanButtonState extends State<ScanButton> {
   }
 
   String get _sourceName => switch (widget.sourceType) {
-        DriSourceType.Bluetooth => 'Bluetooth',
-        DriSourceType.Wifi => 'Wi-Fi',
-      };
+    DriSourceType.Bluetooth => 'Bluetooth',
+    DriSourceType.Wifi => 'Wi-Fi',
+  };
 }
