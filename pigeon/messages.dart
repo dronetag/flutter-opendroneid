@@ -13,12 +13,8 @@ import 'package:pigeon/pigeon.dart';
     ),
   ),
 )
-
 /// Higher priority drains battery but receives more data
-enum ScanPriority {
-  High,
-  Low,
-}
+enum ScanPriority { High, Low }
 
 /// ODID Message Source
 enum MessageSource {
@@ -40,20 +36,9 @@ enum BluetoothState {
 }
 
 /// State of the Wifi adapter
-enum WifiState {
-  Disabling,
-  Disabled,
-  Enabling,
-  Enabled,
-}
+enum WifiState { Disabling, Disabled, Enabling, Enabled }
 
-enum BluetoothPhy {
-  None,
-  Phy1M,
-  Phy2M,
-  PhyLECoded,
-  Unknown,
-}
+enum BluetoothPhy { None, Phy1M, Phy2M, PhyLECoded, Unknown }
 
 class ODIDMetadata {
   ODIDMetadata({
