@@ -10,9 +10,11 @@ Pod::Spec.new do |s|
   s.license          = {}
   s.homepage         = 'https://github.com/dronetag/flutter-opendroneid'
   s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
-  s.platform         = :ios, '8.0'
+  s.source_files     = 'Classes/**/*.{swift,m,h}', 'Classes_objc_gen/**/*.{m,h}'
+  s.platform         = :ios, '13.0'
   
+  s.private_header_files = 'Classes_objc_gen/**/*.h'
+
   s.dependency 'Flutter'
 
   # Flutter.framework does not contain a i386 slice.

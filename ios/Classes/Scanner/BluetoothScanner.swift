@@ -1,14 +1,13 @@
 import Foundation
 import CoreBluetooth
 
-class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
+class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     static let defaultShortServiceUuid = "fffa"
 
-    private let odidPayloadStreamHandler: StreamHandler
-    private let scanStateHandler: StreamHandler
+    private let sink: OdidSink
     
     private var centralManager: CBCentralManager!
-    private var scanPriority: DTGScanPriority = .high
+    private var scanPriority: ScanPriority = .high
     private var restartTimer: Timer?;
     private let restartIntervalSec: TimeInterval = 120.0
     private var shortServiceUuid: String? = nil
@@ -24,9 +23,8 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
     }
     static let odidAdCode: [UInt8] = [ 0x0D ]
     
-    init(odidPayloadStreamHandler: StreamHandler, scanStateHandler: StreamHandler) {
-        self.odidPayloadStreamHandler = odidPayloadStreamHandler
-        self.scanStateHandler = scanStateHandler
+    init(sink: OdidSink) {
+        self.sink = sink
         
         super.init()
         centralManager = CBCentralManager(delegate: self, queue: dispatchQueue)
@@ -60,7 +58,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
         updateScanState()
     }
     
-    func setScanPriority(priority: DTGScanPriority)
+    func setScanPriority(priority: ScanPriority)
     {
         scanPriority = priority
         restartScan()
@@ -77,7 +75,7 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
     }
 
     func updateScanState() {
-        scanStateHandler.send(centralManager.isScanning)
+        sink.onBluetoothScanActive(centralManager.isScanning)
     }
 
     func managerState() async -> Int {
@@ -112,21 +110,27 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate, DTGPayloadApi {
         )    
     }
     
-    func buildPayloadRawData(_ rawData: FlutterStandardTypedData, receivedTimestamp receivedTimestamp: NSNumber, metadata: DTGODIDMetadata, error: AutoreleasingUnsafeMutablePointer<FlutterError?>) -> DTGODIDPayload? {
-        return DTGODIDPayload.make(withRawData: rawData, receivedTimestamp: receivedTimestamp ,metadata: metadata)
-    }
-
     private func handleOdidMessage(advertisementData: [String : Any], didDiscover peripheral: CBPeripheral, rssi RSSI: NSNumber, offset: NSNumber){
         guard let data = getOdidData(from: advertisementData, offset: offset) else {
             // This advertisement is not an ODID ad data
             return
         }
-        var err: FlutterError?
-        let systimestamp = Int(Date().timeIntervalSince1970 * 1000)
-        let metadata = DTGODIDMetadata.make(withMacAddress: peripheral.identifier.uuidString, source: DTGMessageSource.bluetoothLegacy, rssi: RSSI.intValue as NSNumber, btName:  peripheral.name, frequency: nil, centerFreq0: nil, centerFreq1: nil, channelWidthMhz: nil, primaryPhy: DTGBluetoothPhy.unknown, secondaryPhy: DTGBluetoothPhy.unknown)
-        let payload = buildPayloadRawData(data, receivedTimestamp: systimestamp as NSNumber , metadata: metadata , error: &err)
+        let systimestamp = Int64(Date().timeIntervalSince1970 * 1000)
+        let metadata = ODIDMetadata(
+            macAddress: peripheral.identifier.uuidString,
+            source: .bluetoothLegacy,
+            rssi: Int64(RSSI.intValue),
+            btName: peripheral.name,
+            primaryPhy: .unknown,
+            secondaryPhy: .unknown
+        )
+        let payload = ODIDPayload(
+            rawData: [UInt8](data.data),
+            receivedTimestamp: systimestamp,
+            metadata: metadata
+        )
 
-        odidPayloadStreamHandler.send(payload!.toList() as Any)
+        sink.onPayload(payload)
     }
     
     private func getOdidData(from advertisementData: [String : Any], offset: NSNumber) -> FlutterStandardTypedData? {

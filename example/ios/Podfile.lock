@@ -1,34 +1,22 @@
 PODS:
-  - device_info_plus (0.0.1):
-    - Flutter
   - Flutter (1.0.0)
   - flutter_opendroneid (1.0.0):
     - Flutter
-  - permission_handler_apple (9.3.0):
-    - Flutter
 
 DEPENDENCIES:
-  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
   - flutter_opendroneid (from `.symlinks/plugins/flutter_opendroneid/ios`)
-  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
 
 EXTERNAL SOURCES:
-  device_info_plus:
-    :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
     :path: Flutter
   flutter_opendroneid:
     :path: ".symlinks/plugins/flutter_opendroneid/ios"
-  permission_handler_apple:
-    :path: ".symlinks/plugins/permission_handler_apple/ios"
 
 SPEC CHECKSUMS:
-  device_info_plus: 335f3ce08d2e174b9fdc3db3db0f4e3b1f66bd89
-  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_opendroneid: ee1b2725baecf01042167d32fa89b7267d031cd1
-  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
+  Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
+  flutter_opendroneid: fae6fc741b6e05b4848a3e000a4f3a6e512b70b8
 
-PODFILE CHECKSUM: e17c39911160736c550d90a081fa0ced29753627
+PODFILE CHECKSUM: 0fe1b80d8e1492b6f86770fb04a970abaa604dc6
 
 COCOAPODS: 1.16.2
