@@ -2,33 +2,31 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dart_opendroneid/dart_opendroneid.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter_opendroneid/exceptions/odid_message_parsing_exception.dart';
 import 'package:flutter_opendroneid/models/dri_source_type.dart';
 import 'package:flutter_opendroneid/models/permissions_missing_exception.dart';
 import 'package:flutter_opendroneid/models/received_odid_message.dart';
+import 'package:flutter_opendroneid/src/odid_payload_queue.dart';
+import 'package:flutter_opendroneid/src/pigeon/messages.g.dart' as pigeon;
 
-import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
+import 'package:permission_handler/permission_handler.dart';
 
 export 'package:dart_opendroneid/src/types.dart';
 
 class FlutterOpenDroneId {
-  static late pigeon.Api _api = pigeon.Api();
+  static pigeon.OdidScannerHostApi? _apiOverride;
 
-  // event channels
-  static const bluetoothOdidPayloadEventChannel =
-      const EventChannel('flutter_odid_data_bt');
-  static const wifiOdidPayloadEventChannel =
-      const EventChannel('flutter_odid_data_wifi');
-  static const _btStateEventChannel =
-      const EventChannel('flutter_odid_state_bt');
-  static const _wifiStateEventChannel =
-      const EventChannel('flutter_odid_state_wifi');
+  static pigeon.OdidScannerHostApi get _api =>
+      _apiOverride ??= pigeon.OdidScannerHostApi.createWithNativeInteropApi();
 
-  static StreamSubscription? _receivedBluetoothMessagesSubscription;
-  static StreamSubscription? _receivedWiFiMessagesSubscription;
+  @visibleForTesting
+  static set debugApi(pigeon.OdidScannerHostApi api) => _apiOverride = api;
+
+  static final _bluetoothScanActiveController =
+      StreamController<bool>.broadcast();
+  static final _wifiScanActiveController = StreamController<bool>.broadcast();
 
   static final _receivedMessagesController =
       StreamController<ReceivedODIDMessage>.broadcast();
@@ -36,19 +34,27 @@ class FlutterOpenDroneId {
   static final _rawMessagesController =
       StreamController<pigeon.ODIDPayload>.broadcast();
 
+  static final OdidPayloadQueue<pigeon.ODIDPayload> _payloadQueue =
+      OdidPayloadQueue<pigeon.ODIDPayload>(
+        onPayload: _handlePayload,
+        onError: (Object error, StackTrace stack) =>
+            Zone.current.handleUncaughtError(error, stack),
+      );
+
+  static bool _flutterApiRegistered = false;
+
   static Stream<ReceivedODIDMessage> get receivedMessages =>
       _receivedMessagesController.stream;
 
   static Stream<pigeon.ODIDPayload> get rawMessages =>
       _rawMessagesController.stream;
 
-  static Stream<bool> get bluetoothState => _btStateEventChannel
-      .receiveBroadcastStream()
-      .map((event) => event as bool);
+  /// Emits whether a Bluetooth scan is currently active.
+  static Stream<bool> get bluetoothState =>
+      _bluetoothScanActiveController.stream;
 
-  static Stream<bool> get wifiState => _wifiStateEventChannel
-      .receiveBroadcastStream()
-      .map((event) => event as bool);
+  /// Emits whether a Wi-Fi scan is currently active.
+  static Stream<bool> get wifiState => _wifiScanActiveController.stream;
 
   static Future<bool> get btTurnedOn async =>
       await _api.bluetoothState() ==
@@ -60,6 +66,7 @@ class FlutterOpenDroneId {
 
   /// Initialize the plugin before using.
   static Future<void> initialize() async {
+    _registerFlutterApi();
     await _api.initialize();
   }
 
@@ -84,23 +91,15 @@ class FlutterOpenDroneId {
   /// stream.
   ///
   /// Plugin must be initialized by calling [initialize] before using.
-  static Future<void> startScan(DriSourceType sourceType,
-      {String? bluetoothServiceUuid = "fffa"}) async {
+  static Future<void> startScan(
+    DriSourceType sourceType, {
+    String? bluetoothServiceUuid = "fffa",
+  }) async {
     if (sourceType == DriSourceType.Bluetooth) {
       await _assertBluetoothPermissions();
-      _receivedBluetoothMessagesSubscription?.cancel();
-      _receivedBluetoothMessagesSubscription = bluetoothOdidPayloadEventChannel
-          .receiveBroadcastStream()
-          .listen(
-              (payload) => _handlePayload(pigeon.ODIDPayload.decode(payload)));
       await _api.startScanBluetooth(bluetoothServiceUuid);
     } else if (sourceType == DriSourceType.Wifi) {
       await _assertWifiPermissions();
-      _receivedWiFiMessagesSubscription?.cancel();
-      _receivedWiFiMessagesSubscription = wifiOdidPayloadEventChannel
-          .receiveBroadcastStream()
-          .listen(
-              (payload) => _handlePayload(pigeon.ODIDPayload.decode(payload)));
       await _api.startScanWifi();
     }
   }
@@ -110,11 +109,9 @@ class FlutterOpenDroneId {
     if (sourceType == DriSourceType.Bluetooth &&
         (await _api.isScanningBluetooth())) {
       await _api.stopScanBluetooth();
-      _receivedBluetoothMessagesSubscription?.cancel();
     }
     if (sourceType == DriSourceType.Wifi && await _api.isScanningWifi()) {
       await _api.stopScanWifi();
-      _receivedWiFiMessagesSubscription?.cancel();
     }
   }
 
@@ -140,6 +137,14 @@ class FlutterOpenDroneId {
 
   static Future<bool> get isScanningWifi async => await _api.isScanningWifi();
 
+  static void _registerFlutterApi() {
+    if (_flutterApiRegistered) {
+      return;
+    }
+    _flutterApiRegistered = true;
+    pigeon.OdidScannerFlutterApi.setUp(_FlutterApiImpl());
+  }
+
   static void _handlePayload(pigeon.ODIDPayload payload) {
     _rawMessagesController.add(payload);
 
@@ -159,10 +164,12 @@ class FlutterOpenDroneId {
 
     _receivedMessagesController.add(
       ReceivedODIDMessage(
-          odidMessage: message,
-          metadata: payload.metadata,
-          receivedTimestamp:
-              DateTime.fromMillisecondsSinceEpoch(payload.receivedTimestamp)),
+        odidMessage: message,
+        metadata: payload.metadata,
+        receivedTimestamp: DateTime.fromMillisecondsSinceEpoch(
+          payload.receivedTimestamp,
+        ),
+      ),
     );
   }
 
@@ -218,4 +225,23 @@ class FlutterOpenDroneId {
     final androidVersion = (await deviceInfo.androidInfo).version.release;
     return int.tryParse(androidVersion);
   }
+}
+
+class _FlutterApiImpl implements pigeon.OdidScannerFlutterApi {
+  @override
+  void onOdidPayload(pigeon.ODIDPayload payload) =>
+      FlutterOpenDroneId._payloadQueue.add(payload);
+
+  @override
+  void onBluetoothScanActive(bool isActive) =>
+      FlutterOpenDroneId._bluetoothScanActiveController.add(isActive);
+
+  @override
+  void onWifiScanActive(bool isActive) =>
+      FlutterOpenDroneId._wifiScanActiveController.add(isActive);
+}
+
+/// Registered by Flutter as the plugin's `dartPluginClass`, including on hot restart.
+class FlutterOpenDroneIdPlugin {
+  static void registerWith() => FlutterOpenDroneId._registerFlutterApi();
 }

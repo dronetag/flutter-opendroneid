@@ -1,4 +1,4 @@
-import 'package:flutter_opendroneid/pigeon.dart';
+import 'package:flutter_opendroneid/src/pigeon/messages.g.dart';
 
 class ODIDMessageParsingException implements Exception {
   final Object relatedException;

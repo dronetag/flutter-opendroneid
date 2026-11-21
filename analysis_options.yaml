@@ -1,0 +1,7 @@
+analyzer:
+  exclude:
+    - lib/src/pigeon/**
+    - example/**
+    - build/**
+    - android/**
+    - ios/**
