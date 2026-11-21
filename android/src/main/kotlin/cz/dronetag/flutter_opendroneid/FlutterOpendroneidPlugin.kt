@@ -13,7 +13,15 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 
-/** FlutterOpendroneidPlugin */
+/**
+ * Android host implementation of the Pigeon `OdidScannerHostApi`.
+ *
+ * The plugin registers itself with the generated `OdidScannerHostApiRegistrar`
+ * on engine attach and unregisters that exact instance on detach. Scanner
+ * events flow through [FlutterApiSink] directly to Dart; no event channels are
+ * used. `initialize` must run on the platform main thread because it registers
+ * broadcast receivers against the current [Activity].
+ */
 class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, OdidScannerHostApi {
 
     private lateinit var sink: FlutterApiSink
@@ -25,6 +33,9 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, OdidScannerHostAp
     private var wifiScanner: WifiScanner? = null
     private var wifiNaNScanner: WifiNaNScanner? = null
 
+    /**
+     * Creates the callback sink and registers this instance for the engine.
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onAttachedToEngine(
             @NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding
@@ -51,6 +62,9 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, OdidScannerHostAp
         }
     }
 
+    /**
+     * Unregisters this instance, stops every scanner, and drops references.
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         OdidScannerHostApiRegistrar().unregister(this, binding)
@@ -151,12 +165,14 @@ class FlutterOpendroneidPlugin : FlutterPlugin, ActivityAware, OdidScannerHostAp
     override fun wifiNaNSupported(): Boolean =
         (wifiNaNScanner ?: notInitialized()).isWifiAwareSupported()
 
+    /** Error thrown when a host method runs before [initialize]. */
     private fun notInitialized(): Nothing = throw FlutterError(
         "uninitialized",
         "Plugin was not initialized",
         "Call the initialize method before using the plugin",
     )
 
+    /** Error thrown when [initialize] runs without an attached Activity. */
     private fun notAttached(): Nothing = throw FlutterError(
         "uninitialized",
         "Unable to initialize, plugin was not attached to activity",

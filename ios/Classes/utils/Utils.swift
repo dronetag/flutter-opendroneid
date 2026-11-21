@@ -1,5 +1,6 @@
 import Foundation
 
+/// Little-endian helpers used by the advertisement parsers.
 extension Data {
     var uint8: UInt8 {
         get {
@@ -25,6 +26,7 @@ extension Data {
 }
 
 extension String {
+    /// Whether every character is a hexadecimal digit.
     var isHexNumber: Bool {
         filter(\.isHexDigit).count == count
     }

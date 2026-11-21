@@ -10,6 +10,10 @@ The platform-specific implementation reads raw message bytes from Wi-Fi and Blue
 
 The architecture of native code is inspired by [OpenDroneID Android receiver application](https://github.com/opendroneid/receiver-android).
 
+## Migrating from 1.x
+
+See [MIGRATION.md](MIGRATION.md) for the 2.0 breaking changes and runtime notes.
+
 ## Pre-requisities
 
 - Flutter 3.50 or newer (Dart 3.14)

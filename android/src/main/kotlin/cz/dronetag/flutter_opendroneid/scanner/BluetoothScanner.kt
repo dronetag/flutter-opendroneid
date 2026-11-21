@@ -14,6 +14,12 @@ import java.util.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
+/**
+ * Scans Bluetooth LE legacy and extended advertisements for ODID service data.
+ *
+ * Scan priorities are mapped to Android [ScanSettings] modes; the configured
+ * 16-bit service UUID defaults to `fffa` and can be overridden.
+ */
 class BluetoothScanner(
     private val sink: OdidSink,
 ) : ODIDScanner(sink) {

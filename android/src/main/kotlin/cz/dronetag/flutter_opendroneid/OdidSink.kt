@@ -5,12 +5,27 @@ import android.os.Looper
 import io.flutter.Log
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 
+/**
+ * Receives scanner events and forwards them to the Dart `OdidScannerFlutterApi`.
+ *
+ * Implementations must be safe to call from scanner threads; [FlutterApiSink]
+ * marshals to the platform main thread.
+ */
 interface OdidSink {
     fun onPayload(payload: ODIDPayload)
     fun onBluetoothScanActive(isActive: Boolean)
     fun onWifiScanActive(isActive: Boolean)
 }
 
+/**
+ * Resolves the Dart callback for each event instead of caching it.
+ *
+ * Pigeon keeps Dart registrations in process memory and a hot restart replaces
+ * them; looking up per event picks up the new isolate. Calls are marshalled to
+ * the main looper because Flutter API callbacks must run on the thread that
+ * registered them, and failures from a stale registration are logged instead of
+ * crashing the scanner.
+ */
 class FlutterApiSink(
     private val binding: FlutterPlugin.FlutterPluginBinding,
 ) : OdidSink {

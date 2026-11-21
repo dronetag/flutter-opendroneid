@@ -1,6 +1,10 @@
 import Foundation
 import CoreBluetooth
 
+/// Scans Bluetooth LE advertisements for ODID service data.
+///
+/// CoreBluetooth callbacks run on [dispatchQueue]; [sink] is responsible for
+/// hopping to the main queue before calling into Dart.
 class BluetoothScanner: NSObject, CBCentralManagerDelegate {
     static let defaultShortServiceUuid = "fffa"
 
@@ -78,6 +82,8 @@ class BluetoothScanner: NSObject, CBCentralManagerDelegate {
         sink.onBluetoothScanActive(centralManager.isScanning)
     }
 
+    /// Current CoreBluetooth state, waiting for the first update when the
+    /// manager is still `.unknown`.
     func managerState() async -> Int {
         if centralManager.state != .unknown {
             return centralManager.state.rawValue

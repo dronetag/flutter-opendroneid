@@ -9,6 +9,14 @@ void _defaultSchedule(void Function() callback) => scheduleMicrotask(callback);
 
 /// Buffers payloads delivered by a synchronous native callback and processes
 /// them in a later microtask, so the native caller never runs Dart parsing.
+///
+/// Guarantees:
+/// * payloads are delivered in arrival order;
+/// * at most one drain is scheduled at a time;
+/// * a throwing [onPayload] is reported to [onError] and does not stop later
+///   payloads from being processed;
+/// * when more than [maxPending] payloads are waiting, the oldest is dropped
+///   and [onOverflow] fires once per overflow episode.
 class OdidPayloadQueue<T> {
   OdidPayloadQueue({
     required this.onPayload,
@@ -25,13 +33,18 @@ class OdidPayloadQueue<T> {
   final int maxPending;
 
   /// Called once, when the first payload is dropped because the queue is full.
+  ///
+  /// The counter keeps increasing while the queue stays full, but the callback
+  /// is not repeated until a later overflow episode.
   final void Function()? onOverflow;
   final Queue<T> _pending = Queue<T>();
   bool _drainScheduled = false;
   int _droppedPayloadCount = 0;
 
+  /// Total payloads discarded because the queue was full.
   int get droppedPayloadCount => _droppedPayloadCount;
 
+  /// Enqueues [payload] and schedules a drain if none is pending.
   void add(T payload) {
     if (_pending.length >= maxPending) {
       final isFirstDrop = _droppedPayloadCount == 0;
@@ -49,6 +62,7 @@ class OdidPayloadQueue<T> {
     _schedule(_drain);
   }
 
+  /// Delivers every queued payload. Errors are isolated per payload.
   void _drain() {
     _drainScheduled = false;
     while (_pending.isNotEmpty) {

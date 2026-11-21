@@ -12,7 +12,8 @@ import android.os.CountDownTimer
 import java.nio.ByteOrder
 import java.util.*
 
-/// Wi-Fi Beacons Scanner
+/// Scans Wi-Fi beacons for ODID vendor information elements.
+///
 /// There are 2 ways to control WiFi scan:
 /// Continuous scan: Calls startScan() from scan completion callback
 /// Periodic scan: countdown timer triggers startScan after expiry of the timer.

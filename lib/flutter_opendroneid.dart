@@ -26,12 +26,24 @@ export 'src/pigeon/messages.g.dart'
         ScanPriority,
         WifiState;
 
+/// Reads Wi-Fi and Bluetooth Remote ID advertisements from the native
+/// Android and iOS scanners.
+///
+/// Call [initialize] once from the root isolate before using any other member.
+/// Control calls go through Pigeon native interop (JNI on Android, FFI on
+/// iOS); payloads and scan state arrive through a direct native callback and
+/// are exposed as broadcast streams.
+///
+/// Parsing happens in a microtask after the native callback returns, so the
+/// platform thread is never blocked. Parse failures are reported through
+/// [Zone.current.handleUncaughtError] in the isolate's root zone.
 class FlutterOpenDroneId {
   static pigeon.OdidScannerHostApi? _apiOverride;
 
   static pigeon.OdidScannerHostApi get _api =>
       _apiOverride ??= pigeon.OdidScannerHostApi.createWithNativeInteropApi();
 
+  /// Replaces the native host API in tests.
   @visibleForTesting
   static set debugApi(pigeon.OdidScannerHostApi api) => _apiOverride = api;
 
@@ -64,9 +76,17 @@ class FlutterOpenDroneId {
   @visibleForTesting
   static pigeon.OdidScannerFlutterApi get debugFlutterApi => _FlutterApiImpl();
 
+  /// Parsed Remote ID messages from every active scan.
+  ///
+  /// A malformed advertisement is reported as an uncaught
+  /// [ODIDMessageParsingException] and does not stop later messages.
   static Stream<ReceivedODIDMessage> get receivedMessages =>
       _receivedMessagesController.stream;
 
+  /// Raw payload bytes plus radio metadata, before ODID parsing.
+  ///
+  /// Use this when you want to parse advertisements yourself. Events are
+  /// delivered in the same order as [receivedMessages].
   static Stream<pigeon.ODIDPayload> get rawMessages =>
       _rawMessagesController.stream;
 
@@ -77,10 +97,14 @@ class FlutterOpenDroneId {
   /// Emits whether a Wi-Fi scan is currently active.
   static Stream<bool> get wifiState => _wifiScanActiveController.stream;
 
+  /// Whether the Bluetooth adapter is powered on.
+  ///
+  /// On iOS this may wait for CoreBluetooth to report its initial state.
   static Future<bool> get btTurnedOn async =>
       await _api.bluetoothState() ==
       pigeon.BluetoothState.values.indexOf(pigeon.BluetoothState.PoweredOn);
 
+  /// Whether the Wi-Fi adapter is enabled.
   static Future<bool> get wifiTurnedOn async =>
       await _api.wifiState() ==
       pigeon.WifiState.values.indexOf(pigeon.WifiState.Enabled);
@@ -95,7 +119,7 @@ class FlutterOpenDroneId {
     await _api.initialize();
   }
 
-  /// Check whether plugin was correctly initialized.
+  /// Whether [initialize] has completed and the native scanners exist.
   static Future<bool> isInitialized() async {
     return await _api.isInitialized();
   }
@@ -129,7 +153,10 @@ class FlutterOpenDroneId {
     }
   }
 
-  /// Stops any currently running scan
+  /// Stops the scan for [sourceType] if it is running.
+  ///
+  /// The corresponding [bluetoothState] / [wifiState] stream emits `false`
+  /// once the native scanner stops.
   static Future<void> stopScan(DriSourceType sourceType) async {
     if (sourceType == DriSourceType.Bluetooth &&
         (await _api.isScanningBluetooth())) {
@@ -140,28 +167,41 @@ class FlutterOpenDroneId {
     }
   }
 
+  /// Changes the Bluetooth scan priority.
+  ///
+  /// A high priority drains the battery faster but receives more data. If a
+  /// scan is running, the native scanner restarts it with the new priority.
   static Future<void> setBtScanPriority(pigeon.ScanPriority priority) async {
     await _api.setBtScanPriority(priority);
   }
 
+  /// Overrides the 16-bit service UUID used to recognize ODID Bluetooth
+  /// advertisements (four hexadecimal characters, e.g. `fffa`).
   static Future<void> setBtServiceUuid(String? serviceUuid) async {
     await _api.setBtServiceUuid(serviceUuid);
   }
 
+  /// Whether the native Bluetooth scanner is currently running.
   static Future<bool> get isScanningBluetooth async {
     return _api.isScanningBluetooth();
   }
 
+  /// Whether Bluetooth LE extended advertising is supported (Android).
   static Future<bool> get isBluetoothExtendedSupported async =>
       await _api.btExtendedSupported();
 
+  /// Whether Wi-Fi Aware (NAN) is supported (Android).
   static Future<bool> get isWifiNanSupported async =>
       await _api.wifiNaNSupported();
 
+  /// Maximum Bluetooth advertising payload length supported by the adapter.
   static Future<int> get btMaxAdvDataLen async => await _api.btMaxAdvDataLen();
 
+  /// Whether the native Wi-Fi scanner is currently running.
   static Future<bool> get isScanningWifi async => await _api.isScanningWifi();
 
+  /// Registers the Dart callback that native scanners call. Idempotent for the
+  /// lifetime of an isolate; a hot restart installs a fresh registration.
   static void _registerFlutterApi() {
     if (_flutterApiRegistered) {
       return;
@@ -170,6 +210,8 @@ class FlutterOpenDroneId {
     _flutterApiRegistered = true;
   }
 
+  /// Parses one payload and forwards it to both streams. Runs on the Dart event
+  /// loop, never inside the native callback.
   static void _handlePayload(pigeon.ODIDPayload payload) {
     _rawMessagesController.add(payload);
 
@@ -252,6 +294,10 @@ class FlutterOpenDroneId {
   }
 }
 
+/// Direct native-to-Dart callback implementation.
+///
+/// Every method does constant work: payloads are queued for a microtask drain
+/// and scan-state updates are forwarded to the corresponding broadcast stream.
 class _FlutterApiImpl implements pigeon.OdidScannerFlutterApi {
   @override
   void onOdidPayload(pigeon.ODIDPayload payload) =>

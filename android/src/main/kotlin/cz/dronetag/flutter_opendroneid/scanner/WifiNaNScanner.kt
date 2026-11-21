@@ -26,6 +26,12 @@ import java.util.Arrays;
 import java.util.List;
 
 
+/**
+ * Subscribes to Wi-Fi Aware (NAN) service advertisements for ODID payloads.
+ *
+ * Devices without the Wi-Fi Aware feature report [isWifiAwareSupported] as
+ * `false` and never start a session.
+ */
 class WifiNaNScanner (
     private val sink: OdidSink,
     private val wifiAwareManager: WifiAwareManager?,

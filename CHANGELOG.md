@@ -2,6 +2,8 @@
 
 ### Breaking changes
 
+See [MIGRATION.md](MIGRATION.md) for the full upgrade guide.
+
 * Requires Flutter 3.50 / Dart 3.14 and Android Gradle Plugin 9+ with built-in Kotlin.
 * Replaces all platform channels and event channels with Pigeon 30 native interop (FFI on iOS, JNI on Android). Pigeon native interop is a preview feature.
 * Removes `Api`, `PayloadApi`, and the `FlutterOpenDroneId.bluetoothOdidPayloadEventChannel` / `wifiOdidPayloadEventChannel` constants.

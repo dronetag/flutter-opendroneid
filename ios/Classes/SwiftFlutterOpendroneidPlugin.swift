@@ -1,6 +1,11 @@
 import Flutter
 import UIKit
 
+/// iOS host implementation of the Pigeon `OdidScannerHostApi`.
+///
+/// Registration goes through `OdidScannerHostApiSetup`; scanner events reach
+/// Dart through `FlutterApiSink` without event channels. Wi-Fi scanning is not
+/// available on iOS and its methods throw a `PigeonError`.
 public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, OdidScannerHostApi {
     private let registrar: FlutterPluginRegistrar
     private let sink: FlutterApiSink
@@ -13,12 +18,15 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, OdidScanner
         super.init()
     }
 
+    /// Creates the plugin, publishes it (so `detachFromEngine` is called), and
+    /// registers this instance for the engine.
     public static func register(with registrar: FlutterPluginRegistrar) {
         let instance = SwiftFlutterOpendroneidPlugin(registrar: registrar)
         registrar.publish(instance)
         OdidScannerHostApiSetup.register(api: instance, registrar: registrar)
     }
 
+    /// Removes this instance from the native interop registry for the engine.
     public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
         OdidScannerHostApiSetup.unregister(api: self, registrar: registrar)
     }
@@ -102,6 +110,7 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, OdidScanner
         return Int64(WifiState.disabled.rawValue)
     }
 
+    /// Error thrown when a host method runs before `initialize`.
     private func notInitialized() -> PigeonError {
         return PigeonError(
             code: "uninitialized",
@@ -110,6 +119,7 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, OdidScanner
         )
     }
 
+    /// Error thrown by the Wi-Fi host methods on iOS.
     private func wifiUnavailable() -> PigeonError {
         return PigeonError(
             code: "unimplemented",

@@ -4,9 +4,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 
-/// Contains common functionality for ODID scanners.
-/// Derived scanners should use receiveData method that takes raw data and metadata
-/// and sends it to the Flutter API sink.
+/// Common base for ODID scanners.
+///
+/// Derived scanners call [receiveData] with raw bytes and radio metadata. The
+/// payload is timestamped here and forwarded through [OdidSink]; no platform
+/// channel or event sink is involved.
 abstract class ODIDScanner(
     private val sink: OdidSink,
 ) {
@@ -39,7 +41,7 @@ abstract class ODIDScanner(
         metadata: ODIDMetadata,
     ): ODIDPayload = ODIDPayload(rawData, receivedTimestamp, metadata)
 
-    /// receive data and metadata, create [ODIDPayload] and send it to Dart
+    /// Creates an [ODIDPayload] with the current time and sends it to Dart.
     fun receiveData(
         data: ByteArray, metadata: ODIDMetadata,
     ) {
@@ -50,11 +52,11 @@ abstract class ODIDScanner(
         sink.onPayload(payload)
     }
 
-    /// returns ByteArray without first offset elements
+    /// Returns the bytes after skipping the first [offset] elements.
     inline fun offsetData(data: ByteArray, offset: Int): ByteArray =
         data.copyOfRange(offset, data.size)
 
-    /// returns ByteArray with bytes from start to end
+    /// Returns the bytes in the half-open range `[start, end)`.
     inline fun getDataFromIndex(data: ByteArray, start: Int, end: Int): ByteArray =
         data.copyOfRange(start, end)
 }

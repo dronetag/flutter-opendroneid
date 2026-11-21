@@ -100,36 +100,44 @@ const Map<OperationalStatus, String> _operationalStatusConversionMap = {
   OperationalStatus.none: 'Unknown',
 };
 
+/// Converts the encoded horizontal accuracy to meters, or `null` when unknown.
 extension HorizontalAccuracyConversion on HorizontalAccuracy {
   double? toMeters() => _horizontalAccuracyConversionMap[this];
 }
 
+/// Converts the encoded vertical accuracy to meters, or `null` when unknown.
 extension VerticalAccuracyConversion on VerticalAccuracy {
   double? toMeters() => _verticalAccuracyConversionMap[this];
 }
 
+/// Converts the encoded speed accuracy to meters per second, or `null` when
+/// unknown.
 extension SpeedAccuracyConversion on SpeedAccuracy {
   double? toMetersPerSecond() => _speedAccuracyConversionMap[this];
 }
 
+/// Human-readable form of the UAS identifier, or `null` when not present.
 extension UASIDConversion on UASID {
   String? asString() => switch (this) {
-        IDNone() => null,
-        SerialNumber(serialNumber: final sn) => sn,
-        CAARegistrationID(registrationID: final regId) => regId,
-        UTMAssignedID(id: final id) => id.toHexString(),
-        SpecificSessionID(id: final id) => id.toHexString(),
-      };
+    IDNone() => null,
+    SerialNumber(serialNumber: final sn) => sn,
+    CAARegistrationID(registrationID: final regId) => regId,
+    UTMAssignedID(id: final id) => id.toHexString(),
+    SpecificSessionID(id: final id) => id.toHexString(),
+  };
 }
 
+/// Human-readable ID type label.
 extension IDTypeConversion on IDType {
   String? asString() => _idTypeConversionMap[this];
 }
 
+/// Human-readable aircraft type label.
 extension UATypeConversion on UAType {
   String? asString() => _uaTypeConversionMap[this];
 }
 
+/// Helpers for the European Union UA classification.
 extension UAClassificationConversion on UAClassification {
   bool isEuropeClassification() => this is UAClassificationEurope;
   String? uaClassEuropeString() => isEuropeClassification()
@@ -140,22 +148,27 @@ extension UAClassificationConversion on UAClassification {
       : null;
 }
 
+/// Human-readable EU category label.
 extension UACategoryEuropeConversion on UACategoryEurope {
   String? asString() => _uaCategoryEuropeConversionMap[this];
 }
 
+/// Human-readable EU class label.
 extension UAClassEuropeConversion on UAClassEurope {
   String? asString() => _uaClassEuropeConversionMap[this];
 }
 
+/// Human-readable operator location type label.
 extension OperatorLocationTypeConversion on OperatorLocationType {
   String? asString() => _operatorLocTypeConversionMap[this];
 }
 
+/// Human-readable height reference label.
 extension HeightTypeConversion on HeightType {
   String? asString() => _heightTypeConversionMap[this];
 }
 
+/// Human-readable operational status label.
 extension OperationalStatusConversion on OperationalStatus {
   String? asString() => _operationalStatusConversionMap[this];
 }
