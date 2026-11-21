@@ -1,5 +1,19 @@
 import 'package:pigeon/pigeon.dart';
 
+@ConfigurePigeon(
+  PigeonOptions(
+    appDirectory: 'example',
+    configDirectory: 'example',
+    dartOptions: DartOptions(),
+    kotlinOptions: KotlinOptions(useJni: true),
+    swiftOptions: SwiftOptions(
+      useFfi: true,
+      ffiModuleName: 'flutter_opendroneid',
+      includeErrorClass: true,
+    ),
+  ),
+)
+
 /// Higher priority drains battery but receives more data
 enum ScanPriority {
   High,
@@ -42,6 +56,19 @@ enum BluetoothPhy {
 }
 
 class ODIDMetadata {
+  ODIDMetadata({
+    required this.macAddress,
+    required this.source,
+    this.rssi,
+    this.btName,
+    this.frequency,
+    this.centerFreq0,
+    this.centerFreq1,
+    this.channelWidthMhz,
+    this.primaryPhy,
+    this.secondaryPhy,
+  });
+
   final String macAddress;
 
   final MessageSource source;
@@ -61,73 +88,45 @@ class ODIDMetadata {
   final BluetoothPhy? primaryPhy;
 
   final BluetoothPhy? secondaryPhy;
-
-  ODIDMetadata({
-    required this.macAddress,
-    required this.source,
-    this.rssi,
-    this.btName,
-    this.frequency,
-    this.channelWidthMhz,
-    this.centerFreq0,
-    this.centerFreq1,
-    this.primaryPhy,
-    this.secondaryPhy,
-  });
 }
 
-/// Payload send from native to dart contains raw data and metadata
+/// Payload sent from native to Dart contains raw data and metadata
 class ODIDPayload {
+  ODIDPayload(this.rawData, this.receivedTimestamp, this.metadata);
+
   final Uint8List rawData;
 
   final int receivedTimestamp;
 
   final ODIDMetadata metadata;
-
-  ODIDPayload(
-    this.rawData,
-    this.receivedTimestamp,
-    this.metadata,
-  );
 }
 
 @HostApi()
-abstract class Api {
-  @async
+abstract class OdidScannerHostApi {
   void initialize();
-  @async
   bool isInitialized();
-  @async
   void startScanBluetooth(String? serviceUuid);
-  @async
   void startScanWifi();
-  @async
   void stopScanBluetooth();
-  @async
   void stopScanWifi();
-  @async
   void setBtScanPriority(ScanPriority priority);
-  @async
   void setBtServiceUuid(String? serviceUuid);
-  @async
   bool isScanningBluetooth();
-  @async
   bool isScanningWifi();
+
+  /// Waits for the iOS CoreBluetooth state when it is still unknown.
   @async
   int bluetoothState();
-  @async
+
   int wifiState();
-  @async
   bool btExtendedSupported();
-  @async
   int btMaxAdvDataLen();
-  @async
   bool wifiNaNSupported();
 }
 
-// ODIDPayload is not generated until used in API
-@HostApi()
-abstract class PayloadApi {
-  ODIDPayload buildPayload(
-      Uint8List rawData, int receivedTimestamp, ODIDMetadata metadata);
+@FlutterApi()
+abstract class OdidScannerFlutterApi {
+  void onOdidPayload(ODIDPayload payload);
+  void onBluetoothScanActive(bool isActive);
+  void onWifiScanActive(bool isActive);
 }

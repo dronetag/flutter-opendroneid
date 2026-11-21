@@ -53,3 +53,6 @@ app.*.map.json
 # Mac
 .DS_Store
 build/
+
+# Pigeon FFIgen temporary object files
+*_objc_gen/**/*.o
