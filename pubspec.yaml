@@ -3,16 +3,28 @@ description: A flutter plugin for reading Wi-Fi and Bluetooth Remote ID advertis
 version: 1.2.0
 repository: https://github.com/dronetag/flutter-opendroneid
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.35.1"
+  sdk: ^3.14.0
+  flutter: ">=3.50.0"
 dependencies:
   flutter:
     sdk: flutter
   permission_handler: ^12.0.0
   device_info_plus: ^9.1.2
   dart_opendroneid: ^1.0.0
+  ffi: ^2.2.0
+  objective_c: ">=9.6.2 <9.6.3"
+  meta: ^1.19.0
+  jni: ^1.1.1
 dev_dependencies:
-  pigeon: ^10.1.6
+  flutter_test:
+    sdk: flutter
+  ffigen: ^22.0.0
+  jnigen: ^1.0.0
+  path: ^1.9.1
+  pigeon: ^30.0.4
+  pub_semver: ^2.2.1
+  swift2objc: ^0.3.1
+  swiftgen: ^0.2.0
 flutter:
   plugin:
     platforms:
