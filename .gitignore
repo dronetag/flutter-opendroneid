@@ -60,3 +60,6 @@ build/
 # Maestro E2E screenshots
 example/*.png
 example/maestro-artifacts/
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
