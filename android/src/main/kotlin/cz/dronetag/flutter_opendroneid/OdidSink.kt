@@ -37,7 +37,11 @@ class FlutterApiSink(
 
     private fun withApi(block: (OdidScannerFlutterApi) -> Unit) {
         onMain {
-            val api = OdidScannerFlutterApiRegistrar().getInstance(binding) ?: return@onMain
+            val api = OdidScannerFlutterApiRegistrar().getInstance(binding)
+            if (api == null) {
+                Log.w("FlutterOpenDroneId", "Dropping native callback: no Dart API registered")
+                return@onMain
+            }
             try {
                 block(api)
             } catch (error: Throwable) {

@@ -5,10 +5,18 @@ typedef PayloadHandler<T> = void Function(T payload);
 typedef PayloadErrorHandler = void Function(Object error, StackTrace stack);
 typedef ScheduleCallback = void Function(void Function() callback);
 
-void _defaultSchedule(void Function() callback) => scheduleMicrotask(callback);
+/// Schedules [callback] as an event-loop task.
+///
+/// A microtask is not enough: JNI and FFI callbacks invoked on the platform
+/// thread enter the isolate directly, outside the event loop, and microtasks
+/// queued there only run when some unrelated event arrives later. A
+/// zero-duration timer posts a message to the isolate, which wakes the event
+/// loop and flushes microtasks (stream deliveries, `setState`) afterwards.
+void _defaultSchedule(void Function() callback) => Timer.run(callback);
 
 /// Buffers payloads delivered by a synchronous native callback and processes
-/// them in a later microtask, so the native caller never runs Dart parsing.
+/// them in a later event-loop task, so the native caller never runs Dart
+/// parsing.
 ///
 /// Guarantees:
 /// * payloads are delivered in arrival order;

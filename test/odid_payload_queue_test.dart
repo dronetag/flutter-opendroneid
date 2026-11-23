@@ -83,4 +83,20 @@ void main() {
     expect(queue.droppedPayloadCount, 2);
     expect(overflowCalls, 1);
   });
+
+  test('default schedule drains in an event-loop task, not a microtask', () async {
+    // Native interop callbacks enter the isolate outside the event loop, so a
+    // microtask scheduled there may never run; the drain must be a real event.
+    final delivered = <int>[];
+    final queue = OdidPayloadQueue<int>(onPayload: delivered.add);
+
+    queue.add(1);
+    await Future<void>.microtask(() {});
+
+    expect(delivered, isEmpty);
+
+    await Future<void>.delayed(Duration.zero);
+
+    expect(delivered, <int>[1]);
+  });
 }

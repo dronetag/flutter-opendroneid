@@ -34,8 +34,8 @@ export 'src/pigeon/messages.g.dart'
 /// iOS); payloads and scan state arrive through a direct native callback and
 /// are exposed as broadcast streams.
 ///
-/// Parsing happens in a microtask after the native callback returns, so the
-/// platform thread is never blocked. Parse failures are reported through
+/// Parsing happens in a separate event-loop task after the native callback
+/// returns, so the platform thread is never blocked. Parse failures are reported through
 /// [Zone.current.handleUncaughtError] in the isolate's root zone.
 class FlutterOpenDroneId {
   static pigeon.OdidScannerHostApi? _apiOverride;
@@ -296,18 +296,26 @@ class FlutterOpenDroneId {
 
 /// Direct native-to-Dart callback implementation.
 ///
-/// Every method does constant work: payloads are queued for a microtask drain
-/// and scan-state updates are forwarded to the corresponding broadcast stream.
+/// Every method does constant work and defers delivery to an event-loop task.
+///
+/// Native interop invokes these methods on the platform thread by entering the
+/// isolate directly, outside its event loop. Microtasks queued there (including
+/// broadcast stream deliveries) would only run when an unrelated event arrives,
+/// so payloads go through [OdidPayloadQueue] and scan-state updates through
+/// [Timer.run]. Zero-duration timers run in order, so scan-state and payload
+/// events keep their relative order.
 class _FlutterApiImpl implements pigeon.OdidScannerFlutterApi {
   @override
   void onOdidPayload(pigeon.ODIDPayload payload) =>
       FlutterOpenDroneId._payloadQueue.add(payload);
 
   @override
-  void onBluetoothScanActive(bool isActive) =>
-      FlutterOpenDroneId._bluetoothScanActiveController.add(isActive);
+  void onBluetoothScanActive(bool isActive) => Timer.run(
+    () => FlutterOpenDroneId._bluetoothScanActiveController.add(isActive),
+  );
 
   @override
-  void onWifiScanActive(bool isActive) =>
-      FlutterOpenDroneId._wifiScanActiveController.add(isActive);
+  void onWifiScanActive(bool isActive) => Timer.run(
+    () => FlutterOpenDroneId._wifiScanActiveController.add(isActive),
+  );
 }
