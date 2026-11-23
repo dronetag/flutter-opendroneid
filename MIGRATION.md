@@ -10,7 +10,9 @@ behavior notes.
 - Flutter 3.50+ / Dart 3.14+
 - Android Gradle Plugin 9+ with built-in Kotlin
 - Android `minSdk` 24 and `compileSdk` 37
-- CocoaPods for iOS (Swift Package Manager support is not included yet)
+- iOS 13+; the plugin ships a Swift Package (`ios/flutter_opendroneid/Package.swift`).
+  Swift Package Manager is the primary integration, CocoaPods still works through the
+  podspec
 
 Pigeon native interop is a **preview** feature in Flutter 3.50. Generated
 bindings are committed, so consumers do not need FFIgen/JNIgen.

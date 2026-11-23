@@ -8,8 +8,10 @@
 #   lib/src/pigeon/messages.g.ffi.dart          (iOS/macOS FFI)
 #   lib/src/pigeon/messages.g.jni.dart          (Android JNI)
 #   android/src/main/kotlin/.../Messages.g.kt
-#   ios/Classes/Messages.g.swift
-#   ios/Classes_objc_gen/                       (Objective-C bridge for FFIgen)
+#   ios/flutter_opendroneid/Sources/flutter_opendroneid/Messages.g.swift
+#   ios/flutter_opendroneid/Sources/flutter_opendroneid_objc_gen/
+#                                               (Objective-C bridge for FFIgen,
+#                                                its own SwiftPM target)
 #   example/tool/pigeon/                        (FFIgen/JNIgen config scripts)
 #
 # Prerequisites:
@@ -43,7 +45,7 @@ run_pigeon() {
     --dart_out lib/src/pigeon/messages.g.dart \
     --kotlin_out android/src/main/kotlin/cz/dronetag/flutter_opendroneid/Messages.g.kt \
     --kotlin_package cz.dronetag.flutter_opendroneid \
-    --swift_out ios/Classes/Messages.g.swift
+    --swift_out ios/flutter_opendroneid/Sources/flutter_opendroneid/Messages.g.swift
 }
 
 # First pass: bridges + config scripts. JNI Dart bindings need compiled Kotlin,

@@ -6,7 +6,7 @@ import UIKit
 /// Registration goes through `OdidScannerHostApiSetup`; scanner events reach
 /// Dart through `FlutterApiSink` without event channels. Wi-Fi scanning is not
 /// available on iOS and its methods throw a `PigeonError`.
-public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, OdidScannerHostApi {
+public class FlutterOpendroneidPlugin: NSObject, FlutterPlugin, OdidScannerHostApi {
     private let registrar: FlutterPluginRegistrar
     private let sink: FlutterApiSink
 
@@ -21,7 +21,7 @@ public class SwiftFlutterOpendroneidPlugin: NSObject, FlutterPlugin, OdidScanner
     /// Creates the plugin, publishes it (so `detachFromEngine` is called), and
     /// registers this instance for the engine.
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let instance = SwiftFlutterOpendroneidPlugin(registrar: registrar)
+        let instance = FlutterOpendroneidPlugin(registrar: registrar)
         registrar.publish(instance)
         OdidScannerHostApiSetup.register(api: instance, registrar: registrar)
     }

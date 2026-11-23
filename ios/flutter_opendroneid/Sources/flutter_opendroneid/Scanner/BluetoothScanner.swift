@@ -1,5 +1,6 @@
-import Foundation
 import CoreBluetooth
+import Flutter
+import Foundation
 
 /// Scans Bluetooth LE advertisements for ODID service data.
 ///

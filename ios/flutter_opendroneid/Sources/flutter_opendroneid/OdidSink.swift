@@ -1,3 +1,4 @@
+import Flutter
 import Foundation
 
 /// Receives scanner events and forwards them to the Dart

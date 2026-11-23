@@ -70,7 +70,7 @@ Future<void> main(List<String> args) async {
         sdk: sdk,
       ),
       inputs: <SwiftGenInput>[ObjCCompatibleSwiftFileInput(files: <Uri>[
-          Uri.file('../ios/Classes/Messages.g.swift')
+          Uri.file('../ios/flutter_opendroneid/Sources/flutter_opendroneid/Messages.g.swift')
         ])
       ],
       include: (Declaration d) =>
@@ -78,7 +78,7 @@ Future<void> main(List<String> args) async {
       output: Output(
         module: 'flutter_opendroneid',
         dartFile: Uri.file('../lib/src/pigeon/messages.g.ffi.dart'),
-        objectiveCFile: Uri.file('../ios/Classes_objc_gen/Messages.g.m'),
+        objectiveCFile: Uri.file('../ios/flutter_opendroneid/Sources/flutter_opendroneid_objc_gen/Messages.g.m'),
         preamble: '''
 
   // ignore_for_file: always_specify_types, camel_case_types, non_constant_identifier_names, unnecessary_non_null_assertion, unused_element, unused_field
@@ -128,7 +128,7 @@ Future<void> main(List<String> args) async {
       ),
     ).generate(
       logger: null,
-      tempDirectory: Uri.directory('../ios/Classes_objc_gen'),
+      tempDirectory: Uri.directory('../ios/flutter_opendroneid/Sources/flutter_opendroneid_objc_gen'),
     );
 
 }

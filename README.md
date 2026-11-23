@@ -85,7 +85,11 @@ iOS does not allow Wi-Fi scanning, only Bluetooth scanning is possible. Bluetoot
     ...
 ```
 
-- permission handler requires setting macros in `Podfile`. Set `PERMISSION_BLUETOOTH` to 1.
+- The plugin supports Swift Package Manager (primary) and CocoaPods. To use Swift Package Manager, enable it for your app (`flutter config --enable-swift-package-manager`, or `enable-swift-package-manager: true` under `flutter: config:` in your app's `pubspec.yaml`).
+
+- With Swift Package Manager, `permission_handler` turns on `PERMISSION_BLUETOOTH` automatically when `NSBluetoothAlwaysUsageDescription` is present in `Info.plist`; nothing else is needed.
+
+- With CocoaPods, permission handler requires setting macros in `Podfile`. Set `PERMISSION_BLUETOOTH` to 1.
 ```
 post_install do |installer|
   installer.pods_project.targets.each do |target|
