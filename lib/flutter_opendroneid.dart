@@ -13,6 +13,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_opendroneid/pigeon.dart' as pigeon;
 
 export 'package:dart_opendroneid/src/types.dart';
+export 'package:flutter_opendroneid/utils/ridf_writer.dart';
 
 class FlutterOpenDroneId {
   static late pigeon.Api _api = pigeon.Api();
