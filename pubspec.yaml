@@ -12,6 +12,8 @@ dependencies:
   device_info_plus: ^9.1.2
   dart_opendroneid: ^1.0.0
 dev_dependencies:
+  flutter_test:
+    sdk: flutter
   pigeon: ^10.1.6
 flutter:
   plugin:

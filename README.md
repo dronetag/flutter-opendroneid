@@ -87,6 +87,18 @@ post_install do |installer|
 end
 ```
 
+## Recording raw captures (RIDF)
+
+The `rawMessages` stream carries everything needed to archive a scanning session losslessly. `RidfWriter` writes these payloads as a [RIDF](https://github.com/Mattbusel/remoteid/blob/main/docs/ridf.md) file — a small binary record format (transport, receive time, RSSI, transmitter address and the raw message or message pack per record) that Remote ID analysis tools can read directly:
+
+```dart
+final writer = await RidfWriter.open(File('capture.ridf'));
+final subscription = FlutterOpenDroneId.rawMessages.listen(writer.log);
+// ... scan ...
+await subscription.cancel();
+await writer.close();
+```
+
 ---
 
 &copy; [Dronetag 2026](https://www.dronetag.com)
